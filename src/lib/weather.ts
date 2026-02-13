@@ -20,6 +20,9 @@ export interface HourlyForecast {
   time: string;
   temperature: number;
   weatherCode: number;
+  humidity: number;
+  uvIndex: number;
+  windSpeed: number;
 }
 
 export interface DailyForecast {
@@ -83,7 +86,7 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
 }
 
 export async function fetchWeather(location: GeoLocation): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,uv_index&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,uv_index&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7`;
   const res = await fetch(url);
   const data = await res.json();
 
@@ -108,6 +111,9 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
       time: t,
       temperature: Math.round(data.hourly.temperature_2m[currentHourIndex + i]),
       weatherCode: data.hourly.weather_code[currentHourIndex + i],
+      humidity: data.hourly.relative_humidity_2m[currentHourIndex + i],
+      uvIndex: Math.round(data.hourly.uv_index[currentHourIndex + i]),
+      windSpeed: Math.round(data.hourly.wind_speed_10m[currentHourIndex + i]),
     }));
 
   const daily: DailyForecast[] = data.daily.time.map((d: string, i: number) => ({
