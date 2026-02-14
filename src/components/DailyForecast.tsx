@@ -4,9 +4,11 @@ import { Droplets } from "lucide-react";
 
 interface Props {
   daily: DailyType[];
+  selectedIndex: number | null;
+  onSelectDay: (index: number | null) => void;
 }
 
-const DailyForecast = ({ daily }: Props) => {
+const DailyForecast = ({ daily, selectedIndex, onSelectDay }: Props) => {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
@@ -27,8 +29,14 @@ const DailyForecast = ({ daily }: Props) => {
           const width = (range / totalRange) * 100;
 
            return (
-            <div key={d.date} className="flex items-center gap-3 py-2">
-              <span className="text-sm font-medium text-foreground w-12">{label}</span>
+            <button
+              key={d.date}
+              onClick={() => onSelectDay(selectedIndex === i ? null : i)}
+              className={`flex items-center gap-3 py-2 px-2 w-full rounded-lg transition-colors ${
+                selectedIndex === i ? "bg-foreground/10" : "hover:bg-foreground/5"
+              }`}
+            >
+              <span className="text-sm font-medium text-foreground w-12 text-left">{label}</span>
               <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70 w-6" />
               <span className="text-sm text-foreground/50 w-8 text-right">{d.tempMin}°</span>
               <div className="flex-1 h-1.5 rounded-full bg-foreground/10 relative mx-2">
@@ -42,7 +50,7 @@ const DailyForecast = ({ daily }: Props) => {
                 <Droplets size={14} className="text-primary/70" />
                 <span className="text-xs text-foreground/50">{d.precipitationProbability}%</span>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

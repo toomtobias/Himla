@@ -5,9 +5,10 @@ import { Droplets, Wind, Sun } from "lucide-react";
 
 interface Props {
   hourly: HourlyType[];
+  selectedDayIndex: number | null;
 }
 
-const HourlyForecast = ({ hourly }: Props) => {
+const HourlyForecast = ({ hourly, selectedDayIndex }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selected = selectedIndex !== null ? hourly[selectedIndex] : null;
 
@@ -20,7 +21,7 @@ const HourlyForecast = ({ hourly }: Props) => {
         {hourly.map((h, i) => {
           const info = getWeatherInfo(h.weatherCode);
           const hour = new Date(h.time);
-          const label = i === 0 ? "Now" : hour.toLocaleTimeString([], { hour: "numeric" });
+          const label = i === 0 && selectedDayIndex === null ? "Now" : hour.toLocaleTimeString([], { hour: "numeric" });
           const isSelected = selectedIndex === i;
           return (
             <button
