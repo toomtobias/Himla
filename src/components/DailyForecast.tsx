@@ -1,5 +1,6 @@
 import { DailyForecast as DailyType, getWeatherInfo } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
+import { Droplets } from "lucide-react";
 
 interface Props {
   daily: DailyType[];
@@ -25,7 +26,7 @@ const DailyForecast = ({ daily }: Props) => {
           const left = ((d.tempMin - allMin) / totalRange) * 100;
           const width = (range / totalRange) * 100;
 
-          return (
+           return (
             <div key={d.date} className="flex items-center gap-3 py-2">
               <span className="text-sm font-medium text-foreground w-12">{label}</span>
               <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70 w-6" />
@@ -37,6 +38,10 @@ const DailyForecast = ({ daily }: Props) => {
                 />
               </div>
               <span className="text-sm font-semibold text-foreground w-8">{d.tempMax}°</span>
+              <div className="flex items-center gap-1 w-14">
+                <Droplets size={14} className="text-primary/70" />
+                <span className="text-xs text-foreground/50">{d.precipitationProbability}%</span>
+              </div>
             </div>
           );
         })}
