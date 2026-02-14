@@ -12,6 +12,11 @@ const Index = () => {
   return (
     <div className="min-h-screen sky-gradient">
       <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <div className="mb-2">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Himla
+          </h1>
+        </div>
         <SearchBar onSelect={setLocation} />
 
         {loading && (
