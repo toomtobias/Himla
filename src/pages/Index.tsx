@@ -18,7 +18,7 @@ const Index = () => {
         onSelectLocation={setLocation}
         recentLocations={recentLocations}
       />
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-lg md:max-w-2xl mx-auto px-4 py-8 space-y-6">
 
         {loading && <WeatherSkeleton />}
 
@@ -32,7 +32,7 @@ const Index = () => {
           <>
             <CurrentWeatherCard current={weather.current} />
             <HourlyForecast hourly={weather.hourly} sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
-            <DailyForecast daily={weather.daily} />
+            <DailyForecast daily={weather.daily} allHourly={weather.allHourly} />
             <WeatherDetails current={weather.current} />
             <SunCard sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
           </>

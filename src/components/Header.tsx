@@ -73,7 +73,7 @@ export default function Header({
   const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
 
   return (
-    <div ref={searchRef} className="max-w-lg mx-auto px-4 pt-6 pb-3">
+    <div ref={searchRef} className="max-w-lg md:max-w-2xl mx-auto px-4 pt-6 pb-3">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-base font-semibold whitespace-nowrap text-slate-700">
