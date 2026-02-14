@@ -26,6 +26,7 @@ export interface HourlyForecast {
   humidity: number;
   uvIndex: number;
   windSpeed: number;
+  precipitationProbability: number;
 }
 
 export interface DailyForecast {
@@ -100,7 +101,7 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
 }
 
 export async function fetchWeather(location: GeoLocation): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=7&wind_speed_unit=ms`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=7&wind_speed_unit=ms`;
   const res = await fetch(url);
   const data = await res.json();
 
@@ -111,7 +112,7 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     windSpeed: Math.round(data.current.wind_speed_10m),
     windDirection: data.current.wind_direction_10m,
     weatherCode: data.current.weather_code,
-    uvIndex: Math.round(data.current.uv_index),
+    uvIndex: Math.round(data.current.uv_index * 10) / 10,
     visibility: 10,
     pressure: Math.round(data.current.surface_pressure),
     cloudCover: data.current.cloud_cover,
@@ -130,6 +131,7 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     humidity: data.hourly.relative_humidity_2m[i],
     uvIndex: Math.round(data.hourly.uv_index[i]),
     windSpeed: Math.round(data.hourly.wind_speed_10m[i]),
+    precipitationProbability: data.hourly.precipitation_probability[i] || 0,
   }));
 
   const hourly = allHourly.slice(currentHourIndex, currentHourIndex + 24);

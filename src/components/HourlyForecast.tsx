@@ -39,6 +39,12 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
               <span className="text-xs text-foreground/60 font-medium">{label}</span>
               <WeatherIcon iconName={info.icon} size={22} className="text-foreground/70" tooltip={info.label} isNight={isNight} />
               <span className="text-sm font-semibold text-foreground">{h.temperature}°</span>
+              {h.precipitationProbability > 0 && (
+                <span className="text-xs text-slate-800 flex items-center gap-0.5">
+                  <Droplets size={10} />
+                  {h.precipitationProbability}%
+                </span>
+              )}
             </button>
           );
         })}
