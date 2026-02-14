@@ -23,18 +23,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Data flow:** `useWeather` hook holds the selected `GeoLocation` (defaults to London) and calls `fetchWeather()` from `src/lib/weather.ts` on change. `searchLocations()` calls the Open-Meteo geocoding API for city autocomplete. All weather display components are pure/presentational — they receive typed props, no context or global state.
 
 **Key modules:**
-- `src/lib/weather.ts` — All types (`GeoLocation`, `CurrentWeather`, `HourlyForecast`, `DailyForecast`, `WeatherData`), WMO code-to-label/icon mapping, API fetch functions
+- `src/lib/weather.ts` — All types (`GeoLocation`, `CurrentWeather`, `HourlyForecast`, `DailyForecast`, `WeatherData`), WMO code-to-label/icon mapping (Swedish labels), API fetch functions
 - `src/hooks/useWeather.ts` — Location state + weather data fetching (uses plain `useEffect`/`useState`, not React Query despite `QueryClientProvider` being wired up)
-- `src/pages/Index.tsx` — Composes all weather sections; manages `selectedDayIndex` state for day-based hourly filtering
-- `src/components/` — Weather UI components (SearchBar, CurrentWeatherCard, HourlyForecast, DailyForecast, WeatherDetails, SunCard, WeatherIcon)
+- `src/pages/Index.tsx` — Composes all weather sections; no day selection state, simple pass-through of data
+- `src/components/Header.tsx` — App name "Himla" + inline search bar with debounced geocoding autocomplete
+- `src/components/CurrentWeatherCard.tsx` — Location display (pin + city, country) and current temperature/conditions
+- `src/components/` — Other weather UI components (HourlyForecast, DailyForecast, WeatherDetails, SunCard, WeatherIcon)
 - `src/components/ui/` — Full shadcn/ui component library (most are scaffold, not actively used)
 
-**Hourly data distinction:** `weather.hourly` is the next 24 hours from now; `weather.allHourly` is all 168 hours (7 days). When a day is selected in DailyForecast, `Index.tsx` filters `allHourly` by that day's date string. `WeatherDetails` values for a selected day are computed by averaging that day's filtered hourly data on the fly.
+**Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`). The 7-day forecast is static/non-interactive. Detail cards (humidity, wind, UV, pressure, cloud cover, rain) and sun card always show current-day data.
 
 **WMO icon mapping:** Weather codes map through two layers: `WMO_CODES` in `weather.ts` produces an icon name string, then `WeatherIcon.tsx` resolves it to a Lucide React component via its `iconMap`.
 
 ## Conventions
 
+- **Language:** All user-facing text must be in Swedish
 - **Path alias:** Always use `@/` imports (maps to `src/`), not relative paths
 - **Styling:** Tailwind CSS with custom glassmorphism utility classes (`.glass-card`, `.glass-card-hover`, `.sky-gradient`) defined in `src/index.css` under `@layer components`. Light/dark themes via CSS custom properties on `:root` / `.dark`
 - **Class merging:** Use the `cn()` helper from `@/lib/utils` (clsx + tailwind-merge)
