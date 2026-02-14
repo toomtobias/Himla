@@ -10,8 +10,8 @@ const CurrentWeatherCard = ({ current }: Props) => {
 
   return (
     <div className="text-center space-y-2">
-      <div className="flex items-center justify-center gap-4">
-        <WeatherIcon iconName={info.icon} size={64} className="text-foreground/80" tooltip={info.label} />
+      <div className="flex items-center justify-center gap-1">
+        <WeatherIcon iconName={info.icon} size={32} className="text-foreground/80" tooltip={info.label} />
         <span className="text-8xl font-extralight tracking-tighter text-foreground">
           {current.temperature}°
         </span>

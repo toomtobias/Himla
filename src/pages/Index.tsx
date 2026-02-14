@@ -15,6 +15,7 @@ const Index = () => {
       <Header
         location={weather?.location.name ?? ""}
         country={weather?.location.country ?? ""}
+        timezone={weather?.timezone ?? ""}
         onSelectLocation={setLocation}
         recentLocations={recentLocations}
       />

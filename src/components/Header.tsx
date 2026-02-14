@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Clock } from "lucide-react";
 import { GeoLocation, searchLocations } from "@/lib/weather";
+import { useIconStyle } from "@/contexts/IconProvider";
 
 interface HeaderProps {
   location: string;
   country: string;
+  timezone: string;
   onSelectLocation: (location: GeoLocation) => void;
   recentLocations: () => GeoLocation[];
 }
@@ -12,9 +14,25 @@ interface HeaderProps {
 export default function Header({
   location,
   country,
+  timezone,
   onSelectLocation,
   recentLocations,
 }: HeaderProps) {
+  const [localTime, setLocalTime] = useState("");
+
+  useEffect(() => {
+    if (!timezone) return;
+    const update = () => {
+      const now = new Date();
+      const day = now.toLocaleDateString("sv-SE", { timeZone: timezone, weekday: "long" });
+      const time = now.toLocaleTimeString("sv-SE", { timeZone: timezone, hour: "2-digit", minute: "2-digit" });
+      setLocalTime(`${day.charAt(0).toUpperCase() + day.slice(1)} ${time}`);
+    };
+    update();
+    const interval = setInterval(update, 60000);
+    return () => clearInterval(interval);
+  }, [timezone]);
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeoLocation[]>([]);
@@ -68,6 +86,8 @@ export default function Header({
     setSearchResults([]);
   };
 
+  const { iconStyle, toggleIconStyle } = useIconStyle();
+
   const recent = recentLocations();
   const showRecent = searchOpen && searchQuery.length < 2 && recent.length > 0;
   const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
@@ -86,17 +106,32 @@ export default function Header({
               <span className="text-sm font-medium truncate text-slate-800">
                 {location}, {country}
               </span>
+              {localTime && (
+                <>
+                  <span className="text-sm text-slate-800">|</span>
+                  <span className="text-sm text-slate-600 whitespace-nowrap">{localTime}</span>
+                </>
+              )}
             </>
           )}
         </div>
 
-        <button
-          onClick={() => setSearchOpen(!searchOpen)}
-          className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors flex-shrink-0 ${searchOpen ? "bg-white/20" : ""}`}
-          aria-label="Sök plats"
-        >
-          <Search size={18} className="text-slate-800" />
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={toggleIconStyle}
+            className="px-2 py-1 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/20 transition-colors"
+            aria-label="Byt ikonstil"
+          >
+            {iconStyle === "lucide" ? "Lucide" : "Meteocons"}
+          </button>
+          <button
+            onClick={() => setSearchOpen(!searchOpen)}
+            className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors ${searchOpen ? "bg-white/20" : ""}`}
+            aria-label="Sök plats"
+          >
+            <Search size={18} className="text-slate-800" />
+          </button>
+        </div>
       </div>
 
       {searchOpen && (

@@ -20,7 +20,7 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
         Timprognos
       </h3>
-      <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
         {hourly.map((h, i) => {
           const info = getWeatherInfo(h.weatherCode);
           const hour = new Date(h.time);
@@ -32,14 +32,14 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
             <button
               key={h.time}
               onClick={() => setSelectedIndex(isSelected ? null : i)}
-              className={`flex flex-col items-center gap-2 min-w-[50px] rounded-xl py-2 px-1 transition-colors ${
+              className={`flex flex-col items-center gap-1 min-w-[75px] rounded-xl py-1 px-0 transition-colors ${
                 isSelected ? "bg-foreground/10" : "hover:bg-foreground/5"
               }`}
             >
               <span className="text-xs text-foreground/60 font-medium">{label}</span>
-              <WeatherIcon iconName={info.icon} size={22} className="text-foreground/70" tooltip={info.label} isNight={isNight} />
+              <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70" tooltip={info.label} isNight={isNight} />
               <span className="text-sm font-semibold text-foreground">{h.temperature}°</span>
-              {h.precipitationProbability > 0 && (
+              {h.precipitationProbability > 10 && (
                 <span className="text-xs text-slate-800 flex items-center gap-0.5">
                   <Droplets size={10} />
                   {h.precipitationProbability}%

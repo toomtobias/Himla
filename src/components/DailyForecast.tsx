@@ -1,6 +1,7 @@
 import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { Droplets } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface Props {
   daily: DailyType[];
@@ -29,7 +30,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
         7-dagars prognos
       </h3>
-      <div className="space-y-1">
+      <div className="space-y-0">
         {daily.map((d, i) => {
           const info = getWeatherInfo(d.weatherCode);
           const date = new Date(d.date + "T00:00:00");
@@ -51,26 +52,31 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
           return (
             <div
               key={d.date}
-              className="flex items-center gap-3 py-2 px-2"
+              className="flex items-center gap-2 py-1 px-2"
             >
               <span className="text-sm font-medium text-foreground w-12 text-left">{label}</span>
-              <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70 w-6" tooltip={info.label} />
-              <span className="text-xs text-foreground/50 w-7 text-right">{d.tempMin}°</span>
+              <WeatherIcon iconName={info.icon} size={44} className="text-foreground/70 w-14" tooltip={info.label} />
+              <span className="text-sm font-medium text-foreground/50 w-8 text-right">{d.tempMin}°</span>
               <div className="flex-1 mx-1">
                 <div className="flex h-1.5 overflow-hidden rounded-full">
                 {segments.length > 0 ? segments.map((t, j) => (
-                  <div
-                    key={j}
-                    className="flex-1 h-full"
-                    style={{ backgroundColor: tempToColor(t, globalMin, globalMax) }}
-                    title={`${String(j * 2).padStart(2, "0")}–${String(j * 2 + 2).padStart(2, "0")}: ${t}°`}
-                  />
+                  <Tooltip key={j} delayDuration={500}>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="flex-1 h-full"
+                        style={{ backgroundColor: tempToColor(t, globalMin, globalMax) }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{`${String(j * 2).padStart(2, "0")}–${String(j * 2 + 2).padStart(2, "0")}: ${t}°`}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )) : (
                   <div className="flex-1 h-full bg-foreground/20" />
                 )}
                 </div>
               </div>
-              <span className="text-xs font-semibold text-foreground w-7">{d.tempMax}°</span>
+              <span className="text-sm font-semibold text-foreground w-8">{d.tempMax}°</span>
               <div className="flex items-center gap-1 w-14">
                 <Droplets size={14} className="text-black" />
                 <span className="text-xs text-black">{d.precipitationProbability}%</span>

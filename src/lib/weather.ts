@@ -45,11 +45,12 @@ export interface WeatherData {
   daily: DailyForecast[];
   sunrises: string[];
   sunsets: string[];
+  timezone: string;
 }
 
 const WMO_CODES: Record<number, { label: string; icon: string }> = {
   0: { label: "Klart", icon: "Sun" },
-  1: { label: "Mestadels klart", icon: "Sun" },
+  1: { label: "Mestadels klart", icon: "SunMedium" },
   2: { label: "Halvklart", icon: "CloudSun" },
   3: { label: "Mulet", icon: "Cloud" },
   45: { label: "Dimma", icon: "CloudFog" },
@@ -152,5 +153,6 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     daily,
     sunrises: data.daily.sunrise,
     sunsets: data.daily.sunset,
+    timezone: data.timezone,
   };
 }
