@@ -34,10 +34,9 @@
 
     --radius: 1rem;
 
-    /* previous: 210 70% 65% / 200 80% 82% */
-    /* WeatherMan clear afternoon: sky-400 #38bdf8 → cyan-200 #a5f3fc */
-    --sky-from: 199 89% 60%;
-    --sky-to: 187 92% 81%;
+    /* WeatherMan alternative: 199 89% 60% / 187 92% 81% */
+    --sky-from: 210 70% 65%;
+    --sky-to: 200 80% 82%;
     --glass: 0 0% 100% / 0.18;
     --glass-border: 0 0% 100% / 0.3;
     --glass-hover: 0 0% 100% / 0.28;

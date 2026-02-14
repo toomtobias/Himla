@@ -120,9 +120,10 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     precipitation: data.current.precipitation,
   };
 
-  const now = new Date();
+  // Convert "now" to the location's local time for correct hourly slicing
+  const localNow = new Date(new Date().toLocaleString("en-US", { timeZone: data.timezone }));
   const currentHourIndex = data.hourly.time.findIndex(
-    (t: string) => new Date(t) >= now
+    (t: string) => new Date(t) >= localNow
   );
 
   const allHourly: HourlyForecast[] = data.hourly.time.map((t: string, i: number) => ({
