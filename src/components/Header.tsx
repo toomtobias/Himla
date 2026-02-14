@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Clock } from "lucide-react";
 import { GeoLocation, searchLocations } from "@/lib/weather";
 
 interface HeaderProps {
   location: string;
   country: string;
   onSelectLocation: (location: GeoLocation) => void;
+  recentLocations: () => GeoLocation[];
 }
 
 export default function Header({
   location,
   country,
   onSelectLocation,
+  recentLocations,
 }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,6 +68,10 @@ export default function Header({
     setSearchResults([]);
   };
 
+  const recent = recentLocations();
+  const showRecent = searchOpen && searchQuery.length < 2 && recent.length > 0;
+  const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
+
   return (
     <div ref={searchRef} className="max-w-lg mx-auto px-4 pt-6 pb-3">
       <div className="flex items-center justify-between gap-4">
@@ -110,7 +116,27 @@ export default function Header({
             )}
           </div>
 
-          {searchResults.length > 0 && (
+          {showRecent && (
+            <div className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl">
+              <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                Senaste
+              </div>
+              {recent.map((loc, i) => (
+                <button
+                  key={`${loc.latitude}-${loc.longitude}-${i}`}
+                  onClick={() => handleSelect(loc)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/5 transition-colors"
+                >
+                  <Clock size={14} className="flex-shrink-0 text-foreground/50" />
+                  <span className="text-sm text-foreground">
+                    {loc.name}, {loc.country}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showResults && (
             <div className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl">
               {searchResults.map((result, i) => (
                 <button

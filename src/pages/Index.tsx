@@ -4,11 +4,11 @@ import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
 import WeatherDetails from "@/components/WeatherDetails";
 import SunCard from "@/components/SunCard";
+import WeatherSkeleton from "@/components/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
-import { CloudRain } from "lucide-react";
 
 const Index = () => {
-  const { weather, loading, error, setLocation } = useWeather();
+  const { weather, loading, error, setLocation, recentLocations } = useWeather();
 
   return (
     <div className="min-h-screen sky-gradient">
@@ -16,15 +16,11 @@ const Index = () => {
         location={weather?.location.name ?? ""}
         country={weather?.location.country ?? ""}
         onSelectLocation={setLocation}
+        recentLocations={recentLocations}
       />
       <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
 
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <CloudRain className="text-foreground/30 animate-pulse" size={48} />
-            <p className="text-foreground/40 text-sm">Laddar väder...</p>
-          </div>
-        )}
+        {loading && <WeatherSkeleton />}
 
         {error && (
           <div className="glass-card p-6 text-center">
