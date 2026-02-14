@@ -4,23 +4,21 @@ import { Droplets } from "lucide-react";
 
 interface Props {
   daily: DailyType[];
-  selectedIndex: number | null;
-  onSelectDay: (index: number | null) => void;
 }
 
-const DailyForecast = ({ daily, selectedIndex, onSelectDay }: Props) => {
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DailyForecast = ({ daily }: Props) => {
+  const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
 
   return (
     <div className="glass-card p-4">
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
-        7-Day Forecast
+        7-dagars prognos
       </h3>
       <div className="space-y-1">
         {daily.map((d, i) => {
           const info = getWeatherInfo(d.weatherCode);
           const date = new Date(d.date + "T00:00:00");
-          const label = i === 0 ? "Today" : dayNames[date.getDay()];
+          const label = i === 0 ? "Idag" : dayNames[date.getDay()];
           const range = d.tempMax - d.tempMin;
           const allMin = Math.min(...daily.map((x) => x.tempMin));
           const allMax = Math.max(...daily.map((x) => x.tempMax));
@@ -29,12 +27,9 @@ const DailyForecast = ({ daily, selectedIndex, onSelectDay }: Props) => {
           const width = (range / totalRange) * 100;
 
            return (
-            <button
+            <div
               key={d.date}
-              onClick={() => onSelectDay(selectedIndex === i ? null : i)}
-              className={`flex items-center gap-3 py-2 px-2 w-full rounded-lg transition-colors ${
-                selectedIndex === i ? "bg-foreground/10" : "hover:bg-foreground/5"
-              }`}
+              className="flex items-center gap-3 py-2 px-2"
             >
               <span className="text-sm font-medium text-foreground w-12 text-left">{label}</span>
               <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70 w-6" />
@@ -47,10 +42,10 @@ const DailyForecast = ({ daily, selectedIndex, onSelectDay }: Props) => {
               </div>
               <span className="text-sm font-semibold text-foreground w-8">{d.tempMax}°</span>
               <div className="flex items-center gap-1 w-14">
-                <Droplets size={14} className="text-primary/70" />
-                <span className="text-xs text-foreground/50">{d.precipitationProbability}%</span>
+                <Droplets size={14} className="text-black" />
+                <span className="text-xs text-black">{d.precipitationProbability}%</span>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

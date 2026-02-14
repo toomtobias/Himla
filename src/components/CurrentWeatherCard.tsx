@@ -1,4 +1,4 @@
-import { CurrentWeather, getWeatherInfo, GeoLocation } from "@/lib/weather";
+import { CurrentWeather, GeoLocation, getWeatherInfo } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { MapPin } from "lucide-react";
 
@@ -12,11 +12,9 @@ const CurrentWeatherCard = ({ current, location }: Props) => {
 
   return (
     <div className="text-center space-y-2">
-      <div className="flex items-center justify-center gap-2 text-foreground/70">
-        <MapPin size={16} />
-        <span className="text-sm font-medium tracking-wide">
-          {location.name}, {location.country}
-        </span>
+      <div className="flex items-center justify-center gap-1.5 text-foreground/70">
+        <MapPin size={14} />
+        <span className="text-sm font-medium">{location.name}, {location.country}</span>
       </div>
       <div className="flex items-center justify-center gap-4">
         <WeatherIcon iconName={info.icon} size={64} className="text-foreground/80" />
@@ -26,7 +24,7 @@ const CurrentWeatherCard = ({ current, location }: Props) => {
       </div>
       <p className="text-lg text-foreground/70 font-medium">{info.label}</p>
       <p className="text-sm text-foreground/50">
-        Feels like {current.feelsLike}°
+        Känns som {current.feelsLike}°
       </p>
     </div>
   );

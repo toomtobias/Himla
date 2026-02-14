@@ -53,7 +53,7 @@ const SearchBar = ({ onSelect }: Props) => {
         <Search className="text-foreground/50 shrink-0" size={20} />
         <input
           type="text"
-          placeholder="Search for a city..."
+          placeholder="Sök efter stad..."
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           className="bg-transparent w-full outline-none text-foreground placeholder:text-foreground/40 text-base"
