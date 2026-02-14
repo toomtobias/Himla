@@ -36,10 +36,11 @@ export interface DailyForecast {
 export interface WeatherData {
   location: GeoLocation;
   current: CurrentWeather;
+  allHourly: HourlyForecast[];
   hourly: HourlyForecast[];
   daily: DailyForecast[];
-  sunrise: string;
-  sunset: string;
+  sunrises: string[];
+  sunsets: string[];
 }
 
 const WMO_CODES: Record<number, { label: string; icon: string }> = {
@@ -108,16 +109,17 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
   const currentHourIndex = data.hourly.time.findIndex(
     (t: string) => new Date(t) >= now
   );
-  const hourly: HourlyForecast[] = data.hourly.time
-    .slice(currentHourIndex, currentHourIndex + 24)
-    .map((t: string, i: number) => ({
-      time: t,
-      temperature: Math.round(data.hourly.temperature_2m[currentHourIndex + i]),
-      weatherCode: data.hourly.weather_code[currentHourIndex + i],
-      humidity: data.hourly.relative_humidity_2m[currentHourIndex + i],
-      uvIndex: Math.round(data.hourly.uv_index[currentHourIndex + i]),
-      windSpeed: Math.round(data.hourly.wind_speed_10m[currentHourIndex + i]),
-    }));
+
+  const allHourly: HourlyForecast[] = data.hourly.time.map((t: string, i: number) => ({
+    time: t,
+    temperature: Math.round(data.hourly.temperature_2m[i]),
+    weatherCode: data.hourly.weather_code[i],
+    humidity: data.hourly.relative_humidity_2m[i],
+    uvIndex: Math.round(data.hourly.uv_index[i]),
+    windSpeed: Math.round(data.hourly.wind_speed_10m[i]),
+  }));
+
+  const hourly = allHourly.slice(currentHourIndex, currentHourIndex + 24);
 
   const daily: DailyForecast[] = data.daily.time.map((d: string, i: number) => ({
     date: d,
@@ -127,5 +129,13 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     precipitationProbability: data.daily.precipitation_probability_max[i] || 0,
   }));
 
-  return { location, current, hourly, daily, sunrise: data.daily.sunrise[0], sunset: data.daily.sunset[0] };
+  return {
+    location,
+    current,
+    allHourly,
+    hourly,
+    daily,
+    sunrises: data.daily.sunrise,
+    sunsets: data.daily.sunset,
+  };
 }
