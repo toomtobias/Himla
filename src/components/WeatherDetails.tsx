@@ -1,4 +1,4 @@
-import { CurrentWeather } from "@/lib/weather";
+import { CurrentWeather, getWindDirection } from "@/lib/weather";
 import { Droplets, Wind, Eye, Gauge, Cloud, CloudRain } from "lucide-react";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 
 const details = (c: CurrentWeather) => [
   { label: "Luftfuktighet", value: `${c.humidity}%`, icon: Droplets },
-  { label: "Vind", value: `${c.windSpeed} km/h`, icon: Wind },
+  { label: "Vind", value: `${c.windSpeed} m/s ${getWindDirection(c.windDirection)}`, icon: Wind },
   { label: "UV-index", value: `${c.uvIndex}`, icon: Eye },
   { label: "Lufttryck", value: `${c.pressure} hPa`, icon: Gauge },
   { label: "Molntäcke", value: `${c.cloudCover}%`, icon: Cloud },

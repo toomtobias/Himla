@@ -12,7 +12,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen sky-gradient">
-      <Header onSelectLocation={setLocation} />
+      <Header
+        location={weather?.location.name ?? ""}
+        country={weather?.location.country ?? ""}
+        onSelectLocation={setLocation}
+      />
       <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
 
         {loading && (
@@ -30,7 +34,7 @@ const Index = () => {
 
         {weather && !loading && (
           <>
-            <CurrentWeatherCard current={weather.current} location={weather.location} />
+            <CurrentWeatherCard current={weather.current} />
             <HourlyForecast hourly={weather.hourly} sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
             <DailyForecast daily={weather.daily} />
             <WeatherDetails current={weather.current} />

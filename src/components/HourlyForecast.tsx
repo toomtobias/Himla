@@ -54,7 +54,7 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
           <div className="flex flex-col items-center gap-1">
             <Wind size={16} className="text-foreground/50" />
             <span className="text-xs text-foreground/50">Vind</span>
-            <span className="text-sm font-semibold text-foreground">{selected.windSpeed} km/h</span>
+            <span className="text-sm font-semibold text-foreground">{selected.windSpeed} m/s</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <Sun size={16} className="text-foreground/50" />

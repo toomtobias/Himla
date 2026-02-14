@@ -10,6 +10,7 @@ export interface CurrentWeather {
   feelsLike: number;
   humidity: number;
   windSpeed: number;
+  windDirection: number;
   weatherCode: number;
   uvIndex: number;
   visibility: number;
@@ -72,6 +73,13 @@ const WMO_CODES: Record<number, { label: string; icon: string }> = {
   99: { label: "Åska med kraftigt hagel", icon: "CloudLightning" },
 };
 
+const WIND_DIRECTIONS = ["N", "NO", "Ö", "SO", "S", "SV", "V", "NV"];
+
+export function getWindDirection(degrees: number): string {
+  const index = Math.round(degrees / 45) % 8;
+  return WIND_DIRECTIONS[index];
+}
+
 export function getWeatherInfo(code: number) {
   return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
 }
@@ -92,7 +100,7 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
 }
 
 export async function fetchWeather(location: GeoLocation): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=7`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=auto&forecast_days=7&wind_speed_unit=ms`;
   const res = await fetch(url);
   const data = await res.json();
 
@@ -101,6 +109,7 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     feelsLike: Math.round(data.current.apparent_temperature),
     humidity: data.current.relative_humidity_2m,
     windSpeed: Math.round(data.current.wind_speed_10m),
+    windDirection: data.current.wind_direction_10m,
     weatherCode: data.current.weather_code,
     uvIndex: Math.round(data.current.uv_index),
     visibility: 10,

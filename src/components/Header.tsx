@@ -1,23 +1,28 @@
 import { useState, useEffect, useRef } from "react";
+import { Search, MapPin } from "lucide-react";
 import { GeoLocation, searchLocations } from "@/lib/weather";
 
 interface HeaderProps {
+  location: string;
+  country: string;
   onSelectLocation: (location: GeoLocation) => void;
 }
 
 export default function Header({
+  location,
+  country,
   onSelectLocation,
 }: HeaderProps) {
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeoLocation[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (searchQuery.length < 2) {
       setSearchResults([]);
-      setShowDropdown(false);
       return;
     }
 
@@ -26,7 +31,6 @@ export default function Header({
       try {
         const results = await searchLocations(searchQuery);
         setSearchResults(results);
-        setShowDropdown(results.length > 0);
       } catch (err) {
         console.error("Search error:", err);
       } finally {
@@ -40,75 +44,93 @@ export default function Header({
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
+        setSearchOpen(false);
+        setSearchQuery("");
+        setSearchResults([]);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (searchOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [searchOpen]);
+
   const handleSelect = (loc: GeoLocation) => {
     onSelectLocation(loc);
+    setSearchOpen(false);
     setSearchQuery("");
-    setShowDropdown(false);
+    setSearchResults([]);
   };
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-3">
+    <div ref={searchRef} className="max-w-lg mx-auto px-4 pt-6 pb-3">
       <div className="flex items-center justify-between gap-4">
-            {/* Logo */}
-            <span className="text-base font-semibold whitespace-nowrap text-slate-700">
-              Himla
-            </span>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-base font-semibold whitespace-nowrap text-slate-700">
+            Himla
+          </span>
+          {location && (
+            <>
+              <span className="text-sm text-slate-800">|</span>
+              <MapPin size={14} className="text-slate-800 shrink-0" />
+              <span className="text-sm font-medium truncate text-slate-800">
+                {location}, {country}
+              </span>
+            </>
+          )}
+        </div>
 
-            {/* Search */}
-            <div ref={searchRef} className="relative flex-shrink-0">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-800">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-
-              <input
-                type="text"
-                placeholder="Sök plats..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
-                className="w-40 sm:w-48 pl-6 pr-3 py-1.5 bg-transparent border-b border-slate-800 placeholder:text-slate-600 text-sm text-slate-800 focus:outline-none focus:border-black"
-                aria-label="Sök efter plats"
-              />
-
-              {isSearching && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="w-4 h-4 border-2 rounded-full animate-spin border-slate-300 border-t-slate-600" />
-                </div>
-              )}
-
-              {showDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-sky-100 border border-white/30 rounded-xl shadow-xl overflow-hidden">
-                  {searchResults.map((result, i) => (
-                    <button
-                      key={`${result.latitude}-${result.longitude}-${i}`}
-                      onClick={() => handleSelect(result)}
-                      className="w-full px-4 py-3 text-left hover:bg-white/20 transition-colors flex items-center gap-3"
-                    >
-                      <svg className="w-4 h-4 flex-shrink-0 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <div className="min-w-0">
-                        <div className="font-medium text-sm truncate text-slate-900">{result.name}</div>
-                        <div className="text-xs truncate text-slate-700">
-                          {result.country}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        <button
+          onClick={() => setSearchOpen(!searchOpen)}
+          className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors flex-shrink-0 ${searchOpen ? "bg-white/20" : ""}`}
+          aria-label="Sök plats"
+        >
+          <Search size={18} className="text-slate-800" />
+        </button>
       </div>
+
+      {searchOpen && (
+        <div className="mt-3 relative z-50">
+          <div className="glass-card flex items-center gap-3 px-4 py-3">
+            <Search className="text-foreground/50 shrink-0" size={20} />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Sök efter plats..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent w-full outline-none text-foreground placeholder:text-foreground/40 text-base"
+            />
+            {isSearching && (
+              <div className="w-4 h-4 border-2 rounded-full animate-spin border-slate-300 border-t-slate-600 shrink-0" />
+            )}
+          </div>
+
+          {searchResults.length > 0 && (
+            <div className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl">
+              {searchResults.map((result, i) => (
+                <button
+                  key={`${result.latitude}-${result.longitude}-${i}`}
+                  onClick={() => handleSelect(result)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/5 transition-colors"
+                >
+                  <svg className="w-4 h-4 flex-shrink-0 text-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-sm text-foreground">
+                    {result.name}, {result.country}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
