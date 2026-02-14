@@ -31,7 +31,7 @@ const Index = () => {
         {weather && !loading && (
           <>
             <CurrentWeatherCard current={weather.current} location={weather.location} />
-            <HourlyForecast hourly={weather.hourly} />
+            <HourlyForecast hourly={weather.hourly} sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
             <DailyForecast daily={weather.daily} />
             <WeatherDetails current={weather.current} />
             <SunCard sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
