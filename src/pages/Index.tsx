@@ -3,6 +3,7 @@ import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
 import WeatherDetails from "@/components/WeatherDetails";
+import SunCard from "@/components/SunCard";
 import { useWeather } from "@/hooks/useWeather";
 import { CloudRain } from "lucide-react";
 
@@ -38,6 +39,7 @@ const Index = () => {
             <HourlyForecast hourly={weather.hourly} />
             <DailyForecast daily={weather.daily} />
             <WeatherDetails current={weather.current} />
+            <SunCard sunrise={weather.sunrise} sunset={weather.sunset} />
           </>
         )}
       </div>
