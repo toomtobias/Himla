@@ -1,4 +1,4 @@
-import { CurrentWeather, getWindDirection } from "@/lib/weather";
+import { CurrentWeather } from "@/lib/weather";
 import { Droplets, Wind, Eye, Gauge, Cloud, CloudRain } from "lucide-react";
 
 interface Props {
@@ -6,8 +6,6 @@ interface Props {
 }
 
 const details = (c: CurrentWeather) => [
-  { label: "Regn", value: `${c.precipitation} mm`, icon: CloudRain },
-  { label: "Vind", value: `${c.windSpeed} m/s ${getWindDirection(c.windDirection)}`, icon: Wind },
   { label: "Molntäcke", value: `${c.cloudCover}%`, icon: Cloud },
   { label: "UV-index (0–11)", value: `${c.uvIndex}`, icon: Eye },
   { label: "Luftfuktighet", value: `${c.humidity}%`, icon: Droplets },
@@ -17,6 +15,24 @@ const details = (c: CurrentWeather) => [
 const WeatherDetails = ({ current }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-3">
+      {/* Regnkort */}
+      <div className="glass-card p-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-foreground/50">
+          <CloudRain size={14} />
+          <span className="text-xs font-semibold uppercase tracking-wider">Regn</span>
+        </div>
+        <span className="text-2xl font-semibold text-foreground">{current.precipitation} mm</span>
+      </div>
+      {/* Vindkort */}
+      <div className="glass-card p-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-foreground/50">
+          <Wind size={14} />
+          <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
+            Vind <span style={{ transform: `rotate(${current.windDirection}deg)` }} className="inline-block">↓</span>
+          </span>
+        </div>
+        <span className="text-2xl font-semibold text-foreground">{current.windSpeed} <span className="text-lg">({current.windGusts})</span> m/s</span>
+      </div>
       {details(current).map((d) => (
         <div key={d.label} className="glass-card p-4 flex flex-col gap-2">
           <div className="flex items-center gap-2 text-foreground/50">
