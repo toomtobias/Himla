@@ -32,9 +32,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/components/MeteoconIcon.tsx` — Renders animated Meteocons SVGs from `public/meteocons/`. Maps WMO icon name strings to meteocon filenames with explicit day/night variants. Applies a 4x scale multiplier and drop-shadow.
 - `src/components/WeatherSkeleton.tsx` — Skeleton loading state matching the full page layout
 - `src/components/` — Other weather UI components (HourlyForecast, DailyForecast, WeatherDetails, SunCard)
-- `src/components/ui/` — Full shadcn/ui component library (most are scaffold, not actively used)
+- `src/components/ui/` — Minimal shadcn/ui: only `tooltip.tsx` and `skeleton.tsx` remain
 
-**Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`) with night icons based on sunrise/sunset and per-hour precipitation probability. The 7-day forecast shows column headers (Min, Temperatur, Max, Regn, Vind, UV) with a per-day temperature heatmap bar (1-hour segments, steel blue→golden amber, scaled per-day min/max), max wind speed in m/s, and UV index. Detail cards (rain, wind with direction, cloud cover, UV index with 0–11 scale, humidity, pressure) and sun card always show current real-time data.
+**Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`) with night icons based on sunrise/sunset and per-hour precipitation probability. The 7-day forecast is responsive: on mobile it shows day, icon, max temp, rain %, wind, UV; on desktop (`md`+) it adds min temp and a per-day temperature heatmap bar (1-hour segments, steel blue→golden amber, scaled per-day min/max). Detail cards (rain, wind with direction, cloud cover, UV index with 0–11 scale, humidity, pressure) and sun card always show current real-time data.
 
 **WMO icon mapping:** Weather codes map through two layers: `WMO_CODES` in `weather.ts` produces an icon name string, then `WeatherIcon.tsx` renders it via `MeteoconIcon` (using `meteoconMap` with day/night filenames). Meteocon SVGs live in `public/meteocons/` (44 animated SVGs).
 
