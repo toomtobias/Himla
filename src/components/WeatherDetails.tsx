@@ -31,7 +31,7 @@ const WeatherDetails = ({ current }: Props) => {
             Vind <span style={{ transform: `rotate(${current.windDirection}deg)` }} className="inline-block">↓</span>
           </span>
         </div>
-        <span className="text-2xl font-semibold text-foreground">{current.windSpeed} <span className="text-lg">({current.windGusts})</span> m/s</span>
+        <span className="text-2xl font-semibold text-foreground">{current.windSpeed} m/s</span>
       </div>
       {details(current).map((d) => (
         <div key={d.label} className="glass-card p-4 flex flex-col gap-2">
