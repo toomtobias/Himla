@@ -1,4 +1,4 @@
-import { CurrentWeather } from "@/lib/weather";
+import { CurrentWeather, snapWindDegrees } from "@/lib/weather";
 import { Droplets, Wind, Eye, Gauge, Cloud, CloudRain } from "lucide-react";
 
 interface Props {
@@ -28,7 +28,7 @@ const WeatherDetails = ({ current }: Props) => {
         <div className="flex items-center gap-2 text-foreground/50">
           <Wind size={14} />
           <span className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1">
-            Vind <span style={{ transform: `rotate(${current.windDirection}deg)` }} className="inline-block">↓</span>
+            Vind <span style={{ transform: `rotate(${snapWindDegrees(current.windDirection)}deg)` }} className="inline-block">↓</span>
           </span>
         </div>
         <span className="text-2xl font-semibold text-foreground">{current.windSpeed} m/s</span>

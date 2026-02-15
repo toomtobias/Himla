@@ -90,6 +90,10 @@ export function getWindDirection(degrees: number): string {
   return WIND_DIRECTIONS[index];
 }
 
+export function snapWindDegrees(degrees: number): number {
+  return (Math.round(degrees / 45) % 8) * 45;
+}
+
 export function getWeatherInfo(code: number) {
   return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
 }

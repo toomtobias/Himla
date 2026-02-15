@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HourlyForecast as HourlyType, getWeatherInfo, getWindDirection } from "@/lib/weather";
+import { HourlyForecast as HourlyType, getWeatherInfo, getWindDirection, snapWindDegrees } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { Cloud, CloudRain, Droplets, Wind, Sun } from "lucide-react";
 
@@ -56,7 +56,7 @@ const HourlyForecast = ({ hourly, sunrises, sunsets }: Props) => {
           </div>
           <div className="flex flex-col items-center gap-1">
             <Wind size={16} className="text-foreground/50" />
-            <span className="text-xs text-foreground/50 flex items-center gap-1">Vind <span style={{ transform: `rotate(${selected.windDirection}deg)` }} className="inline-block">↓</span></span>
+            <span className="text-xs text-foreground/50 flex items-center gap-1">Vind <span style={{ transform: `rotate(${snapWindDegrees(selected.windDirection)}deg)` }} className="inline-block">↓</span></span>
             <span className="text-sm font-semibold text-foreground">{selected.windSpeed} m/s</span>
             <span className="text-xs text-foreground/40">({selected.windGusts}) m/s</span>
           </div>
