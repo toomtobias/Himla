@@ -5,10 +5,10 @@ const STORAGE_KEY = "himla-recent-locations";
 const MAX_RECENT = 5;
 
 const DEFAULT_LOCATION: GeoLocation = {
-  name: "London",
-  country: "United Kingdom",
-  latitude: 51.5074,
-  longitude: -0.1278,
+  name: "Stockholm",
+  country: "Sweden",
+  latitude: 59.3293,
+  longitude: 18.0686,
 };
 
 function getRecentLocations(): GeoLocation[] {
