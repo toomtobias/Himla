@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Clock } from "lucide-react";
 import { GeoLocation, searchLocations } from "@/lib/weather";
-import { useIconStyle } from "@/contexts/IconProvider";
 
 interface HeaderProps {
   location: string;
@@ -86,8 +85,6 @@ export default function Header({
     setSearchResults([]);
   };
 
-  const { iconStyle, toggleIconStyle } = useIconStyle();
-
   const recent = recentLocations();
   const showRecent = searchOpen && searchQuery.length < 2 && recent.length > 0;
   const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
@@ -117,13 +114,6 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={toggleIconStyle}
-            className="px-2 py-1 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/20 transition-colors"
-            aria-label="Byt ikonstil"
-          >
-            {iconStyle === "lucide" ? "Lucide" : "Meteocons"}
-          </button>
           <button
             onClick={() => setSearchOpen(!searchOpen)}
             className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors ${searchOpen ? "bg-white/20" : ""}`}

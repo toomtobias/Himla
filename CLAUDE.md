@@ -20,16 +20,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-**Data flow:** `useWeather` hook holds the selected `GeoLocation` and calls `fetchWeather()` from `src/lib/weather.ts` on change. On first load, the last searched location is restored from localStorage (falls back to London). `searchLocations()` calls the Open-Meteo geocoding API for city autocomplete. All weather display components are pure/presentational — they receive typed props, except `WeatherIcon` which reads `IconProvider` context to switch icon renderers.
+**Data flow:** `useWeather` hook holds the selected `GeoLocation` and calls `fetchWeather()` from `src/lib/weather.ts` on change. On first load, the last searched location is restored from localStorage (falls back to London). `searchLocations()` calls the Open-Meteo geocoding API for city autocomplete. All weather display components are pure/presentational — they receive typed props.
 
 **Key modules:**
 - `src/lib/weather.ts` — All types, WMO code-to-label/icon mapping (Swedish labels), wind direction helper (`getWindDirection`), API fetch functions. Wind speed uses m/s (`wind_speed_unit=ms`). Returns `timezone` from API. Hourly slicing uses location-local time (via `toLocaleString` with timezone) to correctly offset for remote locations.
 - `src/hooks/useWeather.ts` — Location state + weather data fetching. Manages recent locations in localStorage (key: `himla-recent-locations`, max 5). Exposes `recentLocations` getter and `setLocation` which auto-saves to history.
 - `src/pages/Index.tsx` — Composes all weather sections; no day selection state, simple pass-through of data. Shows `WeatherSkeleton` during loading.
-- `src/contexts/IconProvider.tsx` — React context providing `iconStyle` (`"lucide" | "meteocons"`) and `toggleIconStyle`. Persisted in localStorage (key: `himla-icon-style`). Wraps the app in `App.tsx`.
-- `src/components/Header.tsx` — "Himla" + location with pin icon + local day/time (using timezone from API) + icon style toggle + search icon that toggles a glass-card search field. When search opens with no query, shows recent locations with clock icons. Search results overlay content (absolute positioned). Click outside closes search.
+- `src/components/Header.tsx` — "Himla" + location with pin icon + local day/time (using timezone from API) + search icon that toggles a glass-card search field. When search opens with no query, shows recent locations with clock icons. Search results overlay content (absolute positioned). Click outside closes search.
 - `src/components/CurrentWeatherCard.tsx` — Current temperature, weather icon with tooltip (isNight based on sunrise/sunset in location timezone), condition label, feels-like
-- `src/components/WeatherIcon.tsx` — Routes to either Lucide icons or MeteoconIcon based on `IconProvider` context. Lucide path maps WMO icon name strings to Lucide components with `nightMap` for Sun→Moon swaps. Supports `isNight` and `tooltip` props.
+- `src/components/WeatherIcon.tsx` — Always renders MeteoconIcon. Supports `isNight` and `tooltip` props.
 - `src/components/MeteoconIcon.tsx` — Renders animated Meteocons SVGs from `public/meteocons/`. Maps WMO icon name strings to meteocon filenames with explicit day/night variants. Applies a 4x scale multiplier and drop-shadow.
 - `src/components/WeatherSkeleton.tsx` — Skeleton loading state matching the full page layout
 - `src/components/` — Other weather UI components (HourlyForecast, DailyForecast, WeatherDetails, SunCard)
@@ -37,7 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`) with night icons based on sunrise/sunset and per-hour precipitation probability. The 7-day forecast shows column headers (Min, Temperatur, Max, Regn, Vind, UV) with a per-day temperature heatmap bar (1-hour segments, steel blue→golden amber, scaled per-day min/max), max wind speed in m/s, and UV index. Detail cards (humidity, wind with direction, UV index with 0–11 scale, pressure, cloud cover, rain) and sun card always show current real-time data.
 
-**WMO icon mapping:** Weather codes map through two layers: `WMO_CODES` in `weather.ts` produces an icon name string, then `WeatherIcon.tsx` delegates to either Lucide (via `iconMap`/`nightMap`) or `MeteoconIcon` (via `meteoconMap` with day/night filenames) depending on the `IconProvider` context. Meteocon SVGs live in `public/meteocons/` (44 animated SVGs).
+**WMO icon mapping:** Weather codes map through two layers: `WMO_CODES` in `weather.ts` produces an icon name string, then `WeatherIcon.tsx` renders it via `MeteoconIcon` (using `meteoconMap` with day/night filenames). Meteocon SVGs live in `public/meteocons/` (44 animated SVGs).
 
 ## Conventions
 
@@ -47,5 +46,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Styling:** Tailwind CSS with custom glassmorphism utility classes (`.glass-card`, `.glass-card-hover`, `.sky-gradient`) defined in `src/index.css` under `@layer components`. Light/dark themes via CSS custom properties on `:root` / `.dark`
 - **Class merging:** Use the `cn()` helper from `@/lib/utils` (clsx + tailwind-merge)
 - **TypeScript:** Strict mode is off (`noImplicitAny: false`). The codebase uses `any` in API response mapping
-- **Storage:** localStorage key `himla-recent-locations` stores last 5 searched locations as JSON array of `GeoLocation`. Key `himla-icon-style` stores icon style preference (`"lucide"` or `"meteocons"`)
+- **Storage:** localStorage key `himla-recent-locations` stores last 5 searched locations as JSON array of `GeoLocation`
 - **Tests:** Vitest + Testing Library + jsdom. Place tests as `src/**/*.{test,spec}.{ts,tsx}`. Setup file at `src/test/setup.ts` stubs `window.matchMedia`
