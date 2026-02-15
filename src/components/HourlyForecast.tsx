@@ -20,7 +20,7 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
         Timprognos
       </h3>
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex gap-3 overflow-x-auto pb-4 glass-scrollbar">
         {hourly.map((h, i) => {
           const info = getWeatherInfo(h.weatherCode);
           const hour = new Date(h.time);

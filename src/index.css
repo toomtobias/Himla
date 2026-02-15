@@ -123,4 +123,21 @@
   .sky-gradient {
     background: linear-gradient(180deg, hsl(var(--sky-from)), hsl(var(--sky-to)));
   }
+
+  .glass-scrollbar::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .glass-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .glass-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--foreground) / 0.15);
+    border-radius: 9999px;
+  }
+
+  .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground) / 0.25);
+  }
 }
