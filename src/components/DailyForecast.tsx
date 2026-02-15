@@ -1,6 +1,5 @@
 import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
-import { Droplets } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface Props {
@@ -21,12 +20,24 @@ function tempToColor(temp: number, min: number, max: number): string {
 const DailyForecast = ({ daily, allHourly }: Props) => {
   const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
 
-
   return (
     <div className="glass-card p-4">
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
         7-dagars prognos
       </h3>
+      {/* Column headers */}
+      <div className="flex items-center gap-2 px-2 mb-1">
+        <span className="w-12" />
+        <span className="w-14" />
+        <span className="text-[10px] font-medium text-foreground/40 uppercase w-8 text-right">Min</span>
+        <div className="flex-1 mx-1">
+          <span className="text-[10px] font-medium text-foreground/40 uppercase text-center block">Temperatur</span>
+        </div>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase w-8">Max</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase w-12 text-center">Regn</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase w-12 text-center">Vind</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase w-10 text-center">UV</span>
+      </div>
       <div className="space-y-0">
         {daily.map((d, i) => {
           const info = getWeatherInfo(d.weatherCode);
@@ -67,11 +78,10 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
                 )}
                 </div>
               </div>
-              <span className="text-sm font-semibold text-foreground w-8">{d.tempMax}°</span>
-              <div className="flex items-center gap-1 w-14">
-                <Droplets size={14} className="text-black" />
-                <span className="text-xs text-black">{d.precipitationProbability}%</span>
-              </div>
+              <span className="text-sm font-medium text-foreground/50 w-8">{d.tempMax}°</span>
+              <span className="text-xs text-foreground/70 w-12 text-center">{d.precipitationProbability}%</span>
+              <span className="text-xs text-foreground/70 w-12 text-center">{d.windSpeedMax} m/s</span>
+              <span className="text-xs text-foreground/70 w-10 text-center">{d.uvIndexMax}</span>
             </div>
           );
         })}
