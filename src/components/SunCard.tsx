@@ -13,14 +13,14 @@ const formatTime = (iso: string) => {
 const SunCard = ({ sunrise, sunset }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="glass-card p-4 flex flex-col gap-2">
+      <div className="glass-card p-4 flex flex-col items-center gap-2">
         <div className="flex items-center gap-2 text-foreground/50">
           <Sunrise size={14} />
           <span className="text-xs font-semibold uppercase tracking-wider">Soluppgång</span>
         </div>
         <span className="text-2xl font-semibold text-foreground">{formatTime(sunrise)}</span>
       </div>
-      <div className="glass-card p-4 flex flex-col gap-2">
+      <div className="glass-card p-4 flex flex-col items-center gap-2">
         <div className="flex items-center gap-2 text-foreground/50">
           <Sunset size={14} />
           <span className="text-xs font-semibold uppercase tracking-wider">Solnedgång</span>
