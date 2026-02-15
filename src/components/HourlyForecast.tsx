@@ -5,13 +5,11 @@ import { Cloud, CloudRain, Droplets, Wind, Sun } from "lucide-react";
 
 interface Props {
   hourly: HourlyType[];
-  sunrise: string;
-  sunset: string;
+  sunrises: string[];
+  sunsets: string[];
 }
 
-const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
-  const sunriseTime = new Date(sunrise).getTime();
-  const sunsetTime = new Date(sunset).getTime();
+const HourlyForecast = ({ hourly, sunrises, sunsets }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const selected = selectedIndex !== null ? hourly[selectedIndex] : null;
 
@@ -25,7 +23,11 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
           const info = getWeatherInfo(h.weatherCode);
           const hour = new Date(h.time);
           const hourTime = hour.getTime();
-          const isNight = hourTime < sunriseTime || hourTime >= sunsetTime;
+          const dayStr = h.time.slice(0, 10);
+          const dayIndex = sunrises.findIndex((s) => s.startsWith(dayStr));
+          const sr = dayIndex >= 0 ? new Date(sunrises[dayIndex]).getTime() : new Date(sunrises[0]).getTime();
+          const ss = dayIndex >= 0 ? new Date(sunsets[dayIndex]).getTime() : new Date(sunsets[0]).getTime();
+          const isNight = hourTime < sr || hourTime >= ss;
           const label = hour.toLocaleTimeString([], { hour: "numeric" });
           const isSelected = selectedIndex === i;
           return (
