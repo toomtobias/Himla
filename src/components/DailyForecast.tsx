@@ -27,17 +27,17 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
       </h3>
       {/* Column headers */}
       <div className="flex items-center gap-2 px-2 mb-1">
-        <span className="w-[4.5rem]" />
-        <span className="w-14" />
-        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-8 text-right">Min</span>
-        <div className="hidden md:block flex-1 mx-1">
+        <span className="w-16" />
+        <span className="w-14 mr-2" />
+        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-8 ml-2">Min</span>
+        <div className="hidden md:block flex-[2] ml-1 mr-4">
           <span className="text-[10px] font-medium text-foreground/40 uppercase text-center block">Temperatur</span>
         </div>
-        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-8">Max</span>
-        <span className="md:hidden text-[10px] font-medium text-foreground/40 uppercase w-10 text-center">Temp</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase w-12 text-center">Regn</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase w-12 text-center">Vind</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase w-10 text-center">UV</span>
+        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-14">Max</span>
+        <span className="md:hidden text-[10px] font-medium text-foreground/40 uppercase flex-1">Temp</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Regn</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Vind</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">UV</span>
       </div>
       <div className="space-y-0">
         {daily.map((d, i) => {
@@ -57,10 +57,10 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
               key={d.date}
               className="flex items-center gap-2 py-1 px-2"
             >
-              <span className="text-sm font-medium text-foreground w-[4.5rem] text-left">{label}</span>
-              <WeatherIcon iconName={info.icon} size={44} className="text-foreground/70 w-14" tooltip={info.label} />
-              <span className="hidden md:block text-sm font-medium text-foreground/50 w-8 text-right">{d.tempMin}°</span>
-              <div className="hidden md:block flex-1 mx-1">
+              <span className="text-sm font-medium text-foreground w-16 text-left">{label}</span>
+              <WeatherIcon iconName={info.icon} size={44} className="text-foreground/70 w-14 mr-2" tooltip={info.label} />
+              <span className="hidden md:block text-sm font-medium text-foreground/50 w-8 ml-2">{d.tempMin}°</span>
+              <div className="hidden md:block flex-[2] ml-1 mr-4">
                 <div className="flex h-1.5 overflow-hidden rounded-full">
                 {segments.length > 0 ? segments.map((t, j) => (
                   <Tooltip key={j} delayDuration={500}>
@@ -79,11 +79,14 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
                 )}
                 </div>
               </div>
-              <span className="hidden md:block text-sm font-medium text-foreground/50 w-8">{d.tempMax}°</span>
-              <span className="md:hidden text-sm font-medium text-foreground w-10 text-center">{d.tempMax}°</span>
-              <span className="text-xs text-foreground/70 w-12 text-center">{d.precipitationProbability}%</span>
-              <span className="text-xs text-foreground/70 w-12 text-center">{d.windSpeedMax} m/s</span>
-              <span className="text-xs text-foreground/70 w-10 text-center">{d.uvIndexMax}</span>
+              <span className="hidden md:block text-sm font-medium text-foreground/50 w-14">{d.tempMax}°</span>
+              <span className="md:hidden text-sm font-medium text-foreground flex-1">{d.tempMax}°</span>
+              <span className="text-sm text-foreground/70 flex-1 relative">
+                {d.precipitationProbability}%
+                {d.precipitationSum > 0 && <span className="absolute left-0 top-full text-xs text-foreground/40">{d.precipitationSum} mm</span>}
+              </span>
+              <span className="text-sm text-foreground/70 flex-1">{d.windSpeedMax} m/s</span>
+              <span className="text-sm text-foreground/70 flex-1">{d.uvIndexMax}</span>
             </div>
           );
         })}
