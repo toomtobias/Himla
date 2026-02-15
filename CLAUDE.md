@@ -34,7 +34,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `src/components/` — Other weather UI components (HourlyForecast, DailyForecast, WeatherDetails, SunCard)
 - `src/components/ui/` — Full shadcn/ui component library (most are scaffold, not actively used)
 
-**Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`) with night icons based on sunrise/sunset and per-hour precipitation probability. The 7-day forecast shows column headers (Min, Temperatur, Max, Regn, Vind, UV) with a per-day temperature heatmap bar (1-hour segments, steel blue→golden amber, scaled per-day min/max), max wind speed in m/s, and UV index. Detail cards (humidity, wind with direction, UV index with 0–11 scale, pressure, cloud cover, rain) and sun card always show current real-time data.
+**Simplified layout:** Hourly forecast always shows the next 24 hours from now (`weather.hourly`) with night icons based on sunrise/sunset and per-hour precipitation probability. The 7-day forecast shows column headers (Min, Temperatur, Max, Regn, Vind, UV) with a per-day temperature heatmap bar (1-hour segments, steel blue→golden amber, scaled per-day min/max), max wind speed in m/s, and UV index. Detail cards (rain, wind with direction, cloud cover, UV index with 0–11 scale, humidity, pressure) and sun card always show current real-time data.
 
 **WMO icon mapping:** Weather codes map through two layers: `WMO_CODES` in `weather.ts` produces an icon name string, then `WeatherIcon.tsx` renders it via `MeteoconIcon` (using `meteoconMap` with day/night filenames). Meteocon SVGs live in `public/meteocons/` (44 animated SVGs).
 

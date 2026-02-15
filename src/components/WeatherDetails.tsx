@@ -6,12 +6,12 @@ interface Props {
 }
 
 const details = (c: CurrentWeather) => [
-  { label: "Luftfuktighet", value: `${c.humidity}%`, icon: Droplets },
-  { label: "Vind", value: `${c.windSpeed} m/s ${getWindDirection(c.windDirection)}`, icon: Wind },
-  { label: "UV-index (0–11)", value: `${c.uvIndex}`, icon: Eye },
-  { label: "Lufttryck", value: `${c.pressure} hPa`, icon: Gauge },
-  { label: "Molntäcke", value: `${c.cloudCover}%`, icon: Cloud },
   { label: "Regn", value: `${c.precipitation} mm`, icon: CloudRain },
+  { label: "Vind", value: `${c.windSpeed} m/s ${getWindDirection(c.windDirection)}`, icon: Wind },
+  { label: "Molntäcke", value: `${c.cloudCover}%`, icon: Cloud },
+  { label: "UV-index (0–11)", value: `${c.uvIndex}`, icon: Eye },
+  { label: "Luftfuktighet", value: `${c.humidity}%`, icon: Droplets },
+  { label: "Lufttryck", value: `${c.pressure} hPa`, icon: Gauge },
 ];
 
 const WeatherDetails = ({ current }: Props) => {

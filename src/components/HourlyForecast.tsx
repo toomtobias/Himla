@@ -53,11 +53,6 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
             <span className="text-xs text-foreground/40">{selected.precipitationProbability}%</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <Droplets size={16} className="text-foreground/50" />
-            <span className="text-xs text-foreground/50">Luftfuktighet</span>
-            <span className="text-sm font-semibold text-foreground">{selected.humidity}%</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
             <Wind size={16} className="text-foreground/50" />
             <span className="text-xs text-foreground/50">Vind ({getWindDirection(selected.windDirection)})</span>
             <span className="text-sm font-semibold text-foreground">{selected.windSpeed} m/s</span>
@@ -72,6 +67,11 @@ const HourlyForecast = ({ hourly, sunrise, sunset }: Props) => {
             <Sun size={16} className="text-foreground/50" />
             <span className="text-xs text-foreground/50">UV-index</span>
             <span className="text-sm font-semibold text-foreground">{selected.uvIndex}</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <Droplets size={16} className="text-foreground/50" />
+            <span className="text-xs text-foreground/50">Luftfuktighet</span>
+            <span className="text-sm font-semibold text-foreground">{selected.humidity}%</span>
           </div>
         </div>
       )}
