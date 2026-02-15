@@ -11,19 +11,16 @@ interface Props {
 function tempToColor(temp: number, min: number, max: number): string {
   const range = max - min || 1;
   const ratio = (temp - min) / range;
-  // Light grey (cold) → Dark blue (warm)
-  const r = Math.round(210 - ratio * (210 - 30));
-  const g = Math.round(220 - ratio * (220 - 64));
-  const b = Math.round(230 - ratio * (230 - 175));
+  // Steel blue (cold) → Golden amber (warm) via RGB
+  const r = Math.round(140 + ratio * (235 - 140));
+  const g = Math.round(175 + ratio * (180 - 175));
+  const b = Math.round(215 + ratio * (60 - 215));
   return `rgb(${r},${g},${b})`;
 }
 
 const DailyForecast = ({ daily, allHourly }: Props) => {
   const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
 
-  // Global min/max across all 7 days for consistent color scale
-  const globalMin = Math.min(...daily.map((x) => x.tempMin));
-  const globalMax = Math.max(...daily.map((x) => x.tempMax));
 
   return (
     <div className="glass-card p-4">
@@ -40,14 +37,8 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
           const dayHourly = allHourly.filter((h) => h.time.startsWith(d.date));
           const temps = dayHourly.map((h) => h.temperature);
 
-          // Group hourly temps into 2-hour blocks (12 segments)
-          const segments: number[] = [];
-          for (let j = 0; j < 24; j += 2) {
-            const block = temps.slice(j, j + 2);
-            if (block.length > 0) {
-              segments.push(Math.round(block.reduce((a, b) => a + b, 0) / block.length));
-            }
-          }
+          // 1-hour segments (24 per day)
+          const segments = temps.map((t) => Math.round(t));
 
           return (
             <div
@@ -64,11 +55,11 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
                     <TooltipTrigger asChild>
                       <div
                         className="flex-1 h-full"
-                        style={{ backgroundColor: tempToColor(t, globalMin, globalMax) }}
+                        style={{ backgroundColor: tempToColor(t, d.tempMin, d.tempMax) }}
                       />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{`${String(j * 2).padStart(2, "0")}–${String(j * 2 + 2).padStart(2, "0")}: ${t}°`}</p>
+                      <p>{`${String(j).padStart(2, "0")}:00 — ${t}°`}</p>
                     </TooltipContent>
                   </Tooltip>
                 )) : (
