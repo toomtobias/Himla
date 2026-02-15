@@ -17,7 +17,7 @@ const CurrentWeatherCard = ({ current, sunrise, sunset, timezone }: Props) => {
   return (
     <div className="text-center space-y-2">
       <div className="flex items-center justify-center gap-1">
-        <WeatherIcon iconName={info.icon} size={32} className="text-foreground/80" tooltip={info.label} isNight={isNight} />
+        <WeatherIcon iconName={info.icon} size={128} className="text-foreground/80" tooltip={info.label} isNight={isNight} />
         <span className="text-8xl font-extralight tracking-tighter text-foreground">
           {current.temperature}°
         </span>

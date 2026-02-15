@@ -39,7 +39,7 @@ const HourlyForecast = ({ hourly, sunrises, sunsets }: Props) => {
               }`}
             >
               <span className="text-xs text-foreground/60 font-medium">{label}</span>
-              <WeatherIcon iconName={info.icon} size={20} className="text-foreground/70" tooltip={info.label} isNight={isNight} />
+              <WeatherIcon iconName={info.icon} size={80} className="text-foreground/70" tooltip={info.label} isNight={isNight} />
               <span className="text-sm font-semibold text-foreground">{h.temperature}°</span>
             </button>
           );

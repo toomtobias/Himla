@@ -58,7 +58,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
               className="flex items-center gap-2 py-1 px-2"
             >
               <span className="text-sm font-medium text-foreground w-16 text-left">{label}</span>
-              <WeatherIcon iconName={info.icon} size={44} className="text-foreground/70 w-14 mr-2" tooltip={info.label} />
+              <WeatherIcon iconName={info.icon} size={56} className="text-foreground/70 w-14 mr-2" tooltip={info.label} />
               <span className="hidden md:block text-sm font-medium text-foreground/50 w-8 ml-2">{d.tempMin}°</span>
               <div className="hidden md:block flex-[2] ml-1 mr-4">
                 <div className="flex h-1.5 overflow-hidden rounded-full">

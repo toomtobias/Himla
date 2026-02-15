@@ -21,22 +21,18 @@ interface Props {
   isNight?: boolean;
 }
 
-const SCALE = 4;
-
 const MeteoconIcon = ({ iconName, className = "", size = 24, tooltip, isNight = false }: Props) => {
   const entry = meteoconMap[iconName];
   const filename = entry
     ? isNight ? entry.night : entry.day
     : "overcast";
 
-  const scaledSize = size * SCALE;
-
   const img = (
     <img
       src={`/meteocons/${filename}.svg`}
       alt={tooltip || iconName}
-      width={scaledSize}
-      height={scaledSize}
+      width={size}
+      height={size}
       className={`drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)] ${className}`}
     />
   );
