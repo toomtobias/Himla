@@ -18,7 +18,7 @@ function tempToColor(temp: number, min: number, max: number): string {
 }
 
 const DailyForecast = ({ daily, allHourly }: Props) => {
-  const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
+  const dayNames = ["Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"];
 
   return (
     <div className="glass-card p-4">
@@ -27,7 +27,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
       </h3>
       {/* Column headers */}
       <div className="flex items-center gap-2 px-2 mb-1">
-        <span className="w-12" />
+        <span className="w-[4.5rem]" />
         <span className="w-14" />
         <span className="text-[10px] font-medium text-foreground/40 uppercase w-8 text-right">Min</span>
         <div className="flex-1 mx-1">
@@ -56,7 +56,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
               key={d.date}
               className="flex items-center gap-2 py-1 px-2"
             >
-              <span className="text-sm font-medium text-foreground w-12 text-left">{label}</span>
+              <span className="text-sm font-medium text-foreground w-[4.5rem] text-left">{label}</span>
               <WeatherIcon iconName={info.icon} size={44} className="text-foreground/70 w-14" tooltip={info.label} />
               <span className="text-sm font-medium text-foreground/50 w-8 text-right">{d.tempMin}°</span>
               <div className="flex-1 mx-1">

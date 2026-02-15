@@ -95,7 +95,7 @@ export function getWeatherInfo(code: number) {
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
   if (!query.trim()) return [];
   const res = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=sv&format=json`
   );
   const data = await res.json();
   if (!data.results) return [];
