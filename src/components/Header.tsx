@@ -5,6 +5,7 @@ import { GeoLocation, searchLocations } from "@/lib/weather";
 interface HeaderProps {
   location: string;
   country: string;
+  admin1?: string;
   timezone: string;
   onSelectLocation: (location: GeoLocation) => void;
   recentLocations: () => GeoLocation[];
@@ -13,6 +14,7 @@ interface HeaderProps {
 export default function Header({
   location,
   country,
+  admin1,
   timezone,
   onSelectLocation,
   recentLocations,
@@ -101,7 +103,7 @@ export default function Header({
               <span className="text-sm text-slate-800">|</span>
               <MapPin size={14} className="text-slate-800 shrink-0" />
               <span className="text-sm font-medium truncate text-slate-800">
-                {location}, {country}
+                {location}{admin1 ? `, ${admin1}` : ""}, {country}
               </span>
               {localTime && (
                 <>
@@ -154,7 +156,7 @@ export default function Header({
                 >
                   <Clock size={14} className="flex-shrink-0 text-foreground/50" />
                   <span className="text-sm text-foreground">
-                    {loc.name}, {loc.country}
+                    {loc.name}{loc.admin1 ? `, ${loc.admin1}` : ""}, {loc.country}
                   </span>
                 </button>
               ))}
