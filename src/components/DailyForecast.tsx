@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -18,12 +19,14 @@ function tempToColor(temp: number, min: number, max: number): string {
 }
 
 const DailyForecast = ({ daily, allHourly }: Props) => {
+  const [expanded, setExpanded] = useState(false);
   const dayNames = ["Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"];
+  const visibleDays = expanded ? daily : daily.slice(0, 7);
 
   return (
     <div className="glass-card p-4">
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
-        14-dagars prognos
+        {expanded ? "14-dagars prognos" : "7-dagars prognos"}
       </h3>
       {/* Column headers */}
       <div className="flex items-center gap-2 px-2 mb-1">
@@ -40,7 +43,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
         <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">UV</span>
       </div>
       <div className="space-y-0">
-        {daily.map((d, i) => {
+        {visibleDays.map((d, i) => {
           const info = getWeatherInfo(d.weatherCode);
           const date = new Date(d.date + "T00:00:00");
           const label = i === 0 ? "Idag" : dayNames[date.getDay()];
@@ -91,6 +94,14 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
           );
         })}
       </div>
+      {daily.length > 7 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full mt-3 pt-4 border-t border-foreground/10 text-xs font-medium text-foreground/50 hover:text-foreground/70 transition-colors"
+        >
+          {expanded ? "Visa 7 dagar" : "Visa 14 dagar"}
+        </button>
+      )}
     </div>
   );
 };
