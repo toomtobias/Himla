@@ -121,7 +121,7 @@ export default function Header({
             className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors ${searchOpen ? "bg-white/20" : ""}`}
             aria-label="Sök plats"
           >
-            <Search size={18} className="text-slate-800" />
+            <Search size={20} className="text-slate-800" />
           </button>
         </div>
       </div>
