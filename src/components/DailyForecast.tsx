@@ -23,7 +23,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
   return (
     <div className="glass-card p-4">
       <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
-        7-dagars prognos
+        14-dagars prognos
       </h3>
       {/* Column headers */}
       <div className="flex items-center gap-2 px-2 mb-1">

@@ -116,7 +116,7 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
 }
 
 export async function fetchWeather(location: GeoLocation): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,precipitation_probability,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&timezone=auto&forecast_days=7&wind_speed_unit=ms`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,precipitation_probability,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,uv_index_max,sunrise,sunset&timezone=auto&forecast_days=14&wind_speed_unit=ms`;
   const res = await fetch(url);
   const data = await res.json();
 
