@@ -174,7 +174,7 @@ export default function Header({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span className="text-sm text-foreground">
-                    {result.name}, {result.country}
+                    {result.name}{result.admin1 ? `, ${result.admin1}` : ""}, {result.country}
                   </span>
                 </button>
               ))}

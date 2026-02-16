@@ -1,6 +1,7 @@
 export interface GeoLocation {
   name: string;
   country: string;
+  admin1?: string;
   latitude: number;
   longitude: number;
 }
@@ -108,6 +109,7 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
   return data.results.map((r: any) => ({
     name: r.name,
     country: r.country || "",
+    admin1: r.admin1 || "",
     latitude: r.latitude,
     longitude: r.longitude,
   }));
