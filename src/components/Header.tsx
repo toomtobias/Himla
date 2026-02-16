@@ -103,12 +103,12 @@ export default function Header({
               <span className="text-sm text-slate-800">|</span>
               <MapPin size={14} className="text-slate-800 shrink-0" />
               <span className="text-sm font-medium truncate text-slate-800">
-                {location}{admin1 ? `, ${admin1}` : ""}, {country}
+                {location}{admin1 ? ` - ${admin1}` : ""}, {country}
               </span>
               {localTime && (
                 <>
                   <span className="text-sm text-slate-800">|</span>
-                  <span className="text-sm text-slate-600 whitespace-nowrap">{localTime}</span>
+                  <span className="text-sm text-slate-800 whitespace-nowrap">{localTime}</span>
                 </>
               )}
             </>
@@ -156,7 +156,7 @@ export default function Header({
                 >
                   <Clock size={14} className="flex-shrink-0 text-foreground/50" />
                   <span className="text-sm text-foreground">
-                    {loc.name}{loc.admin1 ? `, ${loc.admin1}` : ""}, {loc.country}
+                    {loc.name}{loc.admin1 ? ` - ${loc.admin1}` : ""}, {loc.country}
                   </span>
                 </button>
               ))}
@@ -176,7 +176,7 @@ export default function Header({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span className="text-sm text-foreground">
-                    {result.name}{result.admin1 ? `, ${result.admin1}` : ""}, {result.country}
+                    {result.name}{result.admin1 ? ` - ${result.admin1}` : ""}, {result.country}
                   </span>
                 </button>
               ))}
