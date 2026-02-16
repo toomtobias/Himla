@@ -23,7 +23,7 @@ const CurrentWeatherCard = ({ current, sunrise, sunset, timezone }: Props) => {
         </span>
       </div>
       <p className="text-lg text-foreground/70 font-medium">{info.label}</p>
-      <p className="text-sm text-foreground/50">
+      <p className="text-sm text-foreground/70">
         Känns som {current.feelsLike}°
       </p>
     </div>
