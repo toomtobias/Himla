@@ -20,7 +20,7 @@ function tempToColor(temp: number, min: number, max: number): string {
 
 const DailyForecast = ({ daily, allHourly }: Props) => {
   const [expanded, setExpanded] = useState(false);
-  const dayNames = ["Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"];
+  const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tors", "Fre", "Lör"];
   const visibleDays = expanded ? daily : daily.slice(0, 7);
 
   return (
@@ -30,7 +30,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
       </h3>
       {/* Column headers */}
       <div className="flex items-center gap-2 px-2 mb-1">
-        <span className="w-16" />
+        <span className="w-20" />
         <span className="w-14 mr-2" />
         <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-8 ml-2">Min</span>
         <div className="hidden md:block flex-[2] ml-1 mr-4">
@@ -46,7 +46,9 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
         {visibleDays.map((d, i) => {
           const info = getWeatherInfo(d.weatherCode);
           const date = new Date(d.date + "T00:00:00");
-          const label = i === 0 ? "Idag" : dayNames[date.getDay()];
+          const dayLabel = i === 0 ? "Idag" : dayNames[date.getDay()];
+          const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
+          const label = i === 0 ? dayLabel : `${dayLabel} ${dateStr}`;
 
           // Get hourly temps for this day
           const dayHourly = allHourly.filter((h) => h.time.startsWith(d.date));
@@ -60,7 +62,7 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
               key={d.date}
               className="flex items-center gap-2 py-1 px-2"
             >
-              <span className="text-sm font-medium text-foreground w-16 text-left">{label}</span>
+              <span className="text-sm font-medium text-foreground w-20 text-left">{label}</span>
               <WeatherIcon iconName={info.icon} size={56} className="text-foreground/70 w-14 mr-2" tooltip={info.label} />
               <span className="hidden md:block text-sm font-medium text-foreground/50 w-8 ml-2">{d.tempMin}°</span>
               <div className="hidden md:block flex-[2] ml-1 mr-4">
