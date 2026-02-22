@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo } from "@/lib/weather";
+import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo, getWindDirection, snapWindDegrees } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
@@ -39,8 +39,8 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
         <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-14">Max</span>
         <span className="md:hidden text-[10px] font-medium text-foreground/40 uppercase flex-1">Temp</span>
         <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Regn</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Vind</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">UV</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Vind m/s</span>
+        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1 pl-3">UV</span>
       </div>
       <div className="space-y-0">
         {visibleDays.map((d, i) => {
@@ -90,8 +90,15 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
                 {d.precipitationProbability}%
                 {d.precipitationSum > 0 && <span className="absolute left-0 top-full text-xs text-foreground/40">{d.precipitationSum} mm</span>}
               </span>
-              <span className="text-sm text-foreground/70 flex-1">{d.windSpeedMax} m/s</span>
-              <span className="text-sm text-foreground/70 flex-1">{d.uvIndexMax}</span>
+              <span className="text-sm text-foreground/70 flex-1 flex items-center gap-1">
+                <span
+                  style={{ transform: `rotate(${snapWindDegrees(d.windDirectionDominant)}deg)` }}
+                  className="inline-block"
+                  title={getWindDirection(d.windDirectionDominant)}
+                >↓</span>
+                {d.windSpeedMax}{d.windGustsMax > d.windSpeedMax && <span className="text-foreground/40"> ({d.windGustsMax})</span>}
+              </span>
+              <span className="text-sm text-foreground/70 flex-1 pl-3">{d.uvIndexMax}</span>
             </div>
           );
         })}
