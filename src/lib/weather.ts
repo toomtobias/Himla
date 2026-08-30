@@ -1,6 +1,7 @@
 export interface GeoLocation {
   name: string;
   country: string;
+  countryCode?: string;
   admin1?: string;
   latitude: number;
   longitude: number;
@@ -100,6 +101,52 @@ export function getWeatherInfo(code: number) {
   return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
 }
 
+const ENGLISH_COUNTRY_SV: Record<string, string> = {
+  Sweden: "Sverige",
+  Norway: "Norge",
+  Denmark: "Danmark",
+  Finland: "Finland",
+  Iceland: "Island",
+  Germany: "Tyskland",
+  "United Kingdom": "Storbritannien",
+  "United States": "USA",
+  France: "Frankrike",
+  Spain: "Spanien",
+  Italy: "Italien",
+  Netherlands: "Nederländerna",
+  Switzerland: "Schweiz",
+  Austria: "Österrike",
+  Belgium: "Belgien",
+  Poland: "Polen",
+  Ireland: "Irland",
+  "Czech Republic": "Tjeckien",
+  Czechia: "Tjeckien",
+};
+
+const countryDisplay = new Intl.DisplayNames(["sv"], { type: "region" });
+
+export function formatCountry(country: string, countryCode?: string): string {
+  if (countryCode) {
+    try {
+      const name = countryDisplay.of(countryCode.toUpperCase());
+      if (name) return name;
+    } catch {
+      // ignore invalid region codes
+    }
+  }
+  return ENGLISH_COUNTRY_SV[country] ?? country;
+}
+
+export function formatLocationLabel(loc: {
+  name: string;
+  admin1?: string;
+  country: string;
+  countryCode?: string;
+}): string {
+  const country = formatCountry(loc.country, loc.countryCode);
+  return `${loc.name}${loc.admin1 ? ` - ${loc.admin1}` : ""}, ${country}`;
+}
+
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
   if (!query.trim()) return [];
   const res = await fetch(
@@ -110,12 +157,14 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
   return data.results.map((r: {
     name: string;
     country?: string;
+    country_code?: string;
     admin1?: string;
     latitude: number;
     longitude: number;
   }) => ({
     name: r.name,
-    country: r.country || "",
+    country: formatCountry(r.country || "", r.country_code),
+    countryCode: r.country_code,
     admin1: r.admin1 || "",
     latitude: r.latitude,
     longitude: r.longitude,

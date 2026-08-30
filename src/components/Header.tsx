@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, Clock } from "lucide-react";
-import { GeoLocation, searchLocations } from "@/lib/weather";
+import { GeoLocation, searchLocations, formatCountry, formatLocationLabel } from "@/lib/weather";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   location: string;
   country: string;
+  countryCode?: string;
   admin1?: string;
   timezone: string;
   onSelectLocation: (location: GeoLocation) => void;
@@ -14,6 +16,7 @@ interface HeaderProps {
 export default function Header({
   location,
   country,
+  countryCode,
   admin1,
   timezone,
   onSelectLocation,
@@ -38,22 +41,34 @@ export default function Header({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeoLocation[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    setHighlightedIndex(0);
+    setIsSearching(false);
+  };
 
   useEffect(() => {
     if (searchQuery.length < 2) {
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
 
+    setIsSearching(true);
     const timer = setTimeout(async () => {
-      setIsSearching(true);
       try {
         const results = await searchLocations(searchQuery);
         setSearchResults(results);
       } catch (err) {
         console.error("Search error:", err);
+        setSearchResults([]);
       } finally {
         setIsSearching(false);
       }
@@ -65,9 +80,7 @@ export default function Header({
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setSearchOpen(false);
-        setSearchQuery("");
-        setSearchResults([]);
+        closeSearch();
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -80,16 +93,59 @@ export default function Header({
     }
   }, [searchOpen]);
 
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeSearch();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [searchOpen]);
+
   const handleSelect = (loc: GeoLocation) => {
     onSelectLocation(loc);
-    setSearchOpen(false);
-    setSearchQuery("");
-    setSearchResults([]);
+    closeSearch();
   };
 
   const recent = recentLocations();
   const showRecent = searchOpen && searchQuery.length < 2 && recent.length > 0;
   const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
+  const showEmpty =
+    searchOpen && searchQuery.length >= 2 && !isSearching && searchResults.length === 0;
+  const listItems = showRecent ? recent : showResults ? searchResults : [];
+
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [searchQuery, searchResults, showRecent]);
+
+  useEffect(() => {
+    optionRefs.current[highlightedIndex]?.scrollIntoView?.({ block: "nearest" });
+  }, [highlightedIndex]);
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeSearch();
+      return;
+    }
+    if (!listItems.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((i) => (i + 1) % listItems.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((i) => (i - 1 + listItems.length) % listItems.length);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const loc = listItems[highlightedIndex];
+      if (loc) handleSelect(loc);
+    }
+  };
+
+  const countryLabel = formatCountry(country, countryCode);
 
   return (
     <div ref={searchRef} className="max-w-lg md:max-w-2xl mx-auto px-4 pt-6 pb-3">
@@ -103,7 +159,7 @@ export default function Header({
               <span className="text-sm text-slate-800">|</span>
               <MapPin size={14} className="text-slate-800 shrink-0" />
               <span className="text-sm font-medium truncate text-slate-800">
-                {location}{admin1 ? ` - ${admin1}` : ""}, {country}
+                {location}{admin1 ? ` - ${admin1}` : ""}{countryLabel ? `, ${countryLabel}` : ""}
               </span>
               {localTime && (
                 <>
@@ -117,9 +173,10 @@ export default function Header({
 
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
-            onClick={() => setSearchOpen(!searchOpen)}
+            onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
             className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors ${searchOpen ? "bg-white/20" : ""}`}
             aria-label="Sök plats"
+            aria-expanded={searchOpen}
           >
             <Search size={20} className="text-slate-800" />
           </button>
@@ -136,6 +193,15 @@ export default function Header({
               placeholder="Sök efter plats..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              role="combobox"
+              aria-expanded={showRecent || showResults || showEmpty}
+              aria-controls="location-search-results"
+              aria-activedescendant={
+                listItems.length > 0 ? `search-option-${highlightedIndex}` : undefined
+              }
+              aria-autocomplete="list"
+              aria-busy={isSearching}
               className="bg-transparent w-full outline-none text-foreground placeholder:text-foreground/40 text-base"
             />
             {isSearching && (
@@ -143,43 +209,49 @@ export default function Header({
             )}
           </div>
 
-          {showRecent && (
-            <div className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl">
-              <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-                Senaste
-              </div>
-              {recent.map((loc, i) => (
-                <button
-                  key={`${loc.latitude}-${loc.longitude}-${i}`}
-                  onClick={() => handleSelect(loc)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/5 transition-colors"
-                >
-                  <Clock size={14} className="flex-shrink-0 text-foreground/50" />
-                  <span className="text-sm text-foreground">
-                    {loc.name}{loc.admin1 ? ` - ${loc.admin1}` : ""}, {loc.country}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {showResults && (
-            <div className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl">
-              {searchResults.map((result, i) => (
-                <button
-                  key={`${result.latitude}-${result.longitude}-${i}`}
-                  onClick={() => handleSelect(result)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/5 transition-colors"
-                >
-                  <svg className="w-4 h-4 flex-shrink-0 text-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span className="text-sm text-foreground">
-                    {result.name}{result.admin1 ? ` - ${result.admin1}` : ""}, {result.country}
-                  </span>
-                </button>
-              ))}
+          {(showRecent || showResults || showEmpty) && (
+            <div
+              id="location-search-results"
+              role={showEmpty ? "status" : "listbox"}
+              aria-label={showRecent ? "Senaste platser" : "Sökresultat"}
+              className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl"
+            >
+              {showRecent && (
+                <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                  Senaste
+                </div>
+              )}
+              {showEmpty && (
+                <p className="px-4 py-3 text-sm text-foreground/50">Inga platser hittades</p>
+              )}
+              {listItems.map((loc, i) => {
+                const isHighlighted = highlightedIndex === i;
+                return (
+                  <button
+                    key={`${loc.latitude}-${loc.longitude}-${i}`}
+                    id={`search-option-${i}`}
+                    ref={(el) => {
+                      optionRefs.current[i] = el;
+                    }}
+                    type="button"
+                    role="option"
+                    aria-selected={isHighlighted}
+                    onClick={() => handleSelect(loc)}
+                    onMouseEnter={() => setHighlightedIndex(i)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
+                      isHighlighted ? "bg-foreground/10" : "hover:bg-foreground/5",
+                    )}
+                  >
+                    {showRecent ? (
+                      <Clock size={14} className="flex-shrink-0 text-foreground/50" />
+                    ) : (
+                      <MapPin size={16} className="flex-shrink-0 text-foreground/50" />
+                    )}
+                    <span className="text-sm text-foreground">{formatLocationLabel(loc)}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

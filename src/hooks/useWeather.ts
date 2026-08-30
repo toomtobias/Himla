@@ -6,7 +6,8 @@ const MAX_RECENT = 5;
 
 const DEFAULT_LOCATION: GeoLocation = {
   name: "Stockholm",
-  country: "Sweden",
+  country: "Sverige",
+  countryCode: "SE",
   latitude: 59.3293,
   longitude: 18.0686,
 };
