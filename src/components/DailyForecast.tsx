@@ -87,8 +87,12 @@ const DailyForecast = ({ daily, allHourly }: Props) => {
               <span className="hidden md:block text-sm font-medium text-foreground/50 w-14">{d.tempMax}°</span>
               <span className="md:hidden text-sm font-medium text-foreground flex-1">{d.tempMax}°</span>
               <span className="text-sm text-foreground/70 flex-1 relative">
-                {d.precipitationProbability}%
-                {d.precipitationSum > 0 && <span className="absolute left-0 top-full text-xs text-foreground/40">{d.precipitationSum} mm</span>}
+                {d.precipitationSum > 0 && (
+                  <>
+                    {d.precipitationProbability}%
+                    <span className="absolute left-0 top-full text-xs text-foreground/40">{d.precipitationSum} mm</span>
+                  </>
+                )}
               </span>
               <span className="text-sm text-foreground/70 flex-1 flex items-center gap-1">
                 <span

@@ -35,10 +35,7 @@ function formatPrecip(h: HourlyType): string {
   if (h.precipitation > 0) {
     return `${h.precipitation} mm · ${h.precipitationProbability}%`;
   }
-  if (h.precipitationProbability >= 30) {
-    return `${h.precipitationProbability}%`;
-  }
-  return "–";
+  return "";
 }
 
 const HourlyForecast = ({ hourly, sunrises, sunsets }: Props) => {
@@ -81,7 +78,7 @@ const HourlyForecast = ({ hourly, sunrises, sunsets }: Props) => {
                     <div className="flex items-center gap-2 min-w-0">
                       <WeatherIcon
                         iconName={info.icon}
-                        size={48}
+                        size={56}
                         className="text-foreground/70 shrink-0"
                         isNight={night}
                       />

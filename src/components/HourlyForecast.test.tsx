@@ -56,4 +56,16 @@ describe("HourlyForecast", () => {
     );
     expect(screen.getByText("1.2 mm · 60%")).toBeInTheDocument();
   });
+
+  it("does not show probability when precipitation is zero", () => {
+    const dryChance = hours.map((h, i) =>
+      i === 1 ? { ...h, precipitation: 0, precipitationProbability: 40 } : h,
+    );
+    render(
+      <TooltipProvider>
+        <HourlyForecast hourly={dryChance} sunrises={sunrises} sunsets={sunsets} />
+      </TooltipProvider>,
+    );
+    expect(screen.queryByText("40%")).not.toBeInTheDocument();
+  });
 });
