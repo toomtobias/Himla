@@ -5,6 +5,10 @@ import {
   getWeatherInfo,
   formatCountry,
   formatLocationLabel,
+  getUvInfo,
+  getAqiInfo,
+  summarizePollen,
+  getSunProgress,
 } from "@/lib/weather";
 
 describe("getWindDirection", () => {
@@ -65,5 +69,49 @@ describe("formatLocationLabel", () => {
         countryCode: "SE",
       }),
     ).toBe("Stockholm - Stockholms län, Sverige");
+  });
+});
+
+describe("getUvInfo", () => {
+  it("uses WHO-style Swedish bands", () => {
+    expect(getUvInfo(0).label).toBe("Låg");
+    expect(getUvInfo(2.9).label).toBe("Låg");
+    expect(getUvInfo(3).label).toBe("Måttlig");
+    expect(getUvInfo(6).label).toBe("Hög");
+    expect(getUvInfo(8).label).toBe("Mycket hög");
+    expect(getUvInfo(11).label).toBe("Extrem");
+  });
+});
+
+describe("getAqiInfo", () => {
+  it("uses European AQI bands in Swedish", () => {
+    expect(getAqiInfo(20).label).toBe("Bra");
+    expect(getAqiInfo(35).label).toBe("Acceptabel");
+    expect(getAqiInfo(50).label).toBe("Måttlig");
+    expect(getAqiInfo(90).label).toBe("Mycket dålig");
+    expect(getAqiInfo(120).label).toBe("Extremt dålig");
+  });
+});
+
+describe("summarizePollen", () => {
+  it("hides trace amounts", () => {
+    expect(summarizePollen({ grass: 0.3, birch: 0 })).toBeNull();
+  });
+
+  it("picks the highest species", () => {
+    expect(summarizePollen({ grass: 40, birch: 5 })).toEqual({
+      type: "Gräs",
+      level: "Hög",
+    });
+  });
+});
+
+describe("getSunProgress", () => {
+  it("clamps before sunrise and after sunset", () => {
+    const sunrise = 1000;
+    const sunset = 2000;
+    expect(getSunProgress(500, sunrise, sunset)).toBe(0);
+    expect(getSunProgress(2500, sunrise, sunset)).toBe(1);
+    expect(getSunProgress(1500, sunrise, sunset)).toBe(0.5);
   });
 });

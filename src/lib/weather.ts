@@ -48,6 +48,16 @@ export interface DailyForecast {
   uvIndexMax: number;
 }
 
+export interface PollenSummary {
+  type: string;
+  level: "Låg" | "Måttlig" | "Hög" | "Mycket hög";
+}
+
+export interface AirQuality {
+  aqi: number | null;
+  pollen: PollenSummary | null;
+}
+
 export interface WeatherData {
   location: GeoLocation;
   current: CurrentWeather;
@@ -57,6 +67,7 @@ export interface WeatherData {
   sunrises: string[];
   sunsets: string[];
   timezone: string;
+  airQuality: AirQuality | null;
 }
 
 const WMO_CODES: Record<number, { label: string; icon: string }> = {
@@ -147,6 +158,94 @@ export function formatLocationLabel(loc: {
   return `${loc.name}${loc.admin1 ? ` - ${loc.admin1}` : ""}, ${country}`;
 }
 
+export function getUvInfo(uv: number): { label: string } {
+  if (uv < 3) return { label: "Låg" };
+  if (uv < 6) return { label: "Måttlig" };
+  if (uv < 8) return { label: "Hög" };
+  if (uv < 11) return { label: "Mycket hög" };
+  return { label: "Extrem" };
+}
+
+export function getAqiInfo(aqi: number): { label: string } {
+  if (aqi <= 20) return { label: "Bra" };
+  if (aqi <= 40) return { label: "Acceptabel" };
+  if (aqi <= 60) return { label: "Måttlig" };
+  if (aqi <= 80) return { label: "Dålig" };
+  if (aqi <= 100) return { label: "Mycket dålig" };
+  return { label: "Extremt dålig" };
+}
+
+type PollenLevel = PollenSummary["level"];
+const POLLEN_RANK: Record<PollenLevel, number> = {
+  Låg: 1,
+  Måttlig: 2,
+  Hög: 3,
+  "Mycket hög": 4,
+};
+
+export function summarizePollen(values: {
+  alder?: number | null;
+  birch?: number | null;
+  grass?: number | null;
+  mugwort?: number | null;
+  olive?: number | null;
+  ragweed?: number | null;
+}): PollenSummary | null {
+  const species: { type: string; value: number; bands: [number, number, number] }[] = [
+    { type: "Al", value: values.alder ?? 0, bands: [10, 50, 200] },
+    { type: "Björk", value: values.birch ?? 0, bands: [10, 50, 200] },
+    { type: "Gräs", value: values.grass ?? 0, bands: [10, 30, 80] },
+    { type: "Gråbo", value: values.mugwort ?? 0, bands: [10, 30, 100] },
+    { type: "Oliv", value: values.olive ?? 0, bands: [10, 50, 200] },
+    { type: "Ambrosia", value: values.ragweed ?? 0, bands: [10, 30, 100] },
+  ];
+
+  const present = species.filter((s) => s.value >= 1);
+  if (!present.length) return null;
+
+  const ranked = present.map((s) => {
+    let level: PollenLevel;
+    if (s.value <= s.bands[0]) level = "Låg";
+    else if (s.value <= s.bands[1]) level = "Måttlig";
+    else if (s.value <= s.bands[2]) level = "Hög";
+    else level = "Mycket hög";
+    return { type: s.type, level, value: s.value, rank: POLLEN_RANK[level] };
+  });
+
+  ranked.sort((a, b) => b.rank - a.rank || b.value - a.value);
+  return { type: ranked[0].type, level: ranked[0].level };
+}
+
+export function getSunProgress(now: number, sunrise: number, sunset: number): number {
+  if (!(sunset > sunrise)) return now < sunrise ? 0 : 1;
+  return Math.min(1, Math.max(0, (now - sunrise) / (sunset - sunrise)));
+}
+
+async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality | null> {
+  try {
+    const res = await fetch(
+      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`,
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const current = data.current;
+    if (!current) return null;
+    return {
+      aqi: typeof current.european_aqi === "number" ? Math.round(current.european_aqi) : null,
+      pollen: summarizePollen({
+        alder: current.alder_pollen,
+        birch: current.birch_pollen,
+        grass: current.grass_pollen,
+        mugwort: current.mugwort_pollen,
+        olive: current.olive_pollen,
+        ragweed: current.ragweed_pollen,
+      }),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
   if (!query.trim()) return [];
   const res = await fetch(
@@ -173,7 +272,10 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
 
 export async function fetchWeather(location: GeoLocation): Promise<WeatherData> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,surface_pressure,uv_index,cloud_cover,precipitation&hourly=temperature_2m,weather_code,relative_humidity_2m,uv_index,wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,precipitation_probability,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunrise,sunset&timezone=auto&forecast_days=14&wind_speed_unit=ms`;
-  const res = await fetch(url);
+  const [res, airQuality] = await Promise.all([
+    fetch(url),
+    fetchAirQuality(location.latitude, location.longitude),
+  ]);
   const data = await res.json();
 
   const current: CurrentWeather = {
@@ -190,11 +292,13 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     precipitation: data.current.precipitation,
   };
 
-  // Convert "now" to the location's local time for correct hourly slicing
+  // Convert "now" to the location's local time for correct hourly slicing.
+  // Start at the next hour so the table does not repeat the current conditions.
   const localNow = new Date(new Date().toLocaleString("en-US", { timeZone: data.timezone }));
-  const currentHourIndex = data.hourly.time.findIndex(
-    (t: string) => new Date(t) >= localNow
+  const nextHourIndex = data.hourly.time.findIndex(
+    (t: string) => new Date(t) > localNow
   );
+  const hourlyStart = nextHourIndex < 0 ? 0 : nextHourIndex;
 
   const allHourly: HourlyForecast[] = data.hourly.time.map((t: string, i: number) => ({
     time: t,
@@ -210,7 +314,7 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     precipitation: Math.round((data.hourly.precipitation[i] || 0) * 10) / 10,
   }));
 
-  const hourly = allHourly.slice(currentHourIndex, currentHourIndex + 24);
+  const hourly = allHourly.slice(hourlyStart, hourlyStart + 24);
 
   const daily: DailyForecast[] = data.daily.time.map((d: string, i: number) => ({
     date: d,
@@ -234,5 +338,6 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     sunrises: data.daily.sunrise,
     sunsets: data.daily.sunset,
     timezone: data.timezone,
+    airQuality,
   };
 }

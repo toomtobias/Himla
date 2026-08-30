@@ -2,8 +2,6 @@ import Header from "@/components/Header";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
-import WeatherDetails from "@/components/WeatherDetails";
-
 import WeatherSkeleton from "@/components/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
 
@@ -21,7 +19,7 @@ const Index = () => {
         onSelectLocation={setLocation}
         recentLocations={recentLocations}
       />
-      <div className="max-w-lg md:max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-lg md:max-w-3xl mx-auto px-4 py-8 space-y-6">
 
         {loading && <WeatherSkeleton />}
 
@@ -33,10 +31,17 @@ const Index = () => {
 
         {weather && !loading && (
           <>
-            <CurrentWeatherCard current={weather.current} sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} timezone={weather.timezone} />
+            <CurrentWeatherCard
+              current={weather.current}
+              sunrise={weather.sunrises[0]}
+              sunset={weather.sunsets[0]}
+              timezone={weather.timezone}
+              airQuality={weather.airQuality}
+            />
             <HourlyForecast hourly={weather.hourly} sunrises={weather.sunrises} sunsets={weather.sunsets} />
-            <DailyForecast daily={weather.daily} allHourly={weather.allHourly} />
-            <WeatherDetails current={weather.current} sunrise={weather.sunrises[0]} sunset={weather.sunsets[0]} />
+            <div className="pt-6">
+              <DailyForecast daily={weather.daily} allHourly={weather.allHourly} />
+            </div>
           </>
         )}
       </div>
