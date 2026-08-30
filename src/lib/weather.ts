@@ -15,7 +15,6 @@ export interface CurrentWeather {
   windGusts: number;
   weatherCode: number;
   uvIndex: number;
-  visibility: number;
   pressure: number;
   cloudCover: number;
   precipitation: number;
@@ -108,7 +107,13 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
   );
   const data = await res.json();
   if (!data.results) return [];
-  return data.results.map((r: any) => ({
+  return data.results.map((r: {
+    name: string;
+    country?: string;
+    admin1?: string;
+    latitude: number;
+    longitude: number;
+  }) => ({
     name: r.name,
     country: r.country || "",
     admin1: r.admin1 || "",
@@ -131,7 +136,6 @@ export async function fetchWeather(location: GeoLocation): Promise<WeatherData> 
     windGusts: Math.round(data.current.wind_gusts_10m),
     weatherCode: data.current.weather_code,
     uvIndex: Math.round(data.current.uv_index * 10) / 10,
-    visibility: 10,
     pressure: Math.round(data.current.surface_pressure),
     cloudCover: data.current.cloud_cover,
     precipitation: data.current.precipitation,
