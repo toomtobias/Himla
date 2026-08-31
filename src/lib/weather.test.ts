@@ -9,6 +9,7 @@ import {
   getAqiInfo,
   summarizePollen,
   getTimeOfDayFraction,
+  formatRelativeToNow,
 } from "@/lib/weather";
 
 describe("getWindDirection", () => {
@@ -111,5 +112,15 @@ describe("getTimeOfDayFraction", () => {
     expect(getTimeOfDayFraction(new Date(2026, 7, 30, 0, 0, 0, 0))).toBe(0);
     expect(getTimeOfDayFraction(new Date(2026, 7, 30, 12, 0, 0, 0))).toBe(0.5);
     expect(getTimeOfDayFraction(new Date(2026, 7, 30, 18, 0, 0, 0))).toBe(0.75);
+  });
+});
+
+describe("formatRelativeToNow", () => {
+  const now = new Date(2026, 7, 30, 12, 0, 0);
+
+  it("describes future and past events in Swedish", () => {
+    expect(formatRelativeToNow(new Date(2026, 7, 30, 15, 20, 0), now)).toBe("om 3 tim 20 min");
+    expect(formatRelativeToNow(new Date(2026, 7, 30, 9, 0, 0), now)).toBe("för 3 tim sedan");
+    expect(formatRelativeToNow(new Date(2026, 7, 30, 12, 0, 20), now)).toBe("nu");
   });
 });

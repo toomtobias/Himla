@@ -7,9 +7,10 @@ import {
   getUvInfo,
   getAqiInfo,
   getTimeOfDayFraction,
+  formatRelativeToNow,
 } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { Wind, CloudRain, Sun, Leaf, Factory, Sunrise, Sunset } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,14 +22,43 @@ interface Props {
   airQuality: AirQuality | null;
 }
 
+/** Same steel-blue → golden-amber scale as the hourly/daily temperature bars. */
+const SUNRISE_COLOR = "rgb(235, 180, 60)";
+const SUNSET_COLOR = "rgb(224, 179, 79)";
+
 function eventAnchorStyle(fraction: number): CSSProperties {
   if (fraction <= 0.08) {
-    return { left: 0, transform: "translate(0, -50%)" };
+    return { left: 0, transform: "none" };
   }
   if (fraction >= 0.92) {
-    return { left: "100%", transform: "translate(-100%, -50%)" };
+    return { left: "100%", transform: "translateX(-100%)" };
   }
-  return { left: `${fraction * 100}%`, transform: "translate(-50%, -50%)" };
+  return { left: `${fraction * 100}%`, transform: "translateX(-50%)" };
+}
+
+function SunEventLabel({
+  fraction,
+  icon: Icon,
+  time,
+  relative,
+}: {
+  fraction: number;
+  icon: typeof Sunrise;
+  time: string;
+  relative: string;
+}) {
+  return (
+    <div
+      className="absolute top-0 z-10 flex flex-col items-center gap-0.5 text-slate-800 whitespace-nowrap pointer-events-none"
+      style={eventAnchorStyle(fraction)}
+    >
+      <div className="flex items-center gap-1 text-xs font-medium tabular-nums">
+        <Icon size={14} className="shrink-0" />
+        {time}
+      </div>
+      <span className="text-[10px] text-foreground/55 leading-none">{relative}</span>
+    </div>
+  );
 }
 
 function DaylightBar({
@@ -47,34 +77,42 @@ function DaylightBar({
   const nowFrac = getTimeOfDayFraction(now);
   const sunriseFrac = getTimeOfDayFraction(sunrise);
   const sunsetFrac = getTimeOfDayFraction(sunset);
+  const sunriseRelative = formatRelativeToNow(sunrise, now);
+  const sunsetRelative = formatRelativeToNow(sunset, now);
 
   return (
     <div
-      className="relative h-8"
+      className="relative pt-12"
       role="img"
-      aria-label={`Soluppgång ${sunriseLabel}, solnedgång ${sunsetLabel}`}
+      aria-label={`Soluppgång ${sunriseLabel} ${sunriseRelative}, solnedgång ${sunsetLabel} ${sunsetRelative}`}
     >
-      <div className="absolute inset-0 rounded-full overflow-hidden bg-sky-200/80">
+      <div className="relative h-8 rounded-full overflow-hidden border border-white/30 bg-white/20">
         <div
-          className="absolute inset-y-0 left-0 bg-slate-800/70"
+          className="absolute inset-y-0 left-0 bg-sky-900/25"
           style={{ width: `${nowFrac * 100}%` }}
+        />
+        <div
+          className="absolute inset-y-0 w-1 -translate-x-1/2"
+          style={{ left: `${sunriseFrac * 100}%`, backgroundColor: SUNRISE_COLOR }}
+        />
+        <div
+          className="absolute inset-y-0 w-1 -translate-x-1/2"
+          style={{ left: `${sunsetFrac * 100}%`, backgroundColor: SUNSET_COLOR }}
         />
       </div>
 
-      <div
-        className="absolute top-1/2 z-10 flex items-center gap-1 px-1 text-xs font-medium tabular-nums text-slate-800 whitespace-nowrap pointer-events-none drop-shadow-[0_0_3px_rgba(255,255,255,0.9)]"
-        style={eventAnchorStyle(sunriseFrac)}
-      >
-        <Sunrise size={14} className="shrink-0" />
-        {sunriseLabel}
-      </div>
-      <div
-        className="absolute top-1/2 z-10 flex items-center gap-1 px-1 text-xs font-medium tabular-nums text-slate-800 whitespace-nowrap pointer-events-none drop-shadow-[0_0_3px_rgba(255,255,255,0.9)]"
-        style={eventAnchorStyle(sunsetFrac)}
-      >
-        <Sunset size={14} className="shrink-0" />
-        {sunsetLabel}
-      </div>
+      <SunEventLabel
+        fraction={sunriseFrac}
+        icon={Sunrise}
+        time={sunriseLabel}
+        relative={sunriseRelative}
+      />
+      <SunEventLabel
+        fraction={sunsetFrac}
+        icon={Sunset}
+        time={sunsetLabel}
+        relative={sunsetRelative}
+      />
     </div>
   );
 }
@@ -104,8 +142,25 @@ function Chip({
 }
 
 const CurrentWeatherCard = ({ current, sunrise, sunset, timezone, airQuality }: Props) => {
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!timezone) return;
+    const tick = () => setNowMs(Date.now());
+    tick();
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+    const timeoutId = setTimeout(() => {
+      tick();
+      intervalId = setInterval(tick, 60_000);
+    }, 60_000 - (Date.now() % 60_000));
+    return () => {
+      clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [timezone]);
+
   const info = getWeatherInfo(current.weatherCode);
-  const localNow = new Date(new Date().toLocaleString("en-US", { timeZone: timezone })).getTime();
+  const localNow = new Date(new Date(nowMs).toLocaleString("en-US", { timeZone: timezone })).getTime();
   const sunriseMs = new Date(sunrise).getTime();
   const sunsetMs = new Date(sunset).getTime();
   const isNight = localNow < sunriseMs || localNow >= sunsetMs;
@@ -143,7 +198,7 @@ const CurrentWeatherCard = ({ current, sunrise, sunset, timezone, airQuality }: 
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-8">
         <DaylightBar
           now={new Date(localNow)}
           sunrise={new Date(sunrise)}

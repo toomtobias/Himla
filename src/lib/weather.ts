@@ -225,6 +225,21 @@ export function getTimeOfDayFraction(date: Date): number {
   return Math.min(1, Math.max(0, ms / 86400000));
 }
 
+export function formatRelativeToNow(event: Date, now: Date): string {
+  const diffMs = event.getTime() - now.getTime();
+  const minutes = Math.round(Math.abs(diffMs) / 60000);
+  if (minutes < 1) return "nu";
+
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  let body: string;
+  if (hours > 0 && mins > 0) body = `${hours} tim ${mins} min`;
+  else if (hours > 0) body = hours === 1 ? "1 tim" : `${hours} tim`;
+  else body = mins === 1 ? "1 min" : `${mins} min`;
+
+  return diffMs > 0 ? `om ${body}` : `för ${body} sedan`;
+}
+
 async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality | null> {
   try {
     const res = await fetch(

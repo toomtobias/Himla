@@ -48,7 +48,7 @@ describe("CurrentWeatherCard", () => {
 
   it("places sunrise and sunset times on the day bar", () => {
     renderCard({ aqi: 35, pollen: null });
-    expect(screen.getByLabelText(/Soluppgång 05:30, solnedgång 20:00/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Soluppgång 05:30.*solnedgång 20:00/)).toBeInTheDocument();
   });
 
   it("shows pollen only when it is actually present", () => {
