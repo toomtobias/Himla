@@ -6,10 +6,10 @@ import {
   snapWindDegrees,
   getUvInfo,
   getAqiInfo,
-  getSunProgress,
+  getTimeOfDayFraction,
 } from "@/lib/weather";
 import WeatherIcon from "./WeatherIcon";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Wind, CloudRain, Sun, Leaf, Factory, Sunrise, Sunset } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,64 @@ interface Props {
   sunset: string;
   timezone: string;
   airQuality: AirQuality | null;
+}
+
+function eventAnchorStyle(fraction: number): CSSProperties {
+  if (fraction <= 0.08) {
+    return { left: 0, transform: "translate(0, -50%)" };
+  }
+  if (fraction >= 0.92) {
+    return { left: "100%", transform: "translate(-100%, -50%)" };
+  }
+  return { left: `${fraction * 100}%`, transform: "translate(-50%, -50%)" };
+}
+
+function DaylightBar({
+  now,
+  sunrise,
+  sunset,
+  sunriseLabel,
+  sunsetLabel,
+}: {
+  now: Date;
+  sunrise: Date;
+  sunset: Date;
+  sunriseLabel: string;
+  sunsetLabel: string;
+}) {
+  const nowFrac = getTimeOfDayFraction(now);
+  const sunriseFrac = getTimeOfDayFraction(sunrise);
+  const sunsetFrac = getTimeOfDayFraction(sunset);
+
+  return (
+    <div
+      className="relative h-8"
+      role="img"
+      aria-label={`Soluppgång ${sunriseLabel}, solnedgång ${sunsetLabel}`}
+    >
+      <div className="absolute inset-0 rounded-full overflow-hidden bg-sky-200/80">
+        <div
+          className="absolute inset-y-0 left-0 bg-slate-800/70"
+          style={{ width: `${nowFrac * 100}%` }}
+        />
+      </div>
+
+      <div
+        className="absolute top-1/2 z-10 flex items-center gap-1 px-1 text-xs font-medium tabular-nums text-slate-800 whitespace-nowrap pointer-events-none drop-shadow-[0_0_3px_rgba(255,255,255,0.9)]"
+        style={eventAnchorStyle(sunriseFrac)}
+      >
+        <Sunrise size={14} className="shrink-0" />
+        {sunriseLabel}
+      </div>
+      <div
+        className="absolute top-1/2 z-10 flex items-center gap-1 px-1 text-xs font-medium tabular-nums text-slate-800 whitespace-nowrap pointer-events-none drop-shadow-[0_0_3px_rgba(255,255,255,0.9)]"
+        style={eventAnchorStyle(sunsetFrac)}
+      >
+        <Sunset size={14} className="shrink-0" />
+        {sunsetLabel}
+      </div>
+    </div>
+  );
 }
 
 function Chip({
@@ -51,7 +109,6 @@ const CurrentWeatherCard = ({ current, sunrise, sunset, timezone, airQuality }: 
   const sunriseMs = new Date(sunrise).getTime();
   const sunsetMs = new Date(sunset).getTime();
   const isNight = localNow < sunriseMs || localNow >= sunsetMs;
-  const sunProgress = getSunProgress(localNow, sunriseMs, sunsetMs);
 
   const formatTime = (iso: string) =>
     new Date(iso).toLocaleTimeString("sv-SE", {
@@ -86,18 +143,14 @@ const CurrentWeatherCard = ({ current, sunrise, sunset, timezone, airQuality }: 
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-2 text-sm text-foreground/70">
-        <Sunrise size={14} className="text-foreground/50 shrink-0" />
-        <span className="tabular-nums whitespace-nowrap">{formatTime(sunrise)}</span>
-        <div className="relative flex-1 h-1.5 rounded-full bg-foreground/15 min-w-[4rem]">
-          <div
-            className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full bg-amber-400 shadow-sm"
-            style={{ left: `${sunProgress * 100}%` }}
-            aria-hidden
-          />
-        </div>
-        <span className="tabular-nums whitespace-nowrap">{formatTime(sunset)}</span>
-        <Sunset size={14} className="text-foreground/50 shrink-0" />
+      <div className="mt-4">
+        <DaylightBar
+          now={new Date(localNow)}
+          sunrise={new Date(sunrise)}
+          sunset={new Date(sunset)}
+          sunriseLabel={formatTime(sunrise)}
+          sunsetLabel={formatTime(sunset)}
+        />
       </div>
 
       <div className="mt-8 flex flex-wrap gap-2">

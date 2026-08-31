@@ -12,7 +12,7 @@ const WeatherSkeleton = () => {
             <Skeleton className="h-4 w-28 bg-white/20" />
           </div>
         </div>
-        <Skeleton className="mt-4 h-3 w-full bg-white/20" />
+        <Skeleton className="mt-4 h-8 w-full rounded-full bg-white/20" />
         <div className="mt-8 flex gap-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-12 flex-1 rounded-2xl bg-white/20" />

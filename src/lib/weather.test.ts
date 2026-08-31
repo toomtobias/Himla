@@ -8,7 +8,7 @@ import {
   getUvInfo,
   getAqiInfo,
   summarizePollen,
-  getSunProgress,
+  getTimeOfDayFraction,
 } from "@/lib/weather";
 
 describe("getWindDirection", () => {
@@ -106,12 +106,10 @@ describe("summarizePollen", () => {
   });
 });
 
-describe("getSunProgress", () => {
-  it("clamps before sunrise and after sunset", () => {
-    const sunrise = 1000;
-    const sunset = 2000;
-    expect(getSunProgress(500, sunrise, sunset)).toBe(0);
-    expect(getSunProgress(2500, sunrise, sunset)).toBe(1);
-    expect(getSunProgress(1500, sunrise, sunset)).toBe(0.5);
+describe("getTimeOfDayFraction", () => {
+  it("maps midnight, noon and evening across a 24h day", () => {
+    expect(getTimeOfDayFraction(new Date(2026, 7, 30, 0, 0, 0, 0))).toBe(0);
+    expect(getTimeOfDayFraction(new Date(2026, 7, 30, 12, 0, 0, 0))).toBe(0.5);
+    expect(getTimeOfDayFraction(new Date(2026, 7, 30, 18, 0, 0, 0))).toBe(0.75);
   });
 });

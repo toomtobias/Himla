@@ -216,9 +216,13 @@ export function summarizePollen(values: {
   return { type: ranked[0].type, level: ranked[0].level };
 }
 
-export function getSunProgress(now: number, sunrise: number, sunset: number): number {
-  if (!(sunset > sunrise)) return now < sunrise ? 0 : 1;
-  return Math.min(1, Math.max(0, (now - sunrise) / (sunset - sunrise)));
+export function getTimeOfDayFraction(date: Date): number {
+  const ms =
+    date.getHours() * 3600000 +
+    date.getMinutes() * 60000 +
+    date.getSeconds() * 1000 +
+    date.getMilliseconds();
+  return Math.min(1, Math.max(0, ms / 86400000));
 }
 
 async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality | null> {

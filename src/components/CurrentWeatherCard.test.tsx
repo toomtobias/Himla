@@ -46,6 +46,11 @@ describe("CurrentWeatherCard", () => {
     expect(screen.queryByText("Pollen")).not.toBeInTheDocument();
   });
 
+  it("places sunrise and sunset times on the day bar", () => {
+    renderCard({ aqi: 35, pollen: null });
+    expect(screen.getByLabelText(/Soluppgång 05:30, solnedgång 20:00/)).toBeInTheDocument();
+  });
+
   it("shows pollen only when it is actually present", () => {
     renderCard({ aqi: 10, pollen: { type: "Gräs", level: "Hög" } });
     expect(screen.getByText("Hög · Gräs")).toBeInTheDocument();
