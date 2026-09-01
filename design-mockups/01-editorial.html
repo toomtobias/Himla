@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atlas — Himla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #f6f3ee;
+      color: #141414;
+      font-family: Inter, system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .back {
+      position: fixed; top: 20px; left: 24px; z-index: 2;
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #141414; text-decoration: none; opacity: 0.45;
+    }
+    .back:hover { opacity: 1; }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 48px 56px 40px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid #141414;
+      padding-bottom: 14px;
+    }
+    .brand {
+      font-family: Fraunces, serif;
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .search {
+      font-size: 13px;
+      border: none;
+      border-bottom: 1px solid #141414;
+      background: transparent;
+      width: 220px;
+      padding: 4px 0;
+      outline: none;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      padding: 28px 0 24px;
+      border-bottom: 1px solid #141414;
+    }
+    .place { font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; }
+    .time { margin-top: 8px; color: #666; font-size: 14px; }
+    .temp {
+      font-family: Fraunces, serif;
+      font-weight: 300;
+      font-size: 148px;
+      line-height: 0.8;
+      letter-spacing: -0.06em;
+      margin-top: 10px;
+    }
+    .temp span { font-size: 72px; vertical-align: super; }
+    .aside { padding-top: 48px; }
+    .cond {
+      font-family: Fraunces, serif;
+      font-size: 42px;
+      font-weight: 500;
+      line-height: 1.1;
+    }
+    .feels { margin-top: 12px; color: #555; }
+    .facts {
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 32px;
+    }
+    .facts dt { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
+    .facts dd { font-size: 20px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    h2 {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin: 22px 0 12px;
+    }
+    .hours {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 8px;
+      border-bottom: 1px solid #141414;
+      padding-bottom: 20px;
+    }
+    .h { text-align: center; }
+    .h .t { font-size: 11px; color: #888; }
+    .h .bar {
+      height: 72px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .h .bar i {
+      display: block;
+      width: 8px;
+      background: #141414;
+    }
+    .h .d { font-size: 15px; font-variant-numeric: tabular-nums; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #888;
+      font-weight: 500;
+      padding: 0 0 10px;
+    }
+    td {
+      padding: 8px 12px 8px 0;
+      border-top: 1px solid #ddd6cc;
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+    }
+    td:first-child { font-weight: 500; }
+    .range {
+      height: 3px;
+      background: linear-gradient(90deg, #8aaecf, #e0b34f);
+      border-radius: 99px;
+      width: 140px;
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Alla riktningar</a>
+  <div class="page">
+    <header>
+      <div class="brand">Himla</div>
+      <input class="search" placeholder="Sök plats" value="Stockholm" />
+    </header>
+    <section class="hero">
+      <div>
+        <div class="place">Stockholm · Sverige</div>
+        <div class="time">Tisdag 1 september · 14:32</div>
+        <div class="temp">18<span>°</span></div>
+      </div>
+      <div class="aside">
+        <div class="cond">Halvklart,<br>lätt bris från sydväst.</div>
+        <div class="feels">Känns som 16°</div>
+        <dl class="facts">
+          <div><dt>Vind</dt><dd>4 m/s SV</dd></div>
+          <div><dt>Byar</dt><dd>8 m/s</dd></div>
+          <div><dt>Luftfuktighet</dt><dd>62%</dd></div>
+          <div><dt>Tryck</dt><dd>1013 hPa</dd></div>
+          <div><dt>UV</dt><dd>3,2</dd></div>
+          <div><dt>Luft</dt><dd>AQI 28 · bra</dd></div>
+        </dl>
+      </div>
+    </section>
+    <h2>Nästa 12 timmar</h2>
+    <div class="hours">
+      <div class="h"><div class="t">14</div><div class="bar"><i style="height:86%"></i></div><div class="d">18°</div></div>
+      <div class="h"><div class="t">15</div><div class="bar"><i style="height:86%"></i></div><div class="d">18°</div></div>
+      <div class="h"><div class="t">16</div><div class="bar"><i style="height:78%"></i></div><div class="d">17°</div></div>
+      <div class="h"><div class="t">17</div><div class="bar"><i style="height:70%"></i></div><div class="d">16°</div></div>
+      <div class="h"><div class="t">18</div><div class="bar"><i style="height:62%"></i></div><div class="d">15°</div></div>
+      <div class="h"><div class="t">19</div><div class="bar"><i style="height:54%"></i></div><div class="d">14°</div></div>
+      <div class="h"><div class="t">20</div><div class="bar"><i style="height:46%"></i></div><div class="d">13°</div></div>
+      <div class="h"><div class="t">21</div><div class="bar"><i style="height:38%"></i></div><div class="d">12°</div></div>
+      <div class="h"><div class="t">22</div><div class="bar"><i style="height:30%"></i></div><div class="d">11°</div></div>
+      <div class="h"><div class="t">23</div><div class="bar"><i style="height:30%"></i></div><div class="d">11°</div></div>
+      <div class="h"><div class="t">00</div><div class="bar"><i style="height:22%"></i></div><div class="d">10°</div></div>
+      <div class="h"><div class="t">01</div><div class="bar"><i style="height:22%"></i></div><div class="d">10°</div></div>
+    </div>
+    <h2>Sju dagar</h2>
+    <table>
+      <thead>
+        <tr><th>Dag</th><th>Väder</th><th>Min</th><th></th><th>Max</th><th>Regn</th><th>Vind</th><th>UV</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Idag</td><td>Halvklart</td><td>14°</td><td><div class="range"></div></td><td>18°</td><td>10%</td><td>4 SV</td><td>3,2</td></tr>
+        <tr><td>Ons 2/9</td><td>Mulet</td><td>12°</td><td><div class="range"></div></td><td>17°</td><td>40%</td><td>6 V</td><td>2,1</td></tr>
+        <tr><td>Tors 3/9</td><td>Regn</td><td>11°</td><td><div class="range"></div></td><td>16°</td><td>80%</td><td>7 SV</td><td>1,4</td></tr>
+        <tr><td>Fre 4/9</td><td>Skurar</td><td>10°</td><td><div class="range"></div></td><td>15°</td><td>60%</td><td>5 S</td><td>2,0</td></tr>
+        <tr><td>Lör 5/9</td><td>Halvklart</td><td>9°</td><td><div class="range"></div></td><td>14°</td><td>20%</td><td>3 SO</td><td>3,8</td></tr>
+        <tr><td>Sön 6/9</td><td>Klart</td><td>11°</td><td><div class="range"></div></td><td>16°</td><td>5%</td><td>3 Ö</td><td>4,1</td></tr>
+        <tr><td>Mån 7/9</td><td>Mestadels klart</td><td>13°</td><td><div class="range"></div></td><td>18°</td><td>10%</td><td>4 SV</td><td>3,6</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

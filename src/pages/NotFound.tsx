@@ -9,11 +9,11 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Sidan hittades inte</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
+    <div className="flex min-h-screen items-center justify-center bg-paper text-ink px-6">
+      <div className="box bg-white p-8 text-center max-w-md">
+        <h1 className="mb-3 text-6xl font-bold tracking-[-0.06em]">404</h1>
+        <p className="mb-6 font-bold uppercase tracking-[0.08em]">Sidan hittades inte</p>
+        <a href="/" className="font-bold underline">
           Tillbaka till startsidan
         </a>
       </div>

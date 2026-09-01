@@ -1,120 +1,150 @@
-import { useState } from "react";
-import { DailyForecast as DailyType, HourlyForecast as HourlyType, getWeatherInfo, getWindDirection, snapWindDegrees } from "@/lib/weather";
-import WeatherIcon from "./WeatherIcon";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  DailyForecast as DailyType,
+  HourlyForecast as HourlyType,
+  DAY_PARTS,
+  aggregateDayParts,
+  formatMm,
+  precipFillPercent,
+  localHourInZone,
+  type DayPartSlot,
+} from "@/lib/weather";
+import { cn } from "@/lib/utils";
 
 interface Props {
   daily: DailyType[];
   allHourly: HourlyType[];
+  timezone: string;
 }
 
-function tempToColor(temp: number, min: number, max: number): string {
-  const range = max - min || 1;
-  const ratio = (temp - min) / range;
-  // Steel blue (cold) → Golden amber (warm) via RGB
-  const r = Math.round(140 + ratio * (235 - 140));
-  const g = Math.round(175 + ratio * (180 - 175));
-  const b = Math.round(215 + ratio * (60 - 215));
-  return `rgb(${r},${g},${b})`;
+const DAY_NAMES = ["Sön", "Mån", "Tis", "Ons", "Tors", "Fre", "Lör"];
+
+function SlotCell({
+  slot,
+  fill,
+  past,
+  current,
+  labeled,
+}: {
+  slot: DayPartSlot;
+  fill: number;
+  past: boolean;
+  current: boolean;
+  labeled?: boolean;
+}) {
+  const wet = slot.precip > 0;
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden border-[3px] md:border-0 md:border-l-[3px] border-ink min-h-[72px] md:min-h-[86px] min-w-0 px-1 md:px-2 py-2 md:py-3 flex flex-col justify-center items-center gap-0.5",
+        current ? "bg-now" : "bg-white",
+        past && "opacity-[0.38]",
+      )}
+    >
+      {wet && (
+        <div
+          className="absolute inset-x-0 bottom-0 bg-rain"
+          style={{ height: `${fill}%` }}
+          aria-hidden
+        />
+      )}
+      {current && (
+        <span className="absolute top-1.5 right-1.5 z-[1] text-[10px] font-bold tracking-[0.1em] bg-ink text-now px-1 py-0.5">
+          NU
+        </span>
+      )}
+      {labeled && (
+        <span className="relative z-[1] text-[10px] font-bold uppercase tracking-[0.08em]">
+          {slot.shortLabel}
+        </span>
+      )}
+      <span className="relative z-[1] text-[22px] md:text-[28px] font-bold tracking-[-0.05em] leading-none">
+        {slot.temp == null ? "—" : `${slot.temp}°`}
+      </span>
+      {wet && (
+        <span className="relative z-[1] text-[11px] font-bold">{formatMm(slot.precip)}</span>
+      )}
+    </div>
+  );
 }
 
-const DailyForecast = ({ daily, allHourly }: Props) => {
-  const [expanded, setExpanded] = useState(false);
-  const dayNames = ["Sön", "Mån", "Tis", "Ons", "Tors", "Fre", "Lör"];
-  const visibleDays = expanded ? daily : daily.slice(0, 7);
+const DailyForecast = ({ daily, allHourly, timezone }: Props) => {
+  const visibleDays = daily.slice(0, 7);
+  const nowHour = timezone ? localHourInZone(new Date(), timezone) : new Date().getHours();
+  const todayDate = visibleDays[0]?.date;
+
+  const slotsByDay = visibleDays.map((d) => {
+    const hours = allHourly.filter((h) => h.time.startsWith(d.date));
+    return aggregateDayParts(hours);
+  });
+  const maxMm = Math.max(
+    8,
+    ...slotsByDay.flatMap((slots) => slots.map((s) => s.precip)),
+  );
 
   return (
-    <div className="glass-card p-4">
-      <h3 className="text-xs font-semibold text-foreground/50 uppercase tracking-wider mb-3">
-        {expanded ? "14-dagars prognos" : "7-dagars prognos"}
-      </h3>
-      {/* Column headers */}
-      <div className="flex items-center gap-2 px-2 mb-1">
-        <span className="w-20" />
-        <span className="w-14 mr-2" />
-        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-8 ml-2">Min</span>
-        <div className="hidden md:block flex-[2] ml-1 mr-4">
-          <span className="text-[10px] font-medium text-foreground/40 uppercase text-center block">Temperatur</span>
+    <div className="box bg-white mt-4 min-w-0 overflow-hidden">
+      <div className="hidden md:grid md:grid-cols-[92px_repeat(4,1fr)] bg-ink text-white text-center py-2.5">
+        <div className="text-left pl-3.5 flex items-center">
+          <strong className="text-xs tracking-[0.08em]">VECKAN</strong>
         </div>
-        <span className="hidden md:block text-[10px] font-medium text-foreground/40 uppercase w-14">Max</span>
-        <span className="md:hidden text-[10px] font-medium text-foreground/40 uppercase flex-1">Temp</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Regn</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1">Vind m/s</span>
-        <span className="text-[10px] font-medium text-foreground/40 uppercase flex-1 pl-3">UV</span>
+        {DAY_PARTS.map((part) => (
+          <div key={part.id} className="flex flex-col gap-0.5 min-w-0 px-0.5">
+            <strong className="text-xs tracking-[0.08em] uppercase">{part.label}</strong>
+            <span className="text-[11px] font-medium text-white/55">{part.hours}</span>
+          </div>
+        ))}
       </div>
-      <div className="space-y-0">
-        {visibleDays.map((d, i) => {
-          const info = getWeatherInfo(d.weatherCode);
-          const date = new Date(d.date + "T00:00:00");
-          const dayLabel = i === 0 ? "Idag" : dayNames[date.getDay()];
-          const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
-          const label = i === 0 ? dayLabel : `${dayLabel} ${dateStr}`;
+      <div className="md:hidden bg-ink text-white px-3 py-2.5">
+        <strong className="text-xs tracking-[0.08em]">VECKAN</strong>
+      </div>
 
-          // Get hourly temps for this day
-          const dayHourly = allHourly.filter((h) => h.time.startsWith(d.date));
-          const temps = dayHourly.map((h) => h.temperature);
+      {visibleDays.map((d, i) => {
+        const date = new Date(d.date + "T12:00:00");
+        const name = i === 0 ? "IDAG" : DAY_NAMES[date.getDay()].toUpperCase();
+        const isToday = d.date === todayDate;
+        const slots = slotsByDay[i];
 
-          // 1-hour segments (24 per day)
-          const segments = temps.map((t) => Math.round(t));
-
-          return (
-            <div
-              key={d.date}
-              className="flex items-center gap-2 py-1 px-2"
-            >
-              <span className="text-sm font-medium text-foreground w-20 text-left">{label}</span>
-              <WeatherIcon iconName={info.icon} size={56} className="text-foreground/70 w-14 mr-2" tooltip={info.label} />
-              <span className="hidden md:block text-sm font-medium text-foreground/50 w-8 ml-2">{d.tempMin}°</span>
-              <div className="hidden md:block flex-[2] ml-1 mr-4">
-                <div className="flex h-1.5 overflow-hidden rounded-full">
-                {segments.length > 0 ? segments.map((t, j) => (
-                  <Tooltip key={j} delayDuration={500}>
-                    <TooltipTrigger asChild>
-                      <div
-                        className="flex-1 h-full"
-                        style={{ backgroundColor: tempToColor(t, d.tempMin, d.tempMax) }}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{`${String(j).padStart(2, "0")}:00 — ${t}°`}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )) : (
-                  <div className="flex-1 h-full bg-foreground/20" />
-                )}
-                </div>
+        return (
+          <div key={d.date} className="border-t-[3px] border-ink">
+            <div className="hidden md:grid md:grid-cols-[92px_repeat(4,1fr)]">
+              <div className="flex items-center px-3.5 font-bold tracking-[0.06em] text-sm">
+                {name}
               </div>
-              <span className="hidden md:block text-sm font-medium text-foreground/50 w-14">{d.tempMax}°</span>
-              <span className="md:hidden text-sm font-medium text-foreground flex-1">{d.tempMax}°</span>
-              <span className="text-sm text-foreground/70 flex-1 relative">
-                {d.precipitationSum > 0 && (
-                  <>
-                    {d.precipitationProbability}%
-                    <span className="absolute left-0 top-full text-xs text-foreground/40">{d.precipitationSum} mm</span>
-                  </>
-                )}
-              </span>
-              <span className="text-sm text-foreground/70 flex-1 flex items-center gap-1">
-                <span
-                  style={{ transform: `rotate(${snapWindDegrees(d.windDirectionDominant)}deg)` }}
-                  className="inline-block"
-                  title={getWindDirection(d.windDirectionDominant)}
-                >↓</span>
-                {d.windSpeedMax}{d.windGustsMax > d.windSpeedMax && <span className="text-foreground/40"> ({d.windGustsMax})</span>}
-              </span>
-              <span className="text-sm text-foreground/70 flex-1 pl-3">{d.uvIndexMax}</span>
+              {slots.map((slot, si) => {
+                const part = DAY_PARTS[si];
+                return (
+                  <SlotCell
+                    key={slot.id}
+                    slot={slot}
+                    fill={precipFillPercent(slot.precip, maxMm)}
+                    past={isToday && nowHour >= part.end}
+                    current={isToday && nowHour >= part.start && nowHour < part.end}
+                  />
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
-      {daily.length > 7 && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="w-full mt-3 pt-4 border-t border-foreground/10 text-xs font-medium text-foreground/50 hover:text-foreground/70 transition-colors"
-        >
-          {expanded ? "Visa 7 dagar" : "Visa 14 dagar"}
-        </button>
-      )}
+
+            <div className="md:hidden p-3">
+              <div className="font-bold tracking-[0.06em] text-sm mb-2">{name}</div>
+              <div className="grid grid-cols-2 gap-2">
+                {slots.map((slot, si) => {
+                  const part = DAY_PARTS[si];
+                  return (
+                    <SlotCell
+                      key={slot.id}
+                      slot={slot}
+                      labeled
+                      fill={precipFillPercent(slot.precip, maxMm)}
+                      past={isToday && nowHour >= part.end}
+                      current={isToday && nowHour >= part.start && nowHour < part.end}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

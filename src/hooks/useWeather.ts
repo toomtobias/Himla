@@ -63,5 +63,5 @@ export function useWeather() {
     return () => { cancelled = true; };
   }, [location]);
 
-  return { weather, loading, error, setLocation: handleSetLocation, recentLocations: getRecentLocations };
+  return { weather, loading, error, location, setLocation: handleSetLocation, recentLocations: getRecentLocations };
 }

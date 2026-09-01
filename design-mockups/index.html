@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Himla — designutforskningar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #161410;
+      --paper: #f4efe6;
+      --muted: #6f685e;
+      --line: #d9d0c3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    header {
+      padding: 72px 64px 40px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .kicker {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-family: Fraunces, serif;
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      max-width: 16ch;
+    }
+    header p {
+      margin-top: 22px;
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 24px 64px 80px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    a.card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #fffdf8;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    a.card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(22, 20, 16, 0.08);
+    }
+    .swatch {
+      height: 168px;
+      position: relative;
+      overflow: hidden;
+      background: #ddd6c8;
+    }
+    .swatch img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .swatch span {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.45);
+    }
+    .meta { padding: 22px 22px 24px; }
+    .meta h2 {
+      font-family: Fraunces, serif;
+      font-size: 26px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+    .meta p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+    }
+    footer {
+      padding: 0 64px 64px;
+      max-width: 1280px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .s1 { background: linear-gradient(135deg, #f7f3ec, #1a1a1a 70%); }
+    .s2 { background: linear-gradient(135deg, #12141a, #e8a54b); }
+    .s3 { background: linear-gradient(180deg, #6aa8de 0%, #f2c98a 100%); }
+    .s4 { background: linear-gradient(135deg, #ffe14a, #111 55%, #ff6b3d); }
+    .s5 { background: linear-gradient(135deg, #efe8dc, #7d8b72); }
+    .s6 { background: radial-gradient(circle at 30% 40%, #1ad7c4, #071018 60%); }
+    .s7 { background: linear-gradient(135deg, #0b0b0b, #f4efe6); }
+    .s8 { background: linear-gradient(90deg, #f0b45a 0 50%, #f7f4ef 50% 100%); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Himla · Open-Meteo · Desktop</div>
+    <h1>Åtta sätt att visa samma himmel.</h1>
+    <p>
+      Samma data som appen redan har — Stockholm, 18°, halvklart, timme för timme, sju dagar —
+      ritad i åtta olika visuella språk. Öppna en riktning, känn efter. Inget av det här är
+      implementerat; det är inspiration för nästa utseende.
+    </p>
+  </header>
+  <section class="grid">
+    <a class="card" href="01-editorial.html">
+      <div class="swatch"><img src="screens/01-editorial.png" alt="Atlas" /><span>01</span></div>
+      <div class="meta">
+        <div class="tag">Lugn · typografi</div>
+        <h2>Atlas</h2>
+        <p>Tidningslayout. Jättestor temperatur, hårfina linjer, nästan inget krom. Väder som ett uppslag i ett magasin.</p>
+      </div>
+    </a>
+    <a class="card" href="02-bento.html">
+      <div class="swatch"><img src="screens/02-bento.png" alt="Observatorium" /><span>02</span></div>
+      <div class="meta">
+        <div class="tag">Tät · mörk</div>
+        <h2>Observatorium</h2>
+        <p>Mörk bento-dashboard. All data synlig på en skärm, som Linear möter ett observatorium. Desktop på riktigt.</p>
+      </div>
+    </a>
+    <a class="card" href="03-cinematic.html">
+      <div class="swatch"><img src="screens/03-cinematic.png" alt="Himmel" /><span>03</span></div>
+      <div class="meta">
+        <div class="tag">Atmosfär · himmel</div>
+        <h2>Himmel</h2>
+        <p>Hela fönstret är himlen. Siffror svävar i luften. Data ligger som en filmremsa längst ner.</p>
+      </div>
+    </a>
+    <a class="card" href="03b-himmel-system.html">
+      <div class="swatch"><img src="screens/03b-hostregn.png" alt="Himmel-system" /><span>03b</span></div>
+      <div class="meta">
+        <div class="tag">System · klickbart</div>
+        <h2>Himmel som väder</h2>
+        <p>Samma skal, bytbara himlar. Klicka timme och dag — sidan rullar inte. Nederbörd som stolpar, inte ikoner.</p>
+      </div>
+    </a>
+    <a class="card" href="04-brutalist.html">
+      <div class="swatch"><img src="screens/04-brutalist.png" alt="Affisch" /><span>04</span></div>
+      <div class="meta">
+        <div class="tag">Galet · poster</div>
+        <h2>Affisch</h2>
+        <p>Neo-brutalism. Tjocka ramar, offset-skuggor, sommartejp. Väder som en screenprint från Södermalm.</p>
+      </div>
+    </a>
+    <a class="card" href="04-brutalist-new.html">
+      <div class="swatch"><img src="screens/04-brutalist-new.png" alt="Affisch v2" /><span>04b</span></div>
+      <div class="meta">
+        <div class="tag">Galet · poster · v2</div>
+        <h2>Affisch, v2</h2>
+        <p>Samma look. Timmarna fylls med rosa när det regnar. Veckan är natt / förmiddag / eftermiddag / kväll — ett tal, ett tillstånd.</p>
+      </div>
+    </a>
+    <a class="card" href="05-nordic.html">
+      <div class="swatch"><img src="screens/05-nordic.png" alt="Stillhet" /><span>05</span></div>
+      <div class="meta">
+        <div class="tag">Stillhet · papper</div>
+        <h2>Stillhet</h2>
+        <p>Varmt papper, seriffer, mycket luft. En svensk arkitekturtidskrift som råkar visa väder.</p>
+      </div>
+    </a>
+    <a class="card" href="06-instrument.html">
+      <div class="swatch"><img src="screens/06-instrument.png" alt="Station" /><span>06</span></div>
+      <div class="meta">
+        <div class="tag">Galet · cockpit</div>
+        <h2>Station</h2>
+        <p>Analog instrumentpanel. Vindros, tryckmätare, nederbördsradar. Väderstationen du alltid velat ha.</p>
+      </div>
+    </a>
+    <a class="card" href="07-typographic.html">
+      <div class="swatch"><img src="screens/07-typographic.png" alt="Siffra" /><span>07</span></div>
+      <div class="meta">
+        <div class="tag">Galet · siffra</div>
+        <h2>Siffra</h2>
+        <p>Temperaturen är hela gränssnittet. 18 fyller skärmen; resten av datan bor inuti siffran.</p>
+      </div>
+    </a>
+    <a class="card" href="08-split.html">
+      <div class="swatch"><img src="screens/08-split.png" alt="Ateljé" /><span>08</span></div>
+      <div class="meta">
+        <div class="tag">Ateljé · split</div>
+        <h2>Ateljé</h2>
+        <p>Vänster: vädret som konst. Höger: all data, sök och prognos. Som en designstudio med två rum.</p>
+      </div>
+    </a>
+  </section>
+  <footer>
+    Sampledata: Stockholm · tisdag 1 september · 18° · halvklart · vind 4 m/s SV · Open-Meteo-fält som appen redan hämtar.
+    Desktop-first. Öppna filerna i webbläsaren.
+  </footer>
+</body>
+</html>

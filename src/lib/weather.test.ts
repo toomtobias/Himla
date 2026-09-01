@@ -10,6 +10,10 @@ import {
   summarizePollen,
   getTimeOfDayFraction,
   formatRelativeToNow,
+  getPosterCopy,
+  formatMm,
+  aggregateDayParts,
+  precipFillPercent,
 } from "@/lib/weather";
 
 describe("getWindDirection", () => {
@@ -122,5 +126,50 @@ describe("formatRelativeToNow", () => {
     expect(formatRelativeToNow(new Date(2026, 7, 30, 15, 20, 0), now)).toBe("om 3 tim 20 min");
     expect(formatRelativeToNow(new Date(2026, 7, 30, 9, 0, 0), now)).toBe("för 3 tim sedan");
     expect(formatRelativeToNow(new Date(2026, 7, 30, 12, 0, 20), now)).toBe("nu");
+  });
+});
+
+describe("getPosterCopy", () => {
+  it("pairs the WMO label with a poster line", () => {
+    expect(getPosterCopy(2)).toEqual({ line1: "Halvklart", line2: "Ingen brådska." });
+    expect(getPosterCopy(0, true)).toEqual({ line1: "Klart", line2: "Stjärnor." });
+  });
+});
+
+describe("formatMm", () => {
+  it("uses a Swedish decimal comma and drops trailing zeros", () => {
+    expect(formatMm(0)).toBe("0 mm");
+    expect(formatMm(1.2)).toBe("1,2 mm");
+    expect(formatMm(3)).toBe("3 mm");
+  });
+});
+
+describe("aggregateDayParts", () => {
+  it("pins temperature to 03/09/15/21 and sums precipitation", () => {
+    const hours = [3, 9, 15, 21].map((h, i) => ({
+      time: `2026-09-01T${String(h).padStart(2, "0")}:00`,
+      temperature: 10 + i,
+      weatherCode: 2,
+      humidity: 50,
+      uvIndex: 1,
+      windSpeed: 2,
+      windGusts: 3,
+      windDirection: 0,
+      cloudCover: 10,
+      precipitationProbability: 0,
+      precipitation: i === 2 ? 2.4 : 0,
+    }));
+    const parts = aggregateDayParts(hours);
+    expect(parts.map((p) => p.temp)).toEqual([10, 11, 12, 13]);
+    expect(parts[2].precip).toBe(2.4);
+    expect(parts[0].precip).toBe(0);
+  });
+});
+
+describe("precipFillPercent", () => {
+  it("is silent when dry and capped when wet", () => {
+    expect(precipFillPercent(0)).toBe(0);
+    expect(precipFillPercent(8)).toBe(90);
+    expect(precipFillPercent(0.2)).toBe(16);
   });
 });

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Affisch — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #fff1c2;
+      font-family: "Space Grotesk", sans-serif;
+      color: #111;
+      min-height: 100vh;
+    }
+    .back {
+      position: fixed; top: 16px; left: 18px; z-index: 2;
+      color: #111; text-decoration: none; font-weight: 600; font-size: 13px;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 48px 32px 64px; }
+    .top {
+      display: flex; justify-content: space-between; align-items: stretch; gap: 16px;
+    }
+    .box {
+      border: 3px solid #111;
+      box-shadow: 6px 6px 0 #111;
+      background: #fff;
+    }
+    .brand {
+      padding: 14px 18px; font-weight: 700; font-size: 22px;
+      background: #ff5a1f; color: #111;
+    }
+    .search {
+      flex: 1; padding: 14px 18px; font-size: 18px; font-weight: 600;
+      border: 3px solid #111; box-shadow: 6px 6px 0 #111; outline: none;
+      background: #fff;
+    }
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; margin-top: 18px; }
+    .tempbox { padding: 18px; background: #fff; }
+    .place { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .temp { font-size: 180px; line-height: 0.8; font-weight: 700; letter-spacing: -0.07em; margin: 10px 0; }
+    .condbox { padding: 22px; background: #7cff6b; display: flex; flex-direction: column; justify-content: space-between; }
+    .condbox h1 { font-size: 42px; line-height: 1; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+    .stat { padding: 16px; }
+    .stat .k { font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .stat .v { font-size: 32px; font-weight: 700; margin-top: 6px; }
+    .hours { margin-top: 16px; padding: 16px; background: #fff; }
+    .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 10px; }
+    .h { border: 3px solid #111; padding: 10px 6px; text-align: center; background: #ffe14a; }
+    .h b { display: block; font-size: 20px; }
+    .days { margin-top: 16px; }
+    .day {
+      display: grid; grid-template-columns: 120px 1fr 80px 80px 80px;
+      gap: 12px; align-items: center;
+      border: 3px solid #111; box-shadow: 5px 5px 0 #111;
+      background: #fff; padding: 10px 14px; margin-bottom: 10px; font-weight: 600;
+    }
+    .bar { height: 14px; background: repeating-linear-gradient(90deg, #111 0 8px, #ffe14a 8px 16px); }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← ALLA</a>
+  <div class="wrap">
+    <div class="top">
+      <div class="box brand">HIMLA</div>
+      <input class="search" value="STOCKHOLM" />
+    </div>
+    <div class="hero">
+      <div class="box tempbox">
+        <div class="place">Tisdag 14:32</div>
+        <div class="temp">18°</div>
+        <div style="font-weight:700">KÄNNS SOM 16°</div>
+      </div>
+      <div class="box condbox">
+        <div class="place">Just nu</div>
+        <h1>HALV­KLART<br>INGEN BRÅD<wbr>SKA.</h1>
+        <div style="font-weight:700">Solen går ner 19:42</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="box stat" style="background:#7ec8ff"><div class="k">Vind</div><div class="v">4 m/s</div><div>SV · byar 8</div></div>
+      <div class="box stat" style="background:#ff8bd1"><div class="k">Regn</div><div class="v">0 mm</div><div>10% risk</div></div>
+      <div class="box stat" style="background:#fff"><div class="k">UV</div><div class="v">3,2</div><div>Måttlig</div></div>
+      <div class="box stat" style="background:#ffe14a"><div class="k">Luft</div><div class="v">AQI 28</div><div>Bra · pollen låg</div></div>
+    </div>
+    <div class="box hours">
+      <div class="k" style="font-weight:700;letter-spacing:.08em">NÄSTA TIMMAR</div>
+      <div class="row">
+        <div class="h">14<b>18°</b></div>
+        <div class="h">15<b>18°</b></div>
+        <div class="h">16<b>17°</b></div>
+        <div class="h">17<b>16°</b></div>
+        <div class="h">18<b>15°</b></div>
+        <div class="h">19<b>14°</b></div>
+        <div class="h">20<b>13°</b></div>
+        <div class="h">21<b>12°</b></div>
+      </div>
+    </div>
+    <div class="days">
+      <div class="day"><span>IDAG</span><div class="bar"></div><span>14°</span><span>18°</span><span>10%</span></div>
+      <div class="day"><span>ONS</span><div class="bar"></div><span>12°</span><span>17°</span><span>40%</span></div>
+      <div class="day"><span>TORS</span><div class="bar"></div><span>11°</span><span>16°</span><span>80%</span></div>
+      <div class="day"><span>FRE</span><div class="bar"></div><span>10°</span><span>15°</span><span>60%</span></div>
+      <div class="day"><span>LÖR</span><div class="bar"></div><span>9°</span><span>14°</span><span>20%</span></div>
+    </div>
+  </div>
+</body>
+</html>

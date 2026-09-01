@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Himmel — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: #fff;
+      overflow: hidden;
+      background:
+        radial-gradient(900px 500px at 78% 18%, rgba(255,220,140,0.85), transparent 55%),
+        radial-gradient(700px 400px at 20% 80%, rgba(120,160,210,0.4), transparent 50%),
+        linear-gradient(180deg, #5ea0d8 0%, #9ec6e6 38%, #f0c98a 78%, #e8a56a 100%);
+    }
+    .sun {
+      position: absolute;
+      width: 280px; height: 280px;
+      right: 14%; top: 10%;
+      background: radial-gradient(circle, #fff6c8 0%, #ffd36a 40%, rgba(255,180,80,0) 70%);
+      filter: blur(2px);
+    }
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.38);
+      filter: blur(18px);
+      border-radius: 999px;
+    }
+    .c1 { width: 420px; height: 90px; left: 8%; top: 28%; }
+    .c2 { width: 280px; height: 70px; left: 22%; top: 34%; }
+    .c3 { width: 360px; height: 80px; right: 8%; bottom: 38%; }
+    .back {
+      position: fixed; top: 22px; left: 28px; z-index: 3;
+      color: #fff; text-decoration: none; font-size: 12px;
+      letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7;
+    }
+    .top {
+      position: relative; z-index: 2;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 48px 56px 0;
+    }
+    .place { font-size: 14px; letter-spacing: 0.28em; text-transform: uppercase; }
+    .time { margin-top: 8px; opacity: 0.85; }
+    .search {
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff; border-radius: 999px; padding: 10px 18px; width: 240px; outline: none;
+    }
+    .hero {
+      position: relative; z-index: 2;
+      padding: 48px 56px 0;
+    }
+    .temp {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 240px;
+      font-weight: 500;
+      line-height: 0.8;
+      letter-spacing: -0.05em;
+      text-shadow: 0 20px 60px rgba(40,40,20,0.18);
+    }
+    .cond {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 42px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .dock {
+      position: absolute; left: 40px; right: 40px; bottom: 28px; z-index: 2;
+      background: rgba(20,24,32,0.28);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 28px;
+      padding: 18px 22px 16px;
+    }
+    .hours { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; }
+    .h { text-align: center; }
+    .h .t { font-size: 11px; opacity: 0.7; }
+    .h .d { font-size: 16px; margin-top: 6px; }
+    .days {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.18);
+    }
+    .day { text-align: center; font-size: 13px; }
+    .day b { display: block; font-weight: 500; margin-top: 4px; font-size: 15px; }
+    .meta { display: flex; gap: 22px; margin-top: 14px; font-size: 13px; opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <a class="back" href="index.html">← Alla riktningar</a>
+  <div class="top">
+    <div>
+      <div class="place">Stockholm</div>
+      <div class="time">Tisdag 1 september · 14:32</div>
+    </div>
+    <input class="search" placeholder="Sök plats" />
+  </div>
+  <div class="hero">
+    <div class="temp">18°</div>
+    <div class="cond">Halvklart</div>
+    <div class="meta">
+      <span>Känns som 16°</span>
+      <span>Vind 4 m/s SV</span>
+      <span>UV 3,2</span>
+      <span>Solnedgång 19:42</span>
+    </div>
+  </div>
+  <div class="dock">
+    <div class="hours">
+      <div class="h"><div class="t">Nu</div><div class="d">18°</div></div>
+      <div class="h"><div class="t">15</div><div class="d">18°</div></div>
+      <div class="h"><div class="t">16</div><div class="d">17°</div></div>
+      <div class="h"><div class="t">17</div><div class="d">16°</div></div>
+      <div class="h"><div class="t">18</div><div class="d">15°</div></div>
+      <div class="h"><div class="t">19</div><div class="d">14°</div></div>
+      <div class="h"><div class="t">20</div><div class="d">13°</div></div>
+      <div class="h"><div class="t">21</div><div class="d">12°</div></div>
+      <div class="h"><div class="t">22</div><div class="d">11°</div></div>
+      <div class="h"><div class="t">23</div><div class="d">11°</div></div>
+      <div class="h"><div class="t">00</div><div class="d">10°</div></div>
+      <div class="h"><div class="t">01</div><div class="d">10°</div></div>
+    </div>
+    <div class="days">
+      <div class="day">Idag<b>18°</b></div>
+      <div class="day">Ons<b>17°</b></div>
+      <div class="day">Tors<b>16°</b></div>
+      <div class="day">Fre<b>15°</b></div>
+      <div class="day">Lör<b>14°</b></div>
+      <div class="day">Sön<b>16°</b></div>
+      <div class="day">Mån<b>18°</b></div>
+    </div>
+  </div>
+</body>
+</html>

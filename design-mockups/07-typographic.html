@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Siffra — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0a;
+      color: #f3eee4;
+      font-family: Inter, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .back {
+      position: fixed; top: 22px; left: 28px; z-index: 3;
+      color: #f3eee4; text-decoration: none; font-size: 12px;
+      letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5;
+    }
+    .top {
+      position: relative; z-index: 2;
+      display: flex; justify-content: space-between;
+      padding: 48px 56px 0;
+      font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .search {
+      background: transparent; border: 0; border-bottom: 1px solid #f3eee455;
+      color: inherit; outline: none; width: 180px; text-align: right;
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .stage {
+      position: relative;
+      height: calc(100vh - 90px);
+      display: grid;
+      place-items: center;
+    }
+    .num {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: min(78vh, 42vw);
+      line-height: 0.8;
+      letter-spacing: -0.08em;
+      background: linear-gradient(180deg, #f6d58a 0%, #7eb7e4 55%, #3a4a62 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      user-select: none;
+    }
+    .overlay {
+      position: absolute;
+      inset: 18% 12% 16%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-content: space-between;
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+    .block h2 {
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7;
+    }
+    .block p { margin-top: 8px; font-size: 22px; }
+    .hours {
+      position: absolute; bottom: 28px; left: 56px; right: 56px; z-index: 2;
+      display: flex; justify-content: space-between;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+    .h { text-align: center; }
+    .h b { display: block; font-size: 16px; font-weight: 500; margin-top: 4px; color: #f6d58a; }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Alla riktningar</a>
+  <div class="top">
+    <div>Himla · Stockholm</div>
+    <div>Tisdag 14:32</div>
+    <input class="search" placeholder="Sök" />
+  </div>
+  <div class="stage">
+    <div class="num">18</div>
+    <div class="overlay">
+      <div class="block">
+        <h2>Tillstånd</h2>
+        <p>Halvklart<br>känns som 16°</p>
+      </div>
+      <div class="block" style="text-align:right">
+        <h2>Vind</h2>
+        <p>4 m/s SV<br>byar 8</p>
+      </div>
+      <div class="block">
+        <h2>Sol</h2>
+        <p>05:48 — 19:42</p>
+      </div>
+      <div class="block" style="text-align:right">
+        <h2>Luft</h2>
+        <p>AQI 28 · UV 3,2</p>
+      </div>
+    </div>
+  </div>
+  <div class="hours">
+    <div class="h">14<b>18°</b></div>
+    <div class="h">15<b>18°</b></div>
+    <div class="h">16<b>17°</b></div>
+    <div class="h">17<b>16°</b></div>
+    <div class="h">18<b>15°</b></div>
+    <div class="h">19<b>14°</b></div>
+    <div class="h">20<b>13°</b></div>
+    <div class="h">21<b>12°</b></div>
+    <div class="h">22<b>11°</b></div>
+    <div class="h">23<b>11°</b></div>
+    <div class="h">00<b>10°</b></div>
+    <div class="h">01<b>10°</b></div>
+  </div>
+</body>
+</html>

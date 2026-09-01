@@ -112,6 +112,106 @@ export function getWeatherInfo(code: number) {
   return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
 }
 
+const POSTER_LINE2: Record<number, string> = {
+  0: "Inget att anmärka.",
+  1: "Nästan fint.",
+  2: "Ingen brådska.",
+  3: "Grått och stilla.",
+  45: "Titta upp.",
+  48: "Halt underlag.",
+  51: "Det duggar.",
+  53: "Fuktigt.",
+  55: "Blött.",
+  61: "Jacka på.",
+  63: "Paraply.",
+  65: "Stanna inne.",
+  71: "Långsamt.",
+  73: "Vinter.",
+  75: "Håll er inne.",
+  77: "Korn i luften.",
+  80: "Det skurar.",
+  81: "Skurar.",
+  82: "Ös.",
+  85: "Snöbyar.",
+  86: "Tjockt.",
+  95: "Inne.",
+  96: "Hagel.",
+  99: "Hagel. Inne.",
+};
+
+export function getPosterCopy(code: number, isNight = false): { line1: string; line2: string } {
+  const line1 = getWeatherInfo(code).label;
+  if (isNight && (code === 0 || code === 1)) {
+    return { line1: "Klart", line2: "Stjärnor." };
+  }
+  return { line1, line2: POSTER_LINE2[code] ?? "Se upp." };
+}
+
+export function formatSvNumber(n: number): string {
+  return String(n).replace(".", ",");
+}
+
+export function formatMm(n: number): string {
+  const rounded = Math.round(n * 10) / 10;
+  const text = Number.isInteger(rounded) ? String(rounded) : formatSvNumber(rounded);
+  return `${text} mm`;
+}
+
+export function precipFillPercent(mm: number, scale = 8): number {
+  if (mm <= 0) return 0;
+  return Math.min(90, Math.max(16, (mm / scale) * 90));
+}
+
+export function localHourFromIso(iso: string): number {
+  return parseInt(iso.slice(11, 13), 10);
+}
+
+export const DAY_PARTS = [
+  { id: "natt", label: "Natt", shortLabel: "Natt", hours: "00–06", pinHour: 3, start: 0, end: 6 },
+  { id: "formiddag", label: "Förmiddag", shortLabel: "FM", hours: "06–12", pinHour: 9, start: 6, end: 12 },
+  { id: "eftermiddag", label: "Eftermiddag", shortLabel: "EM", hours: "12–18", pinHour: 15, start: 12, end: 18 },
+  { id: "kvall", label: "Kväll", shortLabel: "Kväll", hours: "18–24", pinHour: 21, start: 18, end: 24 },
+] as const;
+
+export type DayPartId = (typeof DAY_PARTS)[number]["id"];
+
+export interface DayPartSlot {
+  id: DayPartId;
+  label: string;
+  shortLabel: string;
+  hours: string;
+  temp: number | null;
+  precip: number;
+}
+
+export function aggregateDayParts(dayHours: HourlyForecast[]): DayPartSlot[] {
+  return DAY_PARTS.map((part) => {
+    const inPart = dayHours.filter((h) => {
+      const hr = localHourFromIso(h.time);
+      return hr >= part.start && hr < part.end;
+    });
+    const meta = { id: part.id, label: part.label, shortLabel: part.shortLabel, hours: part.hours };
+    if (!inPart.length) {
+      return { ...meta, temp: null, precip: 0 };
+    }
+    const pinned = inPart.find((h) => localHourFromIso(h.time) === part.pinHour);
+    const temp = pinned
+      ? pinned.temperature
+      : Math.round(inPart.reduce((sum, h) => sum + h.temperature, 0) / inPart.length);
+    const precip = Math.round(inPart.reduce((sum, h) => sum + h.precipitation, 0) * 10) / 10;
+    return { ...meta, temp, precip };
+  });
+}
+
+export function localHourInZone(date: Date, timezone: string): number {
+  const formatted = new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    hour: "numeric",
+    hourCycle: "h23",
+  }).format(date);
+  return parseInt(formatted, 10);
+}
+
 const ENGLISH_COUNTRY_SV: Record<string, string> = {
   Sweden: "Sverige",
   Norway: "Norge",

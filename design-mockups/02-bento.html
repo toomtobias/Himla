@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Observatorium — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0c0d11;
+      color: #ece7dc;
+      font-family: Outfit, system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .back {
+      position: fixed; top: 16px; left: 20px; z-index: 2;
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #ece7dc; text-decoration: none; opacity: 0.4;
+    }
+    .shell { padding: 40px 40px 24px; max-width: 1360px; margin: 0 auto; }
+    .top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .brand { font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
+    .search {
+      background: #16181f; border: 1px solid #2a2d38; color: #ece7dc;
+      border-radius: 999px; padding: 10px 16px; width: 280px; outline: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 12px;
+    }
+    .card {
+      background: #14161c;
+      border: 1px solid #262a35;
+      border-radius: 20px;
+      padding: 22px;
+    }
+    .hero { grid-column: 1; grid-row: 1 / span 2; }
+    .k { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #8b8a84; letter-spacing: 0.12em; text-transform: uppercase; }
+    .temp { font-size: 96px; font-weight: 300; letter-spacing: -0.06em; line-height: 0.9; margin: 12px 0 8px; }
+    .temp span { font-size: 42px; }
+    .cond { font-size: 22px; color: #cfc8b8; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+    .chip {
+      border: 1px solid #2e3340; border-radius: 999px; padding: 8px 12px; font-size: 13px;
+      background: #1a1d26;
+    }
+    .amber { color: #e8a54b; }
+    .gauge { height: 8px; background: #232632; border-radius: 99px; margin-top: 16px; overflow: hidden; }
+    .gauge b { display: block; height: 100%; background: linear-gradient(90deg, #3d6b8a, #e8a54b); width: 58%; }
+    .big { font-size: 42px; font-weight: 400; letter-spacing: -0.03em; margin-top: 10px; }
+    .sub { color: #8b8a84; margin-top: 4px; font-size: 13px; }
+    .hours { grid-column: 1 / -1; }
+    .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; margin-top: 16px; }
+    .h { text-align: center; background: #1a1d26; border-radius: 14px; padding: 12px 4px; }
+    .h .t { font-size: 11px; color: #8b8a84; }
+    .h .d { margin-top: 8px; font-size: 16px; }
+    .h .p { font-size: 11px; color: #6aa7e8; margin-top: 6px; }
+    .days { grid-column: 1 / span 2; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td { padding: 7px 8px; border-top: 1px solid #262a35; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .heat { height: 6px; border-radius: 99px; background: linear-gradient(90deg, #6a93b8, #e8a54b); width: 120px; }
+    .sun .arc {
+      height: 70px; border-radius: 999px 999px 0 0;
+      border: 1px solid #e8a54b55; border-bottom: none;
+      position: relative; margin: 28px 16px 0;
+    }
+    .dot {
+      width: 10px; height: 10px; background: #e8a54b; border-radius: 50%;
+      position: absolute; right: 28%; top: 18%;
+      box-shadow: 0 0 16px #e8a54b;
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Alla riktningar</a>
+  <div class="shell">
+    <div class="top">
+      <div class="brand">Himla · Observatorium</div>
+      <input class="search" value="Stockholm, Sverige" />
+    </div>
+    <div class="grid">
+      <section class="card hero">
+        <div class="k">Tisdag 14:32 · 59.33°N 18.07°E</div>
+        <div class="temp">18<span>°</span></div>
+        <div class="cond">Halvklart</div>
+        <div class="chips">
+          <span class="chip">Känns som 16°</span>
+          <span class="chip">Moln 38%</span>
+          <span class="chip">Pollen låg</span>
+          <span class="chip amber">AQI 28</span>
+        </div>
+        <div class="gauge"><b></b></div>
+        <div class="sub" style="margin-top:10px">Dygnsspann 14° — 18°</div>
+      </section>
+      <section class="card">
+        <div class="k">Vind</div>
+        <div class="big">4 <span style="font-size:18px">m/s</span></div>
+        <div class="sub">SV · byar 8 m/s</div>
+      </section>
+      <section class="card">
+        <div class="k">Nederbörd</div>
+        <div class="big">0 <span style="font-size:18px">mm</span></div>
+        <div class="sub">10% risk idag</div>
+      </section>
+      <section class="card">
+        <div class="k">UV-index</div>
+        <div class="big">3,2</div>
+        <div class="sub">Måttlig · solkräm räcker</div>
+      </section>
+      <section class="card sun">
+        <div class="k">Sol</div>
+        <div class="arc"><div class="dot"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:13px">
+          <span>05:48</span><span>19:42</span>
+        </div>
+      </section>
+      <section class="card hours">
+        <div class="k">Kommande 12 timmar</div>
+        <div class="row">
+          <div class="h"><div class="t">14</div><div class="d">18°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">15</div><div class="d">18°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">16</div><div class="d">17°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">17</div><div class="d">16°</div><div class="p">10%</div></div>
+          <div class="h"><div class="t">18</div><div class="d">15°</div><div class="p">10%</div></div>
+          <div class="h"><div class="t">19</div><div class="d">14°</div><div class="p">10%</div></div>
+          <div class="h"><div class="t">20</div><div class="d">13°</div><div class="p">5%</div></div>
+          <div class="h"><div class="t">21</div><div class="d">12°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">22</div><div class="d">11°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">23</div><div class="d">11°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">00</div><div class="d">10°</div><div class="p">0%</div></div>
+          <div class="h"><div class="t">01</div><div class="d">10°</div><div class="p">0%</div></div>
+        </div>
+      </section>
+      <section class="card days">
+        <div class="k">Sju dagar</div>
+        <table>
+          <tr><td>Idag</td><td>Halvklart</td><td>14°</td><td><div class="heat"></div></td><td>18°</td><td>10%</td><td>4 m/s</td></tr>
+          <tr><td>Ons</td><td>Mulet</td><td>12°</td><td><div class="heat"></div></td><td>17°</td><td>40%</td><td>6 m/s</td></tr>
+          <tr><td>Tors</td><td>Regn</td><td>11°</td><td><div class="heat"></div></td><td>16°</td><td>80%</td><td>7 m/s</td></tr>
+          <tr><td>Fre</td><td>Skurar</td><td>10°</td><td><div class="heat"></div></td><td>15°</td><td>60%</td><td>5 m/s</td></tr>
+          <tr><td>Lör</td><td>Halvklart</td><td>9°</td><td><div class="heat"></div></td><td>14°</td><td>20%</td><td>3 m/s</td></tr>
+          <tr><td>Sön</td><td>Klart</td><td>11°</td><td><div class="heat"></div></td><td>16°</td><td>5%</td><td>3 m/s</td></tr>
+          <tr><td>Mån</td><td>Klart</td><td>13°</td><td><div class="heat"></div></td><td>18°</td><td>10%</td><td>4 m/s</td></tr>
+        </table>
+      </section>
+      <section class="card">
+        <div class="k">Luft & fukt</div>
+        <div class="big">62%</div>
+        <div class="sub">Tryck 1013 hPa</div>
+        <div class="sub">Molntäcke 38%</div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

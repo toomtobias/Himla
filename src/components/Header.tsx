@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, MapPin, Clock } from "lucide-react";
-import { GeoLocation, searchLocations, formatCountry, formatLocationLabel } from "@/lib/weather";
+import { GeoLocation, searchLocations, formatLocationLabel } from "@/lib/weather";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -15,28 +14,9 @@ interface HeaderProps {
 
 export default function Header({
   location,
-  country,
-  countryCode,
-  admin1,
-  timezone,
   onSelectLocation,
   recentLocations,
 }: HeaderProps) {
-  const [localTime, setLocalTime] = useState("");
-
-  useEffect(() => {
-    if (!timezone) return;
-    const update = () => {
-      const now = new Date();
-      const day = now.toLocaleDateString("sv-SE", { timeZone: timezone, weekday: "long" });
-      const time = now.toLocaleTimeString("sv-SE", { timeZone: timezone, hour: "2-digit", minute: "2-digit" });
-      setLocalTime(`${day.charAt(0).toUpperCase() + day.slice(1)} ${time}`);
-    };
-    update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
-  }, [timezone]);
-
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeoLocation[]>([]);
@@ -52,10 +32,11 @@ export default function Header({
     setSearchResults([]);
     setHighlightedIndex(0);
     setIsSearching(false);
+    inputRef.current?.blur();
   };
 
   useEffect(() => {
-    if (searchQuery.length < 2) {
+    if (!searchOpen || searchQuery.length < 2) {
       setSearchResults([]);
       setIsSearching(false);
       return;
@@ -75,7 +56,7 @@ export default function Header({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, searchOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -86,12 +67,6 @@ export default function Header({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (searchOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [searchOpen]);
 
   useEffect(() => {
     if (!searchOpen) return;
@@ -116,6 +91,7 @@ export default function Header({
   const showEmpty =
     searchOpen && searchQuery.length >= 2 && !isSearching && searchResults.length === 0;
   const listItems = showRecent ? recent : showResults ? searchResults : [];
+  const showList = showRecent || showResults || showEmpty || (searchOpen && isSearching);
 
   useEffect(() => {
     setHighlightedIndex(0);
@@ -145,84 +121,56 @@ export default function Header({
     }
   };
 
-  const countryLabel = formatCountry(country, countryCode);
-
   return (
-    <div ref={searchRef} className="max-w-lg md:max-w-3xl mx-auto px-4 pt-6 pb-3">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-base font-semibold whitespace-nowrap text-slate-700">
-            Himla
-          </span>
-          {location && (
-            <>
-              <span className="text-sm text-slate-800">|</span>
-              <MapPin size={14} className="text-slate-800 shrink-0" />
-              <span className="text-sm font-medium truncate text-slate-800">
-                {location}{admin1 ? ` - ${admin1}` : ""}{countryLabel ? `, ${countryLabel}` : ""}
-              </span>
-              {localTime && (
-                <>
-                  <span className="text-sm text-slate-800">|</span>
-                  <span className="text-sm text-slate-800 whitespace-nowrap">{localTime}</span>
-                </>
-              )}
-            </>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            className={`p-1.5 rounded-lg hover:bg-white/20 transition-colors ${searchOpen ? "bg-white/20" : ""}`}
-            aria-label="Sök plats"
-            aria-expanded={searchOpen}
-          >
-            <Search size={20} className="text-slate-800" />
-          </button>
-        </div>
+    <div className="flex items-stretch gap-3 md:gap-4">
+      <div className="box bg-brand px-4 py-3 text-[22px] font-bold leading-none shrink-0 flex items-center">
+        HIMLA
       </div>
-
-      {searchOpen && (
-        <div className="mt-3 relative z-50">
-          <div className="glass-card flex items-center gap-3 px-4 py-3">
-            <Search className="text-foreground/50 shrink-0" size={20} />
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Sök efter plats..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              role="combobox"
-              aria-expanded={showRecent || showResults || showEmpty}
-              aria-controls="location-search-results"
-              aria-activedescendant={
-                listItems.length > 0 ? `search-option-${highlightedIndex}` : undefined
-              }
-              aria-autocomplete="list"
-              aria-busy={isSearching}
-              className="bg-transparent w-full outline-none text-foreground placeholder:text-foreground/40 text-base"
-            />
-            {isSearching && (
-              <div className="w-4 h-4 border-2 rounded-full animate-spin border-slate-300 border-t-slate-600 shrink-0" />
+      <div ref={searchRef} className="relative flex-1 min-w-0 z-50">
+        <div className={cn("box overflow-hidden", showList && "relative")}>
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Sök plats"
+            value={searchOpen ? searchQuery : location}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              setSearchOpen(true);
+              setSearchQuery("");
+            }}
+            onKeyDown={handleSearchKeyDown}
+            role="combobox"
+            aria-label="Sök plats"
+            aria-expanded={showRecent || showResults || showEmpty}
+            aria-controls="location-search-results"
+            aria-activedescendant={
+              listItems.length > 0 ? `search-option-${highlightedIndex}` : undefined
+            }
+            aria-autocomplete="list"
+            aria-busy={isSearching}
+            className={cn(
+              "w-full bg-transparent px-4 py-3 text-lg font-semibold outline-none placeholder:text-ink/40",
+              !searchOpen && "uppercase",
             )}
-          </div>
+          />
 
-          {(showRecent || showResults || showEmpty) && (
+          {showList && (
             <div
               id="location-search-results"
-              role={showEmpty ? "status" : "listbox"}
+              role={showEmpty || isSearching ? "status" : "listbox"}
               aria-label={showRecent ? "Senaste platser" : "Sökresultat"}
-              className="absolute left-0 right-0 mt-2 glass-card overflow-hidden shadow-xl"
+              className="border-t-[3px] border-ink"
             >
               {showRecent && (
-                <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                <div className="bg-ink px-4 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-white">
                   Senaste
                 </div>
               )}
+              {isSearching && (
+                <p className="px-4 py-3 text-sm font-semibold">Söker…</p>
+              )}
               {showEmpty && (
-                <p className="px-4 py-3 text-sm text-foreground/50">Inga platser hittades</p>
+                <p className="px-4 py-3 text-sm font-semibold">Inga platser hittades</p>
               )}
               {listItems.map((loc, i) => {
                 const isHighlighted = highlightedIndex === i;
@@ -239,23 +187,18 @@ export default function Header({
                     onClick={() => handleSelect(loc)}
                     onMouseEnter={() => setHighlightedIndex(i)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
-                      isHighlighted ? "bg-foreground/10" : "hover:bg-foreground/5",
+                      "w-full px-4 py-3 text-left text-sm font-semibold border-t-[3px] border-ink",
+                      isHighlighted ? "bg-ink text-white" : "bg-white text-ink",
                     )}
                   >
-                    {showRecent ? (
-                      <Clock size={14} className="flex-shrink-0 text-foreground/50" />
-                    ) : (
-                      <MapPin size={16} className="flex-shrink-0 text-foreground/50" />
-                    )}
-                    <span className="text-sm text-foreground">{formatLocationLabel(loc)}</span>
+                    {formatLocationLabel(loc)}
                   </button>
                 );
               })}
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

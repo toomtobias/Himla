@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Affisch v2 — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #fff1c2;
+      font-family: "Space Grotesk", sans-serif;
+      color: #111;
+      min-height: 100vh;
+    }
+    .nav {
+      position: fixed; top: 16px; left: 18px; z-index: 2;
+      display: flex; gap: 14px; font-weight: 600; font-size: 13px;
+    }
+    .nav a { color: #111; text-decoration: none; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 48px 32px 64px; }
+    .top {
+      display: flex; justify-content: space-between; align-items: stretch; gap: 16px;
+    }
+    .box {
+      border: 3px solid #111;
+      box-shadow: 6px 6px 0 #111;
+      background: #fff;
+    }
+    .brand {
+      padding: 14px 18px; font-weight: 700; font-size: 22px;
+      background: #ff5a1f; color: #111;
+    }
+    .search {
+      flex: 1; padding: 14px 18px; font-size: 18px; font-weight: 600;
+      border: 3px solid #111; box-shadow: 6px 6px 0 #111; outline: none;
+      background: #fff;
+    }
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; margin-top: 18px; }
+    .tempbox { padding: 18px; background: #fff; }
+    .place { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .temp { font-size: 180px; line-height: 0.8; font-weight: 700; letter-spacing: -0.07em; margin: 10px 0; }
+    .condbox { padding: 22px; background: #7cff6b; display: flex; flex-direction: column; justify-content: space-between; }
+    .condbox h1 { font-size: 42px; line-height: 1; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+    .stat { padding: 16px; }
+    .stat .k { font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .stat .v { font-size: 32px; font-weight: 700; margin-top: 6px; }
+
+    .hours { margin-top: 16px; padding: 16px; background: #fff; }
+    .section-k {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 10px; }
+    .h {
+      position: relative;
+      overflow: hidden;
+      border: 3px solid #111;
+      background: #ffe14a;
+      min-height: 118px;
+      padding: 8px 6px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .h .fill {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: #ff8bd1;
+      z-index: 0;
+    }
+    .h > *:not(.fill) { position: relative; z-index: 1; }
+    .h .t { font-weight: 700; font-size: 13px; }
+    .h b { display: block; font-size: 22px; letter-spacing: -0.04em; margin-top: 2px; }
+    .h .mm { font-size: 11px; font-weight: 700; margin-top: auto; }
+
+    .week { margin-top: 16px; padding: 0; overflow: hidden; }
+    .week-head, .week-row {
+      display: grid;
+      grid-template-columns: 92px repeat(4, 1fr);
+    }
+    .week-head {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0 12px;
+    }
+    .week-head .stub {
+      text-align: left;
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .week-head .col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .week-head strong {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .week-head em {
+      font-style: normal;
+      font-size: 11px;
+      opacity: 0.55;
+      font-weight: 500;
+    }
+    .week-row { border-top: 3px solid #111; }
+    .week-row .name {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-size: 14px;
+    }
+    .slot {
+      position: relative;
+      overflow: hidden;
+      border-left: 3px solid #111;
+      min-height: 86px;
+      padding: 14px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      background: #fff;
+    }
+    .slot .fill {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: #ff8bd1;
+      z-index: 0;
+    }
+    .slot > *:not(.fill) { position: relative; z-index: 1; }
+    .slot .deg {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+    .slot .mm {
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .slot.past { opacity: 0.38; }
+    .slot.now { background: #7cff6b; }
+    .slot.now .tag {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: #111;
+      color: #7cff6b;
+      padding: 2px 5px;
+    }
+
+    @media (max-width: 800px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: repeat(4, 1fr); }
+      .week { overflow-x: auto; }
+      .week-head, .week-row { min-width: 640px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">← ALLA</a>
+    <a href="04-brutalist.html">ORIGINAL</a>
+  </nav>
+  <div class="wrap">
+    <div class="top">
+      <div class="box brand">HIMLA</div>
+      <input class="search" value="STOCKHOLM" />
+    </div>
+    <div class="hero">
+      <div class="box tempbox">
+        <div class="place">Tisdag 14:32</div>
+        <div class="temp">18°</div>
+        <div style="font-weight:700">KÄNNS SOM 16°</div>
+      </div>
+      <div class="box condbox">
+        <div class="place">Just nu</div>
+        <h1>HALV­KLART<br>INGEN BRÅD<wbr>SKA.</h1>
+        <div style="font-weight:700">Solen går ner 19:42</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="box stat" style="background:#7ec8ff"><div class="k">Vind</div><div class="v">4 m/s</div><div>SV · byar 8</div></div>
+      <div class="box stat" style="background:#ff8bd1"><div class="k">Regn</div><div class="v">0 mm</div><div>10% risk</div></div>
+      <div class="box stat" style="background:#fff"><div class="k">UV</div><div class="v">3,2</div><div>Måttlig</div></div>
+      <div class="box stat" style="background:#ffe14a"><div class="k">Luft</div><div class="v">AQI 28</div><div>Bra · pollen låg</div></div>
+    </div>
+
+    <div class="box hours">
+      <div class="section-k">Nästa timmar</div>
+      <div class="row">
+        <div class="h">
+          <span class="t">14</span>
+          <b>18°</b>
+        </div>
+        <div class="h">
+          <span class="t">15</span>
+          <b>18°</b>
+        </div>
+        <div class="h">
+          <span class="t">16</span>
+          <b>17°</b>
+        </div>
+        <div class="h">
+          <span class="t">17</span>
+          <b>16°</b>
+        </div>
+        <div class="h">
+          <div class="fill" style="height:24%"></div>
+          <span class="t">18</span>
+          <b>15°</b>
+          <span class="mm">0,4 mm</span>
+        </div>
+        <div class="h">
+          <div class="fill" style="height:50%"></div>
+          <span class="t">19</span>
+          <b>14°</b>
+          <span class="mm">2 mm</span>
+        </div>
+        <div class="h">
+          <div class="fill" style="height:72%"></div>
+          <span class="t">20</span>
+          <b>13°</b>
+          <span class="mm">3 mm</span>
+        </div>
+        <div class="h">
+          <div class="fill" style="height:30%"></div>
+          <span class="t">21</span>
+          <b>12°</b>
+          <span class="mm">1 mm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="box week">
+      <div class="week-head">
+        <div class="stub"><strong>VECKAN</strong></div>
+        <div class="col"><strong>NATT</strong><em>00–06</em></div>
+        <div class="col"><strong>FÖRMIDDAG</strong><em>06–12</em></div>
+        <div class="col"><strong>EFTERMIDDAG</strong><em>12–18</em></div>
+        <div class="col"><strong>KVÄLL</strong><em>18–24</em></div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">IDAG</div>
+        <div class="slot past"><span class="deg">12°</span></div>
+        <div class="slot past"><span class="deg">16°</span></div>
+        <div class="slot now">
+          <span class="tag">NU</span>
+          <span class="deg">18°</span>
+        </div>
+        <div class="slot">
+          <div class="fill" style="height:68%"></div>
+          <span class="deg">14°</span>
+          <span class="mm">6 mm</span>
+        </div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">ONS</div>
+        <div class="slot"><span class="deg">11°</span></div>
+        <div class="slot"><span class="deg">14°</span></div>
+        <div class="slot">
+          <div class="fill" style="height:18%"></div>
+          <span class="deg">17°</span>
+          <span class="mm">1 mm</span>
+        </div>
+        <div class="slot">
+          <div class="fill" style="height:30%"></div>
+          <span class="deg">13°</span>
+          <span class="mm">2 mm</span>
+        </div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">TORS</div>
+        <div class="slot">
+          <div class="fill" style="height:18%"></div>
+          <span class="deg">10°</span>
+          <span class="mm">1 mm</span>
+        </div>
+        <div class="slot">
+          <div class="fill" style="height:50%"></div>
+          <span class="deg">12°</span>
+          <span class="mm">4 mm</span>
+        </div>
+        <div class="slot">
+          <div class="fill" style="height:90%"></div>
+          <span class="deg">11°</span>
+          <span class="mm">8 mm</span>
+        </div>
+        <div class="slot">
+          <div class="fill" style="height:30%"></div>
+          <span class="deg">10°</span>
+          <span class="mm">2 mm</span>
+        </div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">FRE</div>
+        <div class="slot"><span class="deg">9°</span></div>
+        <div class="slot">
+          <div class="fill" style="height:30%"></div>
+          <span class="deg">11°</span>
+          <span class="mm">2 mm</span>
+        </div>
+        <div class="slot"><span class="deg">15°</span></div>
+        <div class="slot"><span class="deg">12°</span></div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">LÖR</div>
+        <div class="slot"><span class="deg">8°</span></div>
+        <div class="slot"><span class="deg">10°</span></div>
+        <div class="slot"><span class="deg">14°</span></div>
+        <div class="slot"><span class="deg">11°</span></div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">SÖN</div>
+        <div class="slot"><span class="deg">8°</span></div>
+        <div class="slot"><span class="deg">11°</span></div>
+        <div class="slot"><span class="deg">15°</span></div>
+        <div class="slot"><span class="deg">12°</span></div>
+      </div>
+
+      <div class="week-row">
+        <div class="name">MÅN</div>
+        <div class="slot"><span class="deg">9°</span></div>
+        <div class="slot"><span class="deg">12°</span></div>
+        <div class="slot"><span class="deg">16°</span></div>
+        <div class="slot"><span class="deg">13°</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Himmel-system — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      color: #fff;
+      overflow: hidden;
+      background: #6aa3d0;
+      transition: background 0.8s ease;
+    }
+
+    .sky, .orb, .clouds, .fog, .precip, .wind, .flash, .stars {
+      position: absolute; inset: 0; pointer-events: none;
+      transition: opacity 0.8s ease, background 0.8s ease, filter 0.8s ease;
+    }
+    .sky { z-index: 0; }
+    .stars { z-index: 1; opacity: 0;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 28% 32%, #fff, transparent),
+        radial-gradient(1px 1px at 44% 12%, #fff, transparent),
+        radial-gradient(1px 1px at 63% 22%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 81% 14%, #fff, transparent),
+        radial-gradient(1px 1px at 72% 38%, #fff, transparent),
+        radial-gradient(1px 1px at 18% 48%, #fff, transparent),
+        radial-gradient(1px 1px at 91% 44%, #fff, transparent);
+    }
+    .orb {
+      z-index: 2; width: 280px; height: 280px; inset: auto;
+      right: 14%; top: 9%; border-radius: 50%;
+      background: radial-gradient(circle, #fff6c8 0%, #ffd36a 38%, rgba(255,180,80,0) 70%);
+      opacity: 0;
+    }
+    .clouds { z-index: 3; opacity: 0; }
+    .cloud {
+      position: absolute; border-radius: 999px; filter: blur(18px);
+      background: rgba(255,255,255,0.4);
+    }
+    .c1 { width: 460px; height: 96px; left: 4%; top: 26%; }
+    .c2 { width: 300px; height: 74px; left: 18%; top: 34%; }
+    .c3 { width: 380px; height: 86px; right: 6%; bottom: 36%; }
+    .fog {
+      z-index: 4; opacity: 0;
+      background: linear-gradient(180deg, rgba(220,226,230,0.15), rgba(236,240,242,0.72) 55%, rgba(210,216,220,0.5));
+    }
+    .precip { z-index: 5; opacity: 0; }
+    .precip.rain {
+      background: repeating-linear-gradient(196deg, transparent 0 14px, rgba(230,240,255,0.22) 14px 15px);
+      animation: fall 0.55s linear infinite;
+    }
+    .precip.snow {
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, #fff, transparent),
+        radial-gradient(3px 3px at 30% 50%, #fff, transparent),
+        radial-gradient(2px 2px at 55% 15%, #fff, transparent),
+        radial-gradient(2.5px 2.5px at 70% 62%, #fff, transparent),
+        radial-gradient(2px 2px at 88% 34%, #fff, transparent),
+        radial-gradient(3px 3px at 42% 78%, #fff, transparent);
+      animation: fall 2.8s linear infinite;
+    }
+    .wind {
+      z-index: 6; opacity: 0;
+      background: repeating-linear-gradient(8deg, transparent 0 42px, rgba(255,255,255,0.07) 42px 44px);
+      animation: drift 1.1s linear infinite;
+    }
+    .flash { z-index: 7; opacity: 0; background: #eef6ff; }
+    @keyframes fall { to { background-position: 0 120px; } }
+    @keyframes drift { to { background-position: 80px 0; } }
+    @keyframes bolt { 0%, 92%, 100% { opacity: 0; } 93% { opacity: 0.55; } 96% { opacity: 0.08; } 97% { opacity: 0.4; } }
+
+    /* Scenes: time palette + overlays. Not one painting per WMO code. */
+    [data-scene="sommar"] { background: linear-gradient(180deg, #5ea0d8 0%, #9ec6e6 40%, #f0c98a 78%, #e8a56a 100%); }
+    [data-scene="sommar"] .orb { opacity: 1; }
+    [data-scene="sommar"] .clouds { opacity: 0.55; }
+
+    [data-scene="hostregn"] { background: linear-gradient(180deg, #5d6d7a 0%, #7b8792 42%, #9aa3ab 100%); }
+    [data-scene="hostregn"] .clouds { opacity: 1; }
+    [data-scene="hostregn"] .cloud { background: rgba(40,48,56,0.35); }
+    [data-scene="hostregn"] .precip.rain { opacity: 1; }
+
+    [data-scene="vinterstorm"] { background: linear-gradient(180deg, #3a4552 0%, #6b7682 48%, #c5ccd3 100%); }
+    [data-scene="vinterstorm"] .clouds { opacity: 0.9; }
+    [data-scene="vinterstorm"] .cloud { background: rgba(255,255,255,0.45); }
+    [data-scene="vinterstorm"] .precip.snow { opacity: 1; }
+    [data-scene="vinterstorm"] .wind { opacity: 1; }
+
+    [data-scene="natt"] { background: linear-gradient(180deg, #071018 0%, #142033 55%, #24344a 100%); }
+    [data-scene="natt"] .stars { opacity: 1; }
+    [data-scene="natt"] .orb {
+      opacity: 1; width: 120px; height: 120px; right: 18%; top: 14%;
+      background: radial-gradient(circle, #f4f0d8 0%, #d9d2a8 40%, rgba(220,210,160,0) 70%);
+    }
+
+    [data-scene="dimma"] { background: linear-gradient(180deg, #9aa6b0 0%, #c5ccd3 45%, #dfe3e6 100%); }
+    [data-scene="dimma"] .fog { opacity: 1; }
+    [data-scene="dimma"] .clouds { opacity: 0.35; }
+
+    [data-scene="aska"] { background: linear-gradient(180deg, #1c2230 0%, #3a4154 50%, #5c6578 100%); }
+    [data-scene="aska"] .clouds { opacity: 1; }
+    [data-scene="aska"] .cloud { background: rgba(12,14,22,0.5); }
+    [data-scene="aska"] .precip.rain { opacity: 0.7; }
+    [data-scene="aska"] .flash { animation: bolt 4.5s ease-in-out infinite; }
+
+    [data-scene="mulet"] { background: linear-gradient(180deg, #7d8b99 0%, #97a3ae 45%, #b7c0c7 100%); }
+    [data-scene="mulet"] .clouds { opacity: 1; }
+    [data-scene="mulet"] .cloud { background: rgba(70,80,90,0.4); }
+
+    .ui { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
+    .back {
+      position: absolute; top: 20px; left: 28px;
+      color: inherit; text-decoration: none; font-size: 11px;
+      letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.7;
+    }
+    .top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 48px 56px 0;
+    }
+    .place { font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; }
+    .time { margin-top: 6px; opacity: 0.85; font-size: 14px; }
+    .search {
+      display: block;
+      margin-top: 14px;
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; border-radius: 999px; padding: 9px 16px; width: 220px; outline: none;
+    }
+    .hero { padding: 36px 56px 0; flex: 1; }
+    .temp {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(120px, 18vw, 200px);
+      font-weight: 500; line-height: 0.8; letter-spacing: -0.05em;
+      text-shadow: 0 18px 50px rgba(20,20,10,0.18);
+    }
+    .temp span {
+      font-family: Inter, sans-serif;
+      font-size: 0.28em;
+      font-weight: 500;
+      letter-spacing: 0;
+      vertical-align: super;
+      margin-left: 0.02em;
+    }
+    .cond {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 38px; margin-top: 8px; font-weight: 500;
+    }
+    .meta { display: flex; gap: 22px; margin-top: 12px; font-size: 13px; opacity: 0.9; flex-wrap: wrap; }
+    .note {
+      margin-top: 18px; max-width: 46ch; font-size: 13px; line-height: 1.5;
+      opacity: 0.75;
+    }
+
+    .presets {
+      position: absolute; top: 48px; right: 56px; display: flex; flex-direction: column; gap: 8px;
+      align-items: flex-end;
+    }
+    .presets button {
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(20,24,32,0.22);
+      backdrop-filter: blur(12px);
+      color: #fff; border-radius: 999px; padding: 7px 12px;
+      font-size: 12px; cursor: pointer;
+    }
+    .presets button.on { background: rgba(255,255,255,0.22); }
+
+    .dock {
+      margin: 0 36px 24px;
+      background: rgba(16,20,28,0.32);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 28px;
+      padding: 16px 20px 14px;
+    }
+    .hint {
+      font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+      opacity: 0.6; margin-bottom: 10px;
+    }
+    .hours {
+      display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px;
+    }
+    .h {
+      text-align: center; cursor: pointer; border-radius: 14px; padding: 8px 2px 6px;
+      border: 1px solid transparent;
+    }
+    .h:hover, .h.on { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+    .h .t { font-size: 11px; opacity: 0.7; }
+    .h .d { font-size: 16px; margin: 4px 0 6px; }
+    .bar {
+      height: 28px; width: 8px; margin: 0 auto;
+      background: rgba(255,255,255,0.12); border-radius: 99px;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .bar i { display: block; width: 100%; background: #8ec4ff; border-radius: 99px; }
+    .h .p { font-size: 10px; opacity: 0.7; margin-top: 4px; }
+    .days {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.16);
+    }
+    .day {
+      text-align: center; font-size: 13px; cursor: pointer;
+      border-radius: 14px; padding: 8px 4px; border: 1px solid transparent;
+    }
+    .day:hover, .day.on { background: rgba(255,255,255,0.12); }
+    .day b { display: block; font-weight: 500; margin-top: 2px; font-size: 15px; }
+    .day .rainline {
+      height: 3px; margin: 6px 12px 0; border-radius: 99px;
+      background: rgba(255,255,255,0.15); overflow: hidden;
+    }
+    .day .rainline i { display: block; height: 100%; background: #8ec4ff; }
+    .day small { display: block; margin-top: 4px; opacity: 0.7; font-size: 11px; }
+  </style>
+</head>
+<body data-scene="sommar">
+  <div class="sky"></div>
+  <div class="stars"></div>
+  <div class="orb" id="orb"></div>
+  <div class="clouds">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+  </div>
+  <div class="fog"></div>
+  <div class="precip rain"></div>
+  <div class="precip snow"></div>
+  <div class="wind"></div>
+  <div class="flash"></div>
+
+  <div class="ui">
+    <a class="back" href="index.html">← Alla riktningar</a>
+    <div class="top">
+      <div>
+        <div class="place">Stockholm</div>
+        <div class="time" id="time">Tisdag 1 september · 14:32</div>
+        <input class="search" placeholder="Sök plats" />
+      </div>
+    </div>
+
+    <div class="presets" id="presets"></div>
+
+    <div class="hero">
+      <div class="temp" id="temp">23°</div>
+      <div class="cond" id="cond">Mestadels klart</div>
+      <div class="meta" id="meta"></div>
+      <p class="note">
+        Sidan rullar inte. Himlen är den valda stunden — klicka en timme eller en dag.
+        Nederbörd visas som stolpe och procent, inte som ikon. Ikoner behövs inte i hero:
+        himlen är ikonen.
+      </p>
+    </div>
+
+    <div class="dock">
+      <div class="hint">Timmar · blå stolpe = sannolikhet för nederbörd</div>
+      <div class="hours" id="hours"></div>
+      <div class="days" id="days"></div>
+    </div>
+  </div>
+
+  <script>
+    const scenes = {
+      sommar: {
+        label: "Mestadels klart",
+        temp: 23,
+        feels: 22,
+        wind: "3 m/s SV",
+        uv: "5,4",
+        sun: "Solnedgång 19:42",
+        time: "Tisdag 1 september · 14:32",
+        hours: [
+          [14,23,0],[15,23,0],[16,22,0],[17,21,5],[18,19,5],
+          [19,17,10],[20,16,10],[21,15,5],[22,14,0],[23,13,0],[00,12,0],[1,12,0]
+        ],
+      },
+      hostregn: {
+        label: "Regn",
+        temp: 8,
+        feels: 5,
+        wind: "7 m/s V",
+        uv: "0,8",
+        sun: "Solnedgång 17:51",
+        time: "Torsdag 3 september · 16:10",
+        hours: [
+          [14,10,40],[15,9,55],[16,8,70],[17,8,80],[18,7,85],
+          [19,7,75],[20,6,60],[21,6,40],[22,5,25],[23,5,15],[00,4,10],[1,4,10]
+        ],
+      },
+      vinterstorm: {
+        label: "Kraftigt snöfall",
+        temp: -6,
+        feels: -12,
+        wind: "14 m/s NO",
+        uv: "0,2",
+        sun: "Solnedgång 14:48",
+        time: "Söndag 11 januari · 11:20",
+        hours: [
+          [8,-4,70],[9,-5,80],[10,-5,90],[11,-6,90],[12,-6,85],
+          [13,-7,80],[14,-7,70],[15,-8,60],[16,-8,50],[17,-9,40],[18,-9,35],[19,-10,30]
+        ],
+      },
+      natt: {
+        label: "Klart",
+        temp: 11,
+        feels: 9,
+        wind: "2 m/s Ö",
+        uv: "0,0",
+        sun: "Soluppgång 05:48",
+        time: "Tisdag 1 september · 22:14",
+        hours: [
+          [20,13,0],[21,12,0],[22,11,0],[23,11,0],[0,10,0],
+          [1,10,0],[2,9,0],[3,9,0],[4,9,0],[5,10,0],[6,11,0],[7,13,0]
+        ],
+      },
+      dimma: {
+        label: "Dimma",
+        temp: 4,
+        feels: 3,
+        wind: "1 m/s",
+        uv: "0,4",
+        sun: "Solen är slöja",
+        time: "Lördag 14 november · 08:40",
+        hours: [
+          [6,3,10],[7,3,15],[8,4,20],[9,5,15],[10,6,10],
+          [11,7,5],[12,8,0],[13,8,0],[14,7,5],[15,6,10],[16,5,15],[17,4,20]
+        ],
+      },
+      aska: {
+        label: "Åska",
+        temp: 16,
+        feels: 15,
+        wind: "9 m/s SV",
+        uv: "1,1",
+        sun: "Solen bakom ovädret",
+        time: "Fredag 4 september · 17:05",
+        hours: [
+          [12,19,20],[13,18,35],[14,18,50],[15,17,70],[16,16,85],
+          [17,16,90],[18,15,80],[19,14,55],[20,13,30],[21,13,15],[22,12,10],[23,12,5]
+        ],
+      },
+      mulet: {
+        label: "Mulet",
+        temp: 14,
+        feels: 13,
+        wind: "5 m/s V",
+        uv: "1,6",
+        sun: "Solnedgång 19:38",
+        time: "Onsdag 2 september · 13:00",
+        hours: [
+          [12,15,10],[13,14,15],[14,14,20],[15,14,20],[16,13,25],
+          [17,13,20],[18,12,15],[19,12,10],[20,11,10],[21,11,5],[22,10,5],[23,10,5]
+        ],
+      },
+    };
+
+    const days = [
+      { scene: "sommar", name: "Idag", max: 23, rain: 10, mm: "0 mm" },
+      { scene: "mulet", name: "Ons", max: 15, rain: 25, mm: "0 mm" },
+      { scene: "hostregn", name: "Tors", max: 10, rain: 80, mm: "8 mm" },
+      { scene: "aska", name: "Fre", max: 16, rain: 90, mm: "12 mm" },
+      { scene: "dimma", name: "Lör", max: 8, rain: 20, mm: "0 mm" },
+      { scene: "sommar", name: "Sön", max: 16, rain: 5, mm: "0 mm" },
+      { scene: "mulet", name: "Mån", max: 14, rain: 30, mm: "1 mm" },
+    ];
+
+    const presetOrder = [
+      ["sommar", "Sommarsol"],
+      ["hostregn", "Höstregn"],
+      ["vinterstorm", "Vinterstorm"],
+      ["natt", "Nattklart"],
+      ["dimma", "Dimma"],
+      ["aska", "Åska"],
+    ];
+
+    let sceneId = "sommar";
+    let hourIndex = 0;
+    let dayIndex = 0;
+
+    const $ = (id) => document.getElementById(id);
+
+    function renderPresets() {
+      $("presets").innerHTML = presetOrder.map(([id, name]) =>
+        `<button data-id="${id}" class="${id === sceneId ? "on" : ""}">${name}</button>`
+      ).join("");
+    }
+
+    function renderHours() {
+      const hours = scenes[sceneId].hours;
+      $("hours").innerHTML = hours.map((h, i) => `
+        <div class="h ${i === hourIndex ? "on" : ""}" data-i="${i}">
+          <div class="t">${String(h[0]).padStart(2, "0")}</div>
+          <div class="d">${h[1]}°</div>
+          <div class="bar"><i style="height:${Math.max(6, h[2])}%"></i></div>
+          <div class="p">${h[2]}%</div>
+        </div>`).join("");
+    }
+
+    function renderDays() {
+      $("days").innerHTML = days.map((d, i) => `
+        <div class="day ${i === dayIndex ? "on" : ""}" data-i="${i}">
+          ${d.name}<b>${d.max}°</b>
+          <div class="rainline"><i style="width:${d.rain}%"></i></div>
+          <small>${d.mm}</small>
+        </div>`).join("");
+    }
+
+    function apply(id, hour, nextDay) {
+      sceneId = id;
+      const s = scenes[id];
+      hourIndex = hour ?? 0;
+      if (nextDay != null) dayIndex = nextDay;
+      const h = s.hours[hourIndex];
+      document.body.dataset.scene = id;
+      $("temp").innerHTML = h[1] + "<span>°</span>";
+      $("cond").textContent = s.label;
+      $("time").textContent = s.time.replace(/\d{2}:\d{2}$/, String(h[0]).padStart(2,"0") + ":00");
+      $("meta").innerHTML = `
+        <span>Känns som ${s.feels}°</span>
+        <span>Vind ${s.wind}</span>
+        <span>UV ${s.uv}</span>
+        <span>${s.sun}</span>
+        <span>Nederbörd ${h[2]}%</span>`;
+      renderPresets();
+      renderHours();
+      renderDays();
+    }
+
+    $("presets").addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const match = days.findIndex((d) => d.scene === btn.dataset.id);
+      apply(btn.dataset.id, 0, match === -1 ? dayIndex : match);
+    });
+    $("hours").addEventListener("click", (e) => {
+      const el = e.target.closest(".h");
+      if (el) apply(sceneId, Number(el.dataset.i));
+    });
+    $("days").addEventListener("click", (e) => {
+      const el = e.target.closest(".day");
+      if (!el) return;
+      const i = Number(el.dataset.i);
+      apply(days[i].scene, 0, i);
+    });
+
+    const start = new URLSearchParams(location.search).get("scene") || "sommar";
+    const startDay = days.findIndex((d) => d.scene === start);
+    apply(scenes[start] ? start : "sommar", 0, startDay);
+  </script>
+</body>
+</html>

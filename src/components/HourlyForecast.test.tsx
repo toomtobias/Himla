@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { render, screen } from "@testing-library/react";
 import HourlyForecast from "@/components/HourlyForecast";
 import type { HourlyForecast as HourlyType } from "@/lib/weather";
 
@@ -23,49 +22,32 @@ function hour(index: number, overrides: Partial<HourlyType> = {}): HourlyType {
 }
 
 const hours = Array.from({ length: 24 }, (_, i) => hour(i));
-const sunrises = ["2026-08-30T05:30"];
-const sunsets = ["2026-08-30T20:00"];
 
 describe("HourlyForecast", () => {
-  it("shows 12 hours by default and can expand to 24", () => {
-    render(
-      <TooltipProvider>
-        <HourlyForecast hourly={hours} sunrises={sunrises} sunsets={sunsets} />
-      </TooltipProvider>,
-    );
+  it("shows the next 8 hours", () => {
+    render(<HourlyForecast hourly={hours} />);
 
-    expect(screen.getByText("Närmsta 12 timmarna")).toBeInTheDocument();
-    expect(screen.queryByText("Nu")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("row")).toHaveLength(13); // header + 12
-
-    fireEvent.click(screen.getByRole("button", { name: "Visa 24 timmar" }));
-
-    expect(screen.getByText("Närmsta 24 timmarna")).toBeInTheDocument();
-    expect(screen.getAllByRole("row")).toHaveLength(25);
-    expect(screen.getByRole("button", { name: "Visa 12 timmar" })).toBeInTheDocument();
+    expect(screen.getByText("Nästa timmar")).toBeInTheDocument();
+    expect(screen.getByText("00")).toBeInTheDocument();
+    expect(screen.getByText("07")).toBeInTheDocument();
+    expect(screen.queryByText("08")).not.toBeInTheDocument();
   });
 
-  it("shows precipitation details without requiring a click", () => {
+  it("shows precipitation amount without probability", () => {
     const wet = hours.map((h, i) =>
       i === 1 ? { ...h, precipitation: 1.2, precipitationProbability: 60 } : h,
     );
-    render(
-      <TooltipProvider>
-        <HourlyForecast hourly={wet} sunrises={sunrises} sunsets={sunsets} />
-      </TooltipProvider>,
-    );
-    expect(screen.getByText("1.2 mm · 60%")).toBeInTheDocument();
+    render(<HourlyForecast hourly={wet} />);
+    expect(screen.getByText("1,2 mm")).toBeInTheDocument();
+    expect(screen.queryByText(/60%/)).not.toBeInTheDocument();
   });
 
-  it("does not show probability when precipitation is zero", () => {
+  it("does not show millimetres when precipitation is zero", () => {
     const dryChance = hours.map((h, i) =>
       i === 1 ? { ...h, precipitation: 0, precipitationProbability: 40 } : h,
     );
-    render(
-      <TooltipProvider>
-        <HourlyForecast hourly={dryChance} sunrises={sunrises} sunsets={sunsets} />
-      </TooltipProvider>,
-    );
+    render(<HourlyForecast hourly={dryChance} />);
     expect(screen.queryByText("40%")).not.toBeInTheDocument();
+    expect(screen.queryByText(/\d.*mm/)).not.toBeInTheDocument();
   });
 });

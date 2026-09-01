@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ateljé — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: #1c1915;
+    }
+    .art {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 70% 28%, #ffe08a 0 14%, transparent 15%),
+        radial-gradient(circle at 72% 30%, rgba(255,210,110,0.55), transparent 28%),
+        linear-gradient(165deg, #6ca6d9 0%, #b9d4ea 42%, #f0d2a0 100%);
+      color: #fff;
+      padding: 40px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.42);
+      filter: blur(16px);
+      border-radius: 999px;
+    }
+    .c1 { width: 340px; height: 80px; left: -40px; top: 38%; }
+    .c2 { width: 220px; height: 60px; left: 80px; top: 46%; }
+    .back {
+      position: relative; z-index: 2;
+      color: #fff; text-decoration: none; font-size: 12px;
+      letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75;
+    }
+    .art h1 {
+      position: relative; z-index: 2;
+      font-family: "Instrument Serif", serif;
+      font-size: 42px;
+      font-weight: 400;
+      max-width: 10ch;
+      line-height: 1.05;
+    }
+    .art .temp {
+      position: relative; z-index: 2;
+      font-family: "Instrument Serif", serif;
+      font-size: 180px;
+      line-height: 0.8;
+      letter-spacing: -0.05em;
+    }
+    .art .meta { position: relative; z-index: 2; font-size: 14px; opacity: 0.9; }
+    .panel {
+      background: #f7f4ef;
+      padding: 36px 40px 40px;
+      overflow: auto;
+    }
+    .row { display: flex; justify-content: space-between; align-items: center; }
+    .brand { font-family: "Instrument Serif", serif; font-size: 28px; }
+    .search {
+      border: 1px solid #ddd4c6; background: #fff; border-radius: 999px;
+      padding: 8px 14px; outline: none; width: 200px;
+    }
+    .k { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #8a8174; margin: 28px 0 12px; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat {
+      background: #fff;
+      border: 1px solid #e6dfd3;
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+    .stat b { display: block; font-size: 22px; font-weight: 500; margin-top: 4px; }
+    .hours { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .h {
+      background: #fff; border: 1px solid #e6dfd3; border-radius: 14px;
+      padding: 10px 6px; text-align: center; font-size: 13px;
+    }
+    .h b { display: block; margin-top: 6px; font-weight: 500; }
+    .day {
+      display: grid; grid-template-columns: 72px 1fr auto auto;
+      gap: 12px; align-items: center;
+      padding: 10px 0; border-top: 1px solid #e6dfd3; font-size: 14px;
+    }
+    .heat { height: 4px; border-radius: 99px; background: linear-gradient(90deg, #8eb0d0, #e0b35a); }
+  </style>
+</head>
+<body>
+  <section class="art">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <a class="back" href="index.html">← Alla riktningar</a>
+    <h1>Halvklart över Stockholm.</h1>
+    <div>
+      <div class="temp">18°</div>
+      <div class="meta">Tisdag 1 september · 14:32 · känns som 16°</div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="row">
+      <div class="brand">Himla</div>
+      <input class="search" value="Stockholm" />
+    </div>
+    <div class="k">Just nu</div>
+    <div class="stats">
+      <div class="stat">Vind<b>4 m/s SV</b></div>
+      <div class="stat">Byar<b>8 m/s</b></div>
+      <div class="stat">Nederbörd<b>0 mm</b></div>
+      <div class="stat">UV<b>3,2</b></div>
+      <div class="stat">Fukt<b>62%</b></div>
+      <div class="stat">Tryck<b>1013 hPa</b></div>
+      <div class="stat">Luft<b>AQI 28</b></div>
+      <div class="stat">Sol<b>05:48–19:42</b></div>
+    </div>
+    <div class="k">Timmar</div>
+    <div class="hours">
+      <div class="h">14<b>18°</b></div>
+      <div class="h">15<b>18°</b></div>
+      <div class="h">16<b>17°</b></div>
+      <div class="h">17<b>16°</b></div>
+      <div class="h">18<b>15°</b></div>
+      <div class="h">19<b>14°</b></div>
+    </div>
+    <div class="k">Veckan</div>
+    <div class="day"><span>Idag</span><div class="heat"></div><span>14°</span><span>18°</span></div>
+    <div class="day"><span>Ons</span><div class="heat"></div><span>12°</span><span>17°</span></div>
+    <div class="day"><span>Tors</span><div class="heat"></div><span>11°</span><span>16°</span></div>
+    <div class="day"><span>Fre</span><div class="heat"></div><span>10°</span><span>15°</span></div>
+    <div class="day"><span>Lör</span><div class="heat"></div><span>9°</span><span>14°</span></div>
+    <div class="day"><span>Sön</span><div class="heat"></div><span>11°</span><span>16°</span></div>
+    <div class="day"><span>Mån</span><div class="heat"></div><span>13°</span><span>18°</span></div>
+  </section>
+</body>
+</html>

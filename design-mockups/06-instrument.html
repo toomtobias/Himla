@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Station — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #061018;
+      color: #d7f6f0;
+      font-family: "IBM Plex Mono", monospace;
+      min-height: 100vh;
+    }
+    .back {
+      position: fixed; top: 16px; left: 20px; z-index: 2;
+      color: #1ad7c4; text-decoration: none; font-size: 11px; letter-spacing: 0.14em;
+    }
+    .shell { padding: 44px 36px 36px; max-width: 1280px; margin: 0 auto; }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .brand { font-family: Syne, sans-serif; font-weight: 800; letter-spacing: 0.18em; font-size: 18px; }
+    .status { color: #1ad7c4; font-size: 12px; }
+    .search {
+      background: #0b1a24; border: 1px solid #1ad7c466; color: #d7f6f0;
+      padding: 8px 12px; outline: none; width: 260px;
+    }
+    .layout { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 18px; }
+    .panel {
+      border: 1px solid #1ad7c433;
+      background: radial-gradient(circle at 50% 0%, #0d2430, #061018 70%);
+      padding: 18px;
+      min-height: 220px;
+    }
+    .hero { grid-column: 1; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: space-between; }
+    .k { font-size: 11px; color: #7aa8a1; letter-spacing: 0.16em; }
+    .temp { font-family: Syne, sans-serif; font-size: 128px; font-weight: 800; letter-spacing: -0.06em; line-height: 0.9; color: #e8fff9; }
+    .ring-wrap { display: flex; align-items: center; justify-content: center; height: 186px; }
+    .gauge-box { position: relative; width: 168px; height: 168px; }
+    .ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: conic-gradient(from -90deg, #1ad7c4 0 48%, #1ad7c422 48% 100%);
+      -webkit-mask: radial-gradient(farthest-side, transparent 68%, #000 69%);
+      mask: radial-gradient(farthest-side, transparent 68%, #000 69%);
+    }
+    .gauge-label { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; }
+    .dial {
+      width: 180px; height: 180px; border-radius: 50%;
+      border: 1px solid #1ad7c455;
+      display: grid; place-items: center;
+      position: relative;
+    }
+    .needle {
+      position: absolute; width: 2px; height: 62px; background: #1ad7c4;
+      top: 28px; left: 50%; transform: translateX(-50%) rotate(-35deg); transform-origin: bottom center;
+      box-shadow: 0 0 12px #1ad7c4;
+    }
+    .n { font-size: 10px; position: absolute; top: 10px; }
+    .e { font-size: 10px; position: absolute; right: 12px; }
+    .s { font-size: 10px; position: absolute; bottom: 10px; }
+    .w { font-size: 10px; position: absolute; left: 12px; }
+    .radar {
+      width: 180px; height: 180px; border-radius: 50%; margin: 10px auto 0;
+      background:
+        repeating-radial-gradient(circle, transparent 0 18px, #1ad7c422 19px 20px),
+        conic-gradient(from 200deg, #1ad7c433, transparent 40%);
+      border: 1px solid #1ad7c444;
+      position: relative;
+    }
+    .radar::after {
+      content: "";
+      position: absolute; inset: 0; border-radius: 50%;
+      background: conic-gradient(from 40deg, #1ad7c488, transparent 25%);
+      mask: radial-gradient(circle, #000 0 70%, transparent 71%);
+    }
+    .val { font-family: Syne, sans-serif; font-size: 36px; font-weight: 700; margin-top: 8px; }
+    .hours { grid-column: 1 / -1; }
+    .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; margin-top: 12px; }
+    .h { text-align: center; border: 1px solid #1ad7c422; padding: 10px 0; }
+    .h .d { color: #1ad7c4; margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+    td { padding: 8px 6px; border-top: 1px solid #1ad7c422; }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← ALLA RIKTNINGAR</a>
+  <div class="shell">
+    <div class="top">
+      <div>
+        <div class="brand">HIMLA STATION</div>
+        <div class="status">● LIVE · 59.3293N 18.0686E · TZ Europe/Stockholm</div>
+      </div>
+      <input class="search" value="STOCKHOLM" />
+    </div>
+    <div class="layout">
+      <section class="panel hero">
+        <div class="k">NU / TIS 14:32:08</div>
+        <div>
+          <div class="temp">18°</div>
+          <div style="margin-top:8px">HALVKLART · KÄNNS SOM 16°</div>
+        </div>
+        <div class="k">SOL 05:48 → 19:42 · AQI 028 · POLLEN LÅG</div>
+      </section>
+      <section class="panel">
+        <div class="k">VIND / M/S</div>
+        <div class="ring-wrap">
+          <div class="dial">
+            <div class="needle"></div>
+            <div class="n">N</div><div class="e">Ö</div><div class="s">S</div><div class="w">V</div>
+            <div style="text-align:center"><div class="val">4.0</div><div class="k">SV</div></div>
+          </div>
+        </div>
+        <div class="k" style="text-align:center">BYAR 8.0</div>
+      </section>
+      <section class="panel">
+        <div class="k">TRYCK / HPA</div>
+        <div class="ring-wrap">
+          <div class="gauge-box">
+            <div class="ring"></div>
+            <div class="gauge-label">
+              <div>
+                <div class="val">1013</div>
+                <div class="k">STABILT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="k">NEDERBÖRD</div>
+        <div class="radar"></div>
+        <div style="text-align:center;margin-top:12px" class="k">0,0 MM · 10% RISK</div>
+      </section>
+      <section class="panel">
+        <div class="k">ÖVRIGT</div>
+        <div class="val">UV 3,2</div>
+        <div class="k" style="margin-top:16px">FUKT</div>
+        <div class="val">62%</div>
+        <div class="k" style="margin-top:16px">MOLN</div>
+        <div class="val">38%</div>
+      </section>
+      <section class="panel hours">
+        <div class="k">TIMMAR T+12</div>
+        <div class="row">
+          <div class="h">14<div class="d">18.0</div></div>
+          <div class="h">15<div class="d">18.0</div></div>
+          <div class="h">16<div class="d">17.2</div></div>
+          <div class="h">17<div class="d">16.1</div></div>
+          <div class="h">18<div class="d">15.0</div></div>
+          <div class="h">19<div class="d">14.0</div></div>
+          <div class="h">20<div class="d">13.1</div></div>
+          <div class="h">21<div class="d">12.0</div></div>
+          <div class="h">22<div class="d">11.4</div></div>
+          <div class="h">23<div class="d">11.0</div></div>
+          <div class="h">00<div class="d">10.2</div></div>
+          <div class="h">01<div class="d">10.0</div></div>
+        </div>
+        <table>
+          <tr><td>D0 IDAG</td><td>HALVKLART</td><td>14/18</td><td>VIND 4</td><td>REGN 10%</td><td>UV 3,2</td></tr>
+          <tr><td>D1 ONS</td><td>MULET</td><td>12/17</td><td>VIND 6</td><td>REGN 40%</td><td>UV 2,1</td></tr>
+          <tr><td>D2 TORS</td><td>REGN</td><td>11/16</td><td>VIND 7</td><td>REGN 80%</td><td>UV 1,4</td></tr>
+          <tr><td>D3 FRE</td><td>SKURAR</td><td>10/15</td><td>VIND 5</td><td>REGN 60%</td><td>UV 2,0</td></tr>
+        </table>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

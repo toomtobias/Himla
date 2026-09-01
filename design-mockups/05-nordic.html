@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stillhet — Himla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #ebe4d6;
+      color: #2a241c;
+      font-family: Inter, system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .back {
+      position: fixed; top: 24px; left: 32px;
+      font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: #2a241c; text-decoration: none; opacity: 0.45;
+    }
+    .page { max-width: 980px; margin: 0 auto; padding: 56px 40px 40px; }
+    header { display: flex; justify-content: space-between; align-items: baseline; }
+    .brand {
+      font-family: Newsreader, serif;
+      font-size: 28px;
+    }
+    .search {
+      background: transparent; border: none; border-bottom: 1px solid #c9c0b0;
+      width: 200px; padding: 6px 0; outline: none; color: inherit; font-size: 14px;
+    }
+    .rule { height: 1px; background: #cfc6b6; margin: 24px 0 32px; }
+    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; }
+    .place { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: #7a7266; }
+    .temp {
+      font-family: Newsreader, serif;
+      font-size: 120px;
+      font-weight: 400;
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      margin-top: 12px;
+    }
+    .story {
+      font-family: Newsreader, serif;
+      font-size: 28px;
+      line-height: 1.35;
+      font-weight: 400;
+    }
+    .story em { font-style: italic; }
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 36px;
+    }
+    .facts dt { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7a7266; }
+    .facts dd { font-family: Newsreader, serif; font-size: 28px; margin-top: 6px; }
+    h2 {
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #7a7266; margin: 32px 0 14px;
+    }
+    .hours { display: flex; justify-content: space-between; }
+    .h { text-align: center; }
+    .h .t { font-size: 11px; color: #7a7266; }
+    .stem {
+      width: 1px; height: 64px; background: #2a241c; margin: 10px auto 8px;
+      transform-origin: bottom;
+    }
+    .days { display: grid; gap: 0; }
+    .day {
+      display: grid;
+      grid-template-columns: 140px 1fr auto auto auto;
+      gap: 24px;
+      align-items: center;
+      padding: 9px 0;
+      border-top: 1px solid #d5ccbc;
+      font-size: 15px;
+    }
+    .heat { height: 2px; background: linear-gradient(90deg, #8a9a86, #c4a574); }
+    footer { margin-top: 64px; color: #7a7266; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Alla riktningar</a>
+  <div class="page">
+    <header>
+      <div class="brand">Himla</div>
+      <input class="search" placeholder="Sök en plats" value="Stockholm" />
+    </header>
+    <div class="rule"></div>
+    <section class="hero">
+      <div>
+        <div class="place">Stockholm · tisdag eftermiddag</div>
+        <div class="temp">18°</div>
+      </div>
+      <p class="story">
+        Himlen är <em>halvklar</em>. En lätt sydvästlig bris, 4 meter i sekunden.
+        Dagen klingar av mot 19:42.
+      </p>
+    </section>
+    <dl class="facts">
+      <div><dt>Känns som</dt><dd>16°</dd></div>
+      <div><dt>Luftfuktighet</dt><dd>62%</dd></div>
+      <div><dt>Tryck</dt><dd>1013</dd></div>
+      <div><dt>UV</dt><dd>3,2</dd></div>
+      <div><dt>Moln</dt><dd>38%</dd></div>
+      <div><dt>Luftkvalitet</dt><dd>Bra</dd></div>
+    </dl>
+    <h2>Timmarna som kommer</h2>
+    <div class="hours">
+      <div class="h"><div class="t">14</div><div class="stem" style="height:70px"></div>18°</div>
+      <div class="h"><div class="t">15</div><div class="stem" style="height:70px"></div>18°</div>
+      <div class="h"><div class="t">16</div><div class="stem" style="height:62px"></div>17°</div>
+      <div class="h"><div class="t">17</div><div class="stem" style="height:54px"></div>16°</div>
+      <div class="h"><div class="t">18</div><div class="stem" style="height:46px"></div>15°</div>
+      <div class="h"><div class="t">19</div><div class="stem" style="height:38px"></div>14°</div>
+      <div class="h"><div class="t">20</div><div class="stem" style="height:30px"></div>13°</div>
+      <div class="h"><div class="t">21</div><div class="stem" style="height:24px"></div>12°</div>
+      <div class="h"><div class="t">22</div><div class="stem" style="height:18px"></div>11°</div>
+      <div class="h"><div class="t">23</div><div class="stem" style="height:18px"></div>11°</div>
+    </div>
+    <h2>Veckan</h2>
+    <div class="days">
+      <div class="day"><span>Idag</span><div class="heat"></div><span>14°</span><span>18°</span><span>Halvklart</span></div>
+      <div class="day"><span>Onsdag</span><div class="heat"></div><span>12°</span><span>17°</span><span>Mulet</span></div>
+      <div class="day"><span>Torsdag</span><div class="heat"></div><span>11°</span><span>16°</span><span>Regn</span></div>
+      <div class="day"><span>Fredag</span><div class="heat"></div><span>10°</span><span>15°</span><span>Skurar</span></div>
+      <div class="day"><span>Lördag</span><div class="heat"></div><span>9°</span><span>14°</span><span>Halvklart</span></div>
+      <div class="day"><span>Söndag</span><div class="heat"></div><span>11°</span><span>16°</span><span>Klart</span></div>
+      <div class="day"><span>Måndag</span><div class="heat"></div><span>13°</span><span>18°</span><span>Klart</span></div>
+    </div>
+    <footer>Open-Meteo · en stilla avläsning av luften över staden.</footer>
+  </div>
+</body>
+</html>

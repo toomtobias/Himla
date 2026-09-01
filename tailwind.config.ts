@@ -7,7 +7,17 @@ export default {
   prefix: "",
   theme: {
     extend: {
+      fontFamily: {
+        grotesk: ['"Space Grotesk"', "sans-serif"],
+      },
       colors: {
+        paper: "var(--paper)",
+        ink: "var(--ink)",
+        brand: "var(--brand)",
+        now: "var(--now)",
+        rain: "var(--rain)",
+        wind: "var(--wind)",
+        tape: "var(--tape)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

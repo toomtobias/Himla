@@ -49,6 +49,10 @@ function renderHeader(
   return { onSelectLocation };
 }
 
+function searchInput() {
+  return screen.getByRole("combobox", { name: "Sök plats" });
+}
+
 describe("Header search", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -64,10 +68,8 @@ describe("Header search", () => {
     vi.mocked(searchLocations).mockResolvedValue([]);
     renderHeader();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
-    fireEvent.change(screen.getByPlaceholderText("Sök efter plats..."), {
-      target: { value: "xyzxyz" },
-    });
+    fireEvent.focus(searchInput());
+    fireEvent.change(searchInput(), { target: { value: "xyzxyz" } });
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
@@ -77,29 +79,31 @@ describe("Header search", () => {
   });
 
   it("closes search on Escape", () => {
-    renderHeader();
+    renderHeader({
+      recentLocations: () => [gothenburg],
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
-    expect(screen.getByPlaceholderText("Sök efter plats...")).toBeInTheDocument();
+    fireEvent.focus(searchInput());
+    expect(screen.getByText("Göteborg - Västra Götaland, Sverige")).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByPlaceholderText("Sök efter plats...")).not.toBeInTheDocument();
+    expect(screen.queryByText("Göteborg - Västra Götaland, Sverige")).not.toBeInTheDocument();
+    expect(searchInput()).toBeInTheDocument();
   });
 
   it("navigates results with arrow keys and selects with Enter", async () => {
     vi.mocked(searchLocations).mockResolvedValue([gothenburg, gavle]);
     const { onSelectLocation } = renderHeader();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
-    const input = screen.getByPlaceholderText("Sök efter plats...");
-    fireEvent.change(input, { target: { value: "ga" } });
+    fireEvent.focus(searchInput());
+    fireEvent.change(searchInput(), { target: { value: "ga" } });
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
 
-    fireEvent.keyDown(input, { key: "ArrowDown" });
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.keyDown(searchInput(), { key: "ArrowDown" });
+    fireEvent.keyDown(searchInput(), { key: "Enter" });
 
     expect(onSelectLocation).toHaveBeenCalledWith(gavle);
   });
@@ -116,10 +120,9 @@ describe("Header search", () => {
       recentLocations: () => [oslo, gothenburg],
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
-    const input = screen.getByPlaceholderText("Sök efter plats...");
-    fireEvent.keyDown(input, { key: "ArrowDown" });
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.focus(searchInput());
+    fireEvent.keyDown(searchInput(), { key: "ArrowDown" });
+    fireEvent.keyDown(searchInput(), { key: "Enter" });
 
     expect(onSelectLocation).toHaveBeenCalledWith(gothenburg);
   });
@@ -128,29 +131,27 @@ describe("Header search", () => {
     vi.mocked(searchLocations).mockResolvedValue([gothenburg, gavle]);
     const { onSelectLocation } = renderHeader();
 
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
-    const input = screen.getByPlaceholderText("Sök efter plats...");
-    fireEvent.change(input, { target: { value: "gö" } });
+    fireEvent.focus(searchInput());
+    fireEvent.change(searchInput(), { target: { value: "gö" } });
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(300);
     });
 
-    fireEvent.keyDown(input, { key: "Enter" });
+    fireEvent.keyDown(searchInput(), { key: "Enter" });
     expect(onSelectLocation).toHaveBeenCalledWith(gothenburg);
   });
 
-  it("shows Swedish country names in the header and recent list", () => {
+  it("shows Swedish country names in the recent list", () => {
     renderHeader({
       recentLocations: () => [
         { name: "Oslo", country: "Norway", countryCode: "NO", latitude: 59.9, longitude: 10.7 },
       ],
     });
 
-    expect(screen.getByText(/Sverige/)).toBeInTheDocument();
-    expect(screen.queryByText(/Sweden/)).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Sök plats" }));
+    expect(searchInput()).toHaveValue("Stockholm");
+    fireEvent.focus(searchInput());
     expect(screen.getByText("Oslo, Norge")).toBeInTheDocument();
+    expect(screen.queryByText(/Norway/)).not.toBeInTheDocument();
   });
 });
