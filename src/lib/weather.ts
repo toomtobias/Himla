@@ -204,7 +204,7 @@ export interface DayPartSlot {
 export function formatSlotTemp(min: number | null, max: number | null): string {
   if (min == null || max == null) return "—";
   if (min === max) return `${min}°`;
-  return `${min}–${max}°`;
+  return `${min}°–${max}°`;
 }
 
 export function aggregateDayParts(dayHours: HourlyForecast[]): DayPartSlot[] {
