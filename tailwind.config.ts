@@ -17,6 +17,7 @@ export default {
         now: "var(--now)",
         rain: "var(--rain)",
         wind: "var(--wind)",
+        uv: "var(--uv)",
         tape: "var(--tape)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

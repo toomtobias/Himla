@@ -8,7 +8,7 @@ const WeatherSkeleton = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="box bg-wind h-[110px]" />
         <div className="box bg-rain h-[110px]" />
-        <div className="box bg-white h-[110px]" />
+        <div className="box bg-uv h-[110px]" />
         <div className="box bg-tape h-[110px]" />
       </div>
       <div className="box bg-white p-4 h-[168px]" />

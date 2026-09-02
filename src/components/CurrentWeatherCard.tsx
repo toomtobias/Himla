@@ -108,7 +108,7 @@ const CurrentWeatherCard = ({
             {precipProbability > 0 ? `${precipProbability}% risk` : "Ingen just nu"}
           </div>
         </div>
-        <div className="box bg-white p-4">
+        <div className="box bg-uv p-4">
           <div className="text-xs font-bold uppercase">UV</div>
           <div className="text-[32px] font-bold leading-none mt-1.5">{formatSvNumber(current.uvIndex)}</div>
           <div className="mt-1 font-medium">{uv.label}</div>
