@@ -91,12 +91,14 @@ describe("getUvInfo", () => {
 });
 
 describe("getAqiInfo", () => {
-  it("uses European AQI bands in Swedish", () => {
+  it("uses US AQI bands in Swedish", () => {
     expect(getAqiInfo(20).label).toBe("Bra");
-    expect(getAqiInfo(35).label).toBe("Acceptabel");
-    expect(getAqiInfo(50).label).toBe("Måttlig");
-    expect(getAqiInfo(90).label).toBe("Mycket dålig");
-    expect(getAqiInfo(120).label).toBe("Extremt dålig");
+    expect(getAqiInfo(50).label).toBe("Bra");
+    expect(getAqiInfo(76).label).toBe("Måttlig");
+    expect(getAqiInfo(120).label).toBe("Känsliga grupper");
+    expect(getAqiInfo(180).label).toBe("Ohälsosam");
+    expect(getAqiInfo(250).label).toBe("Mycket ohälsosam");
+    expect(getAqiInfo(320).label).toBe("Farlig");
   });
 });
 

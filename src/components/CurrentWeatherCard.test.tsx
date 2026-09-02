@@ -43,7 +43,7 @@ describe("CurrentWeatherCard", () => {
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("Måttlig")).toBeInTheDocument();
     expect(screen.getByText("AQI 35")).toBeInTheDocument();
-    expect(screen.getByText("Acceptabel")).toBeInTheDocument();
+    expect(screen.getByText("Bra")).toBeInTheDocument();
     expect(screen.queryByText("Pollen")).not.toBeInTheDocument();
   });
 

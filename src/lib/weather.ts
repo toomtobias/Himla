@@ -283,12 +283,12 @@ export function getUvInfo(uv: number): { label: string } {
 }
 
 export function getAqiInfo(aqi: number): { label: string } {
-  if (aqi <= 20) return { label: "Bra" };
-  if (aqi <= 40) return { label: "Acceptabel" };
-  if (aqi <= 60) return { label: "Måttlig" };
-  if (aqi <= 80) return { label: "Dålig" };
-  if (aqi <= 100) return { label: "Mycket dålig" };
-  return { label: "Extremt dålig" };
+  if (aqi <= 50) return { label: "Bra" };
+  if (aqi <= 100) return { label: "Måttlig" };
+  if (aqi <= 150) return { label: "Känsliga grupper" };
+  if (aqi <= 200) return { label: "Ohälsosam" };
+  if (aqi <= 300) return { label: "Mycket ohälsosam" };
+  return { label: "Farlig" };
 }
 
 type PollenLevel = PollenSummary["level"];
@@ -359,14 +359,14 @@ export function formatRelativeToNow(event: Date, now: Date): string {
 async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality | null> {
   try {
     const res = await fetch(
-      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=european_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`,
+      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`,
     );
     if (!res.ok) return null;
     const data = await res.json();
     const current = data.current;
     if (!current) return null;
     return {
-      aqi: typeof current.european_aqi === "number" ? Math.round(current.european_aqi) : null,
+      aqi: typeof current.us_aqi === "number" ? Math.round(current.us_aqi) : null,
       pollen: summarizePollen({
         alder: current.alder_pollen,
         birch: current.birch_pollen,
