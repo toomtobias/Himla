@@ -105,7 +105,7 @@ const CurrentWeatherCard = ({
           <div className="text-xs font-bold uppercase">Regn</div>
           <div className="text-[32px] font-bold leading-none mt-1.5">{formatMm(precip)}</div>
           <div className="mt-1 font-medium">
-            {precipProbability > 0 ? `${precipProbability}% risk` : "Ingen just nu"}
+            {precipProbability > 0 ? `${precipProbability}% risk` : "Ingen risk just nu"}
           </div>
         </div>
         <div className="box bg-uv p-4">
