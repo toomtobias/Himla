@@ -112,6 +112,22 @@ export function getWeatherInfo(code: number) {
   return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
 }
 
+export function getHourlyStub(code: number): string {
+  if (code === 0 || code === 1) return "Klart";
+  if (code === 2) return "Halvklart";
+  if (code === 3) return "Mulet";
+  if (code === 45 || code === 48) return "Dimma";
+  if (code >= 51 && code <= 55) return "Dugg";
+  if ((code >= 61 && code <= 65) || (code >= 80 && code <= 82)) return "Regn";
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "Snö";
+  if (code >= 95 && code <= 99) return "Åska";
+  return "";
+}
+
+export function hourlyStubVisible(code: number): boolean {
+  return getHourlyStub(code).length > 0;
+}
+
 const POSTER_LINE2: Record<number, string> = {
   0: "Inget att anmärka.",
   1: "Nästan fint.",

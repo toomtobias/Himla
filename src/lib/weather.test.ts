@@ -14,6 +14,8 @@ import {
   formatMm,
   aggregateDayParts,
   precipFillPercent,
+  getHourlyStub,
+  hourlyStubVisible,
 } from "@/lib/weather";
 
 describe("getWindDirection", () => {
@@ -171,5 +173,29 @@ describe("precipFillPercent", () => {
     expect(precipFillPercent(0)).toBe(0);
     expect(precipFillPercent(8)).toBe(90);
     expect(precipFillPercent(0.2)).toBe(16);
+  });
+});
+
+describe("getHourlyStub", () => {
+  it("uses short Swedish sky words", () => {
+    expect(getHourlyStub(0)).toBe("Klart");
+    expect(getHourlyStub(1)).toBe("Klart");
+    expect(getHourlyStub(2)).toBe("Halvklart");
+    expect(getHourlyStub(3)).toBe("Mulet");
+    expect(getHourlyStub(45)).toBe("Dimma");
+    expect(getHourlyStub(51)).toBe("Dugg");
+    expect(getHourlyStub(63)).toBe("Regn");
+    expect(getHourlyStub(81)).toBe("Regn");
+    expect(getHourlyStub(73)).toBe("Snö");
+    expect(getHourlyStub(95)).toBe("Åska");
+  });
+});
+
+describe("hourlyStubVisible", () => {
+  it("shows a stub for known sky and precip codes", () => {
+    expect(hourlyStubVisible(63)).toBe(true);
+    expect(hourlyStubVisible(3)).toBe(true);
+    expect(hourlyStubVisible(73)).toBe(true);
+    expect(hourlyStubVisible(999)).toBe(false);
   });
 });

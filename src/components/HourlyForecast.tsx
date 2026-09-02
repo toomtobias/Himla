@@ -2,6 +2,8 @@ import {
   HourlyForecast as HourlyType,
   formatMm,
   precipFillPercent,
+  getHourlyStub,
+  hourlyStubVisible,
 } from "@/lib/weather";
 
 interface Props {
@@ -21,23 +23,27 @@ const HourlyForecast = ({ hourly }: Props) => {
         {visible.map((h) => {
           const wet = h.precipitation > 0;
           const fill = precipFillPercent(h.precipitation, maxMm);
+          const stub = getHourlyStub(h.weatherCode);
+          const showStub = hourlyStubVisible(h.weatherCode);
           return (
-            <div
-              key={h.time}
-              className="relative overflow-hidden border-[3px] border-ink bg-tape min-h-[96px] md:min-h-[118px] min-w-0 px-1 pt-2 pb-2 flex flex-col items-center text-center"
-            >
-              {wet && (
-                <div
-                  className="absolute inset-x-0 bottom-0 bg-rain"
-                  style={{ height: `${fill}%` }}
-                  aria-hidden
-                />
-              )}
-              <span className="relative z-[1] font-bold text-[13px]">{h.time.slice(11, 13)}</span>
-              <b className="relative z-[1] block text-[22px] tracking-[-0.04em] mt-0.5">{h.temperature}°</b>
-              {wet && (
-                <span className="relative z-[1] mt-auto text-[11px] font-bold">{formatMm(h.precipitation)}</span>
-              )}
+            <div key={h.time} className="flex flex-col items-center min-w-0">
+              <div className="relative overflow-hidden border-[3px] border-ink bg-tape min-h-[96px] md:min-h-[118px] w-full min-w-0 px-1 pt-2 pb-2 flex flex-col items-center text-center">
+                {wet && (
+                  <div
+                    className="absolute inset-x-0 bottom-0 bg-rain"
+                    style={{ height: `${fill}%` }}
+                    aria-hidden
+                  />
+                )}
+                <span className="relative z-[1] font-bold text-[13px]">{h.time.slice(11, 13)}</span>
+                <b className="relative z-[1] block text-[22px] tracking-[-0.04em] mt-0.5">{h.temperature}°</b>
+                {wet && (
+                  <span className="relative z-[1] mt-auto text-[11px] font-bold">{formatMm(h.precipitation)}</span>
+                )}
+              </div>
+              <span className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.08em] leading-none min-h-[1em] text-center">
+                {showStub ? stub : ""}
+              </span>
             </div>
           );
         })}

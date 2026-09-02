@@ -33,13 +33,32 @@ describe("HourlyForecast", () => {
     expect(screen.queryByText("08")).not.toBeInTheDocument();
   });
 
+  it("shows a short sky label under dry hours", () => {
+    const mixed = hours.map((h, i) =>
+      i === 0 ? { ...h, weatherCode: 3 } : i === 1 ? { ...h, weatherCode: 2 } : h,
+    );
+    render(<HourlyForecast hourly={mixed} />);
+    expect(screen.getByText("Mulet")).toBeInTheDocument();
+    expect(screen.getByText("Halvklart")).toBeInTheDocument();
+  });
+
   it("shows precipitation amount without probability", () => {
     const wet = hours.map((h, i) =>
-      i === 1 ? { ...h, precipitation: 1.2, precipitationProbability: 60 } : h,
+      i === 1 ? { ...h, weatherCode: 63, precipitation: 1.2, precipitationProbability: 60 } : h,
     );
     render(<HourlyForecast hourly={wet} />);
     expect(screen.getByText("1,2 mm")).toBeInTheDocument();
     expect(screen.queryByText(/60%/)).not.toBeInTheDocument();
+    expect(screen.getByText("Regn")).toBeInTheDocument();
+  });
+
+  it("keeps Snö under a wet snow hour", () => {
+    const snow = hours.map((h, i) =>
+      i === 0 ? { ...h, weatherCode: 73, precipitation: 1 } : h,
+    );
+    render(<HourlyForecast hourly={snow} />);
+    expect(screen.getByText("Snö")).toBeInTheDocument();
+    expect(screen.getByText("1 mm")).toBeInTheDocument();
   });
 
   it("does not show millimetres when precipitation is zero", () => {
