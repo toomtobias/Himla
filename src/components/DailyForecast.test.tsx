@@ -70,4 +70,17 @@ describe("DailyForecast", () => {
     expect(screen.getAllByText("NU").length).toBeGreaterThan(0);
     expect(screen.getAllByText("2,4 mm").length).toBeGreaterThan(0);
   });
+
+  it("shows a temperature range when a day-part spans several degrees", () => {
+    const days = [daily("2026-09-01", 0)];
+    const allHourly = Array.from({ length: 6 }, (_, h) =>
+      hour("2026-09-01", h, { temperature: h === 0 ? 10 : h === 5 ? 15 : 12 }),
+    );
+
+    render(
+      <DailyForecast daily={days} allHourly={allHourly} timezone="Europe/Stockholm" />,
+    );
+
+    expect(screen.getAllByText("10–15°").length).toBeGreaterThan(0);
+  });
 });

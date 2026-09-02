@@ -13,6 +13,7 @@ import {
   getPosterCopy,
   formatMm,
   aggregateDayParts,
+  formatSlotTemp,
   precipFillPercent,
   getHourlyStub,
   hourlyStubVisible,
@@ -148,11 +149,19 @@ describe("formatMm", () => {
   });
 });
 
+describe("formatSlotTemp", () => {
+  it("shows a range only when min and max differ", () => {
+    expect(formatSlotTemp(null, null)).toBe("—");
+    expect(formatSlotTemp(13, 13)).toBe("13°");
+    expect(formatSlotTemp(10, 15)).toBe("10–15°");
+  });
+});
+
 describe("aggregateDayParts", () => {
-  it("pins temperature to 03/09/15/21 and sums precipitation", () => {
-    const hours = [3, 9, 15, 21].map((h, i) => ({
+  it("uses min–max temperature in each slot and sums precipitation", () => {
+    const hours = [0, 3, 5, 9, 15, 21].map((h) => ({
       time: `2026-09-01T${String(h).padStart(2, "0")}:00`,
-      temperature: 10 + i,
+      temperature: h === 0 ? 10 : h === 5 ? 15 : 13,
       weatherCode: 2,
       humidity: 50,
       uvIndex: 1,
@@ -161,10 +170,13 @@ describe("aggregateDayParts", () => {
       windDirection: 0,
       cloudCover: 10,
       precipitationProbability: 0,
-      precipitation: i === 2 ? 2.4 : 0,
+      precipitation: h === 15 ? 2.4 : 0,
     }));
     const parts = aggregateDayParts(hours);
-    expect(parts.map((p) => p.temp)).toEqual([10, 11, 12, 13]);
+    expect(parts[0].tempMin).toBe(10);
+    expect(parts[0].tempMax).toBe(15);
+    expect(parts[1].tempMin).toBe(13);
+    expect(parts[1].tempMax).toBe(13);
     expect(parts[2].precip).toBe(2.4);
     expect(parts[0].precip).toBe(0);
   });

@@ -183,10 +183,10 @@ export function localHourFromIso(iso: string): number {
 }
 
 export const DAY_PARTS = [
-  { id: "natt", label: "Natt", shortLabel: "Natt", hours: "00–06", pinHour: 3, start: 0, end: 6 },
-  { id: "formiddag", label: "Förmiddag", shortLabel: "FM", hours: "06–12", pinHour: 9, start: 6, end: 12 },
-  { id: "eftermiddag", label: "Eftermiddag", shortLabel: "EM", hours: "12–18", pinHour: 15, start: 12, end: 18 },
-  { id: "kvall", label: "Kväll", shortLabel: "Kväll", hours: "18–24", pinHour: 21, start: 18, end: 24 },
+  { id: "natt", label: "Natt", shortLabel: "Natt", hours: "00–06", start: 0, end: 6 },
+  { id: "formiddag", label: "Förmiddag", shortLabel: "FM", hours: "06–12", start: 6, end: 12 },
+  { id: "eftermiddag", label: "Eftermiddag", shortLabel: "EM", hours: "12–18", start: 12, end: 18 },
+  { id: "kvall", label: "Kväll", shortLabel: "Kväll", hours: "18–24", start: 18, end: 24 },
 ] as const;
 
 export type DayPartId = (typeof DAY_PARTS)[number]["id"];
@@ -196,8 +196,15 @@ export interface DayPartSlot {
   label: string;
   shortLabel: string;
   hours: string;
-  temp: number | null;
+  tempMin: number | null;
+  tempMax: number | null;
   precip: number;
+}
+
+export function formatSlotTemp(min: number | null, max: number | null): string {
+  if (min == null || max == null) return "—";
+  if (min === max) return `${min}°`;
+  return `${min}–${max}°`;
 }
 
 export function aggregateDayParts(dayHours: HourlyForecast[]): DayPartSlot[] {
@@ -208,14 +215,16 @@ export function aggregateDayParts(dayHours: HourlyForecast[]): DayPartSlot[] {
     });
     const meta = { id: part.id, label: part.label, shortLabel: part.shortLabel, hours: part.hours };
     if (!inPart.length) {
-      return { ...meta, temp: null, precip: 0 };
+      return { ...meta, tempMin: null, tempMax: null, precip: 0 };
     }
-    const pinned = inPart.find((h) => localHourFromIso(h.time) === part.pinHour);
-    const temp = pinned
-      ? pinned.temperature
-      : Math.round(inPart.reduce((sum, h) => sum + h.temperature, 0) / inPart.length);
+    const temps = inPart.map((h) => h.temperature);
     const precip = Math.round(inPart.reduce((sum, h) => sum + h.precipitation, 0) * 10) / 10;
-    return { ...meta, temp, precip };
+    return {
+      ...meta,
+      tempMin: Math.min(...temps),
+      tempMax: Math.max(...temps),
+      precip,
+    };
   });
 }
 

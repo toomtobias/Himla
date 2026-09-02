@@ -4,6 +4,7 @@ import {
   DAY_PARTS,
   aggregateDayParts,
   formatMm,
+  formatSlotTemp,
   precipFillPercent,
   localHourInZone,
   type DayPartSlot,
@@ -57,8 +58,8 @@ function SlotCell({
           {slot.shortLabel}
         </span>
       )}
-      <span className="relative z-[1] text-[22px] md:text-[28px] font-bold tracking-[-0.05em] leading-none">
-        {slot.temp == null ? "—" : `${slot.temp}°`}
+      <span className="relative z-[1] text-[22px] md:text-[28px] font-bold tracking-[-0.05em] leading-none tabular-nums">
+        {formatSlotTemp(slot.tempMin, slot.tempMax)}
       </span>
       {wet && (
         <span className="relative z-[1] text-[11px] font-bold">{formatMm(slot.precip)}</span>
