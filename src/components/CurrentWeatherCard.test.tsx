@@ -90,13 +90,13 @@ describe("CurrentWeatherCard", () => {
     expect(screen.getByText("3/5")).toBeInTheDocument();
 
     fireEvent.click(card);
-    expect(screen.getByText("Hög")).toBeInTheDocument();
     expect(screen.getByText("Gräs")).toBeInTheDocument();
+    expect(screen.getByText("Pollen · Hög")).toBeInTheDocument();
     expect(screen.getByText("4/5")).toBeInTheDocument();
 
     fireEvent.click(card);
-    expect(screen.getByText("Låg")).toBeInTheDocument();
     expect(screen.getByText("Björk")).toBeInTheDocument();
+    expect(screen.getByText("Pollen · Låg")).toBeInTheDocument();
     expect(screen.getByText("5/5")).toBeInTheDocument();
 
     fireEvent.click(card);

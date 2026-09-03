@@ -55,8 +55,8 @@ function airSlideCopy(slide: AirSlide): { value: string; detail: string; aria: s
     };
   }
   return {
-    value: slide.level,
-    detail: slide.type,
+    value: slide.type,
+    detail: `Pollen · ${slide.level}`,
     aria: `Pollen ${slide.type}, ${slide.level}`,
   };
 }
