@@ -7,7 +7,8 @@ import {
   formatLocationLabel,
   getUvInfo,
   getAqiInfo,
-  summarizePollen,
+  listPollen,
+  listAirSlides,
   getTimeOfDayFraction,
   formatRelativeToNow,
   getPosterCopy,
@@ -106,16 +107,38 @@ describe("getAqiInfo", () => {
   });
 });
 
-describe("summarizePollen", () => {
+describe("listPollen", () => {
   it("hides trace amounts", () => {
-    expect(summarizePollen({ grass: 0.3, birch: 0 })).toBeNull();
+    expect(listPollen({ grass: 0.3, birch: 0 })).toEqual([]);
   });
 
-  it("picks the highest species", () => {
-    expect(summarizePollen({ grass: 40, birch: 5 })).toEqual({
-      type: "Gräs",
-      level: "Hög",
-    });
+  it("returns present species, worst first", () => {
+    expect(listPollen({ grass: 40, birch: 5 })).toEqual([
+      { type: "Gräs", level: "Hög", value: 40 },
+      { type: "Björk", level: "Låg", value: 5 },
+    ]);
+  });
+});
+
+describe("listAirSlides", () => {
+  it("orders AQI, particles, then pollen and skips missing values", () => {
+    expect(
+      listAirSlides({
+        aqi: 35,
+        pm25: 8.2,
+        pm10: null,
+        pollen: [{ type: "Gräs", level: "Hög", value: 40 }],
+      }),
+    ).toEqual([
+      { kind: "aqi", aqi: 35 },
+      { kind: "pm25", value: 8.2 },
+      { kind: "pollen", type: "Gräs", level: "Hög", value: 40 },
+    ]);
+  });
+
+  it("is empty without air data", () => {
+    expect(listAirSlides(null)).toEqual([]);
+    expect(listAirSlides({ aqi: null, pm25: null, pm10: null, pollen: [] })).toEqual([]);
   });
 });
 

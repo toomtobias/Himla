@@ -9,7 +9,7 @@ const WeatherSkeleton = () => {
         <div className="box bg-wind h-[110px]" />
         <div className="box bg-rain h-[110px]" />
         <div className="box bg-uv h-[110px]" />
-        <div className="box bg-tape h-[110px]" />
+        <div className="box bg-air h-[110px]" />
       </div>
       <div className="box bg-white p-4 h-[168px]" />
       <div className="box bg-white h-[520px]" />

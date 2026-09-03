@@ -19,6 +19,7 @@ export default {
         wind: "var(--wind)",
         uv: "var(--uv)",
         tape: "var(--tape)",
+        air: "var(--air)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

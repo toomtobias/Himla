@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { ComponentProps } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import type { CurrentWeather } from "@/lib/weather";
 
@@ -34,7 +34,7 @@ function renderCard(
 
 describe("CurrentWeatherCard", () => {
   it("shows now chips including UV and wind gusts", () => {
-    renderCard({ aqi: 35, pollen: null });
+    renderCard({ aqi: 35, pm25: null, pm10: null, pollen: [] });
     expect(screen.getByText("Klart")).toBeInTheDocument();
     expect(screen.getByText("14°")).toBeInTheDocument();
     expect(screen.getByText("4 m/s")).toBeInTheDocument();
@@ -44,16 +44,63 @@ describe("CurrentWeatherCard", () => {
     expect(screen.getByText("Måttlig")).toBeInTheDocument();
     expect(screen.getByText("AQI 35")).toBeInTheDocument();
     expect(screen.getByText("Bra")).toBeInTheDocument();
-    expect(screen.queryByText("Pollen")).not.toBeInTheDocument();
+    expect(screen.getByText("Luft").closest(".box")).toHaveClass("bg-air");
+    expect(screen.queryByRole("button", { name: /luft/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("1/1")).not.toBeInTheDocument();
   });
 
   it("shows sunrise or sunset time in the poster box", () => {
-    renderCard({ aqi: 35, pollen: null });
+    renderCard({ aqi: 35, pm25: null, pm10: null, pollen: [] });
     expect(screen.getByText(/Solen går (upp|ner) \d{2}:\d{2}/)).toBeInTheDocument();
   });
 
-  it("shows pollen only when it is actually present", () => {
-    renderCard({ aqi: 10, pollen: { type: "Gräs", level: "Hög" } });
-    expect(screen.getByText("Hög · Gräs")).toBeInTheDocument();
+  it("falls back to humidity without air data", () => {
+    renderCard(null);
+    expect(screen.getByText("60%")).toBeInTheDocument();
+    expect(screen.getByText("Fuktighet")).toBeInTheDocument();
+    expect(screen.queryByText("AQI")).not.toBeInTheDocument();
+  });
+
+  it("cycles AQI, particles and present pollen", () => {
+    renderCard({
+      aqi: 10,
+      pm25: 8.2,
+      pm10: 14,
+      pollen: [
+        { type: "Gräs", level: "Hög", value: 40 },
+        { type: "Björk", level: "Låg", value: 5 },
+      ],
+    });
+
+    const card = screen.getByRole("button", { name: /luft, aqi 10, bra, 1 av 5/i });
+    expect(screen.getByText("AQI 10")).toBeInTheDocument();
+    expect(screen.getByText("Bra")).toBeInTheDocument();
+    expect(screen.getByText("1/5")).toBeInTheDocument();
+    expect(screen.queryByText("Gräs")).not.toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByRole("button", { name: /luft, pm2\.5 8,2/i })).toBeInTheDocument();
+    expect(screen.getByText("8,2")).toBeInTheDocument();
+    expect(screen.getByText("PM2.5 · µg/m³")).toBeInTheDocument();
+    expect(screen.getByText("2/5")).toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByText("14")).toBeInTheDocument();
+    expect(screen.getByText("PM10 · µg/m³")).toBeInTheDocument();
+    expect(screen.getByText("3/5")).toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByText("Hög")).toBeInTheDocument();
+    expect(screen.getByText("Gräs")).toBeInTheDocument();
+    expect(screen.getByText("4/5")).toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByText("Låg")).toBeInTheDocument();
+    expect(screen.getByText("Björk")).toBeInTheDocument();
+    expect(screen.getByText("5/5")).toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByRole("button", { name: /luft, aqi 10, bra, 1 av 5/i })).toBeInTheDocument();
+    expect(screen.getByText("AQI 10")).toBeInTheDocument();
   });
 });

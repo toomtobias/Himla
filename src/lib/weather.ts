@@ -51,12 +51,21 @@ export interface DailyForecast {
 export interface PollenSummary {
   type: string;
   level: "Låg" | "Måttlig" | "Hög" | "Mycket hög";
+  value: number;
 }
 
 export interface AirQuality {
   aqi: number | null;
-  pollen: PollenSummary | null;
+  pm25: number | null;
+  pm10: number | null;
+  pollen: PollenSummary[];
 }
+
+export type AirSlide =
+  | { kind: "aqi"; aqi: number }
+  | { kind: "pm25"; value: number }
+  | { kind: "pm10"; value: number }
+  | { kind: "pollen"; type: string; level: PollenSummary["level"]; value: number };
 
 export interface WeatherData {
   location: GeoLocation;
@@ -374,14 +383,14 @@ const POLLEN_RANK: Record<PollenLevel, number> = {
   "Mycket hög": 4,
 };
 
-export function summarizePollen(values: {
+export function listPollen(values: {
   alder?: number | null;
   birch?: number | null;
   grass?: number | null;
   mugwort?: number | null;
   olive?: number | null;
   ragweed?: number | null;
-}): PollenSummary | null {
+}): PollenSummary[] {
   const species: { type: string; value: number; bands: [number, number, number] }[] = [
     { type: "Al", value: values.alder ?? 0, bands: [10, 50, 200] },
     { type: "Björk", value: values.birch ?? 0, bands: [10, 50, 200] },
@@ -391,20 +400,31 @@ export function summarizePollen(values: {
     { type: "Ambrosia", value: values.ragweed ?? 0, bands: [10, 30, 100] },
   ];
 
-  const present = species.filter((s) => s.value >= 1);
-  if (!present.length) return null;
-
-  const ranked = present.map((s) => {
-    let level: PollenLevel;
-    if (s.value <= s.bands[0]) level = "Låg";
-    else if (s.value <= s.bands[1]) level = "Måttlig";
-    else if (s.value <= s.bands[2]) level = "Hög";
-    else level = "Mycket hög";
-    return { type: s.type, level, value: s.value, rank: POLLEN_RANK[level] };
-  });
+  const ranked = species
+    .filter((s) => s.value >= 1)
+    .map((s) => {
+      let level: PollenLevel;
+      if (s.value <= s.bands[0]) level = "Låg";
+      else if (s.value <= s.bands[1]) level = "Måttlig";
+      else if (s.value <= s.bands[2]) level = "Hög";
+      else level = "Mycket hög";
+      return { type: s.type, level, value: s.value, rank: POLLEN_RANK[level] };
+    });
 
   ranked.sort((a, b) => b.rank - a.rank || b.value - a.value);
-  return { type: ranked[0].type, level: ranked[0].level };
+  return ranked.map(({ type, level, value }) => ({ type, level, value }));
+}
+
+export function listAirSlides(air: AirQuality | null): AirSlide[] {
+  if (!air) return [];
+  const slides: AirSlide[] = [];
+  if (air.aqi != null) slides.push({ kind: "aqi", aqi: air.aqi });
+  if (air.pm25 != null) slides.push({ kind: "pm25", value: air.pm25 });
+  if (air.pm10 != null) slides.push({ kind: "pm10", value: air.pm10 });
+  for (const p of air.pollen) {
+    slides.push({ kind: "pollen", type: p.type, level: p.level, value: p.value });
+  }
+  return slides;
 }
 
 export function getTimeOfDayFraction(date: Date): number {
@@ -431,18 +451,31 @@ export function formatRelativeToNow(event: Date, now: Date): string {
   return diffMs > 0 ? `om ${body}` : `för ${body} sedan`;
 }
 
+function asFiniteNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function roundTenths(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
 async function fetchAirQuality(lat: number, lon: number): Promise<AirQuality | null> {
   try {
     const res = await fetch(
-      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`,
+      `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`,
     );
     if (!res.ok) return null;
     const data = await res.json();
     const current = data.current;
     if (!current) return null;
+    const aqi = asFiniteNumber(current.us_aqi);
+    const pm25 = asFiniteNumber(current.pm2_5);
+    const pm10 = asFiniteNumber(current.pm10);
     return {
-      aqi: typeof current.us_aqi === "number" ? Math.round(current.us_aqi) : null,
-      pollen: summarizePollen({
+      aqi: aqi == null ? null : Math.round(aqi),
+      pm25: pm25 == null ? null : roundTenths(pm25),
+      pm10: pm10 == null ? null : roundTenths(pm10),
+      pollen: listPollen({
         alder: current.alder_pollen,
         birch: current.birch_pollen,
         grass: current.grass_pollen,

@@ -1,12 +1,14 @@
 import {
   CurrentWeather,
   AirQuality,
+  AirSlide,
   getPosterCopy,
   getWindDirection,
   getUvInfo,
   getAqiInfo,
   formatMm,
   formatSvNumber,
+  listAirSlides,
 } from "@/lib/weather";
 import { useEffect, useState } from "react";
 
@@ -25,6 +27,99 @@ function formatClock(iso: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function airSlideCopy(slide: AirSlide): { value: string; detail: string; aria: string } {
+  if (slide.kind === "aqi") {
+    const label = getAqiInfo(slide.aqi).label;
+    return {
+      value: `AQI ${slide.aqi}`,
+      detail: label,
+      aria: `AQI ${slide.aqi}, ${label}`,
+    };
+  }
+  if (slide.kind === "pm25") {
+    const value = formatSvNumber(slide.value);
+    return {
+      value,
+      detail: "PM2.5 · µg/m³",
+      aria: `PM2.5 ${value} mikrogram per kubikmeter`,
+    };
+  }
+  if (slide.kind === "pm10") {
+    const value = formatSvNumber(slide.value);
+    return {
+      value,
+      detail: "PM10 · µg/m³",
+      aria: `PM10 ${value} mikrogram per kubikmeter`,
+    };
+  }
+  return {
+    value: slide.level,
+    detail: slide.type,
+    aria: `Pollen ${slide.type}, ${slide.level}`,
+  };
+}
+
+function AirCard({
+  airQuality,
+  humidity,
+}: {
+  airQuality: AirQuality | null;
+  humidity: number;
+}) {
+  const slides = listAirSlides(airQuality);
+  const slideKey = slides
+    .map((s) => (s.kind === "pollen" ? `pollen:${s.type}` : s.kind))
+    .join("|");
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [slideKey]);
+
+  const canCycle = slides.length > 1;
+  const slide = slides[Math.min(index, Math.max(0, slides.length - 1))];
+  const copy = slide ? airSlideCopy(slide) : null;
+
+  const body = (
+    <>
+      <div className="text-xs font-bold uppercase">Luft</div>
+      {copy ? (
+        <>
+          <div className="text-[32px] font-bold leading-none mt-1.5">{copy.value}</div>
+          <div className="mt-1 flex items-end justify-between gap-2">
+            <div className="font-medium min-w-0">{copy.detail}</div>
+            {canCycle && (
+              <span className="text-[10px] font-bold tabular-nums shrink-0" aria-hidden>
+                {Math.min(index, slides.length - 1) + 1}/{slides.length}
+              </span>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="text-[32px] font-bold leading-none mt-1.5">{humidity}%</div>
+          <div className="mt-1 font-medium">Fuktighet</div>
+        </>
+      )}
+    </>
+  );
+
+  if (canCycle && copy) {
+    return (
+      <button
+        type="button"
+        onClick={() => setIndex((current) => (current + 1) % slides.length)}
+        aria-label={`Luft, ${copy.aria}, ${Math.min(index, slides.length - 1) + 1} av ${slides.length}. Klicka för att byta.`}
+        className="box bg-air p-4 w-full min-w-0 text-left cursor-pointer font-[inherit] text-ink select-none"
+      >
+        {body}
+      </button>
+    );
+  }
+
+  return <div className="box bg-air p-4">{body}</div>;
 }
 
 const CurrentWeatherCard = ({
@@ -69,8 +164,6 @@ const CurrentWeatherCard = ({
   const precip = Math.round(current.precipitation * 10) / 10;
   const uv = getUvInfo(current.uvIndex);
   const windDir = getWindDirection(current.windDirection);
-  const aqi = airQuality?.aqi;
-  const pollen = airQuality?.pollen;
 
   return (
     <div className="mt-[18px] space-y-4">
@@ -113,27 +206,7 @@ const CurrentWeatherCard = ({
           <div className="text-[32px] font-bold leading-none mt-1.5">{formatSvNumber(current.uvIndex)}</div>
           <div className="mt-1 font-medium">{uv.label}</div>
         </div>
-        <div className="box bg-tape p-4">
-          <div className="text-xs font-bold uppercase">Luft</div>
-          {aqi != null ? (
-            <>
-              <div className="text-[32px] font-bold leading-none mt-1.5">AQI {aqi}</div>
-              <div className="mt-1 font-medium">
-                {pollen ? `${pollen.level} · ${pollen.type}` : getAqiInfo(aqi).label}
-              </div>
-            </>
-          ) : pollen ? (
-            <>
-              <div className="text-[32px] font-bold leading-none mt-1.5">{pollen.level}</div>
-              <div className="mt-1 font-medium">{pollen.type}</div>
-            </>
-          ) : (
-            <>
-              <div className="text-[32px] font-bold leading-none mt-1.5">{current.humidity}%</div>
-              <div className="mt-1 font-medium">Fuktighet</div>
-            </>
-          )}
-        </div>
+        <AirCard airQuality={airQuality} humidity={current.humidity} />
       </div>
     </div>
   );
