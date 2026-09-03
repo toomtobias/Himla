@@ -8,14 +8,20 @@ import {
   hourlyStubVisible,
   getWindDirection,
   getUvInfo,
+  isHourPast,
+  localHourInZone,
 } from "@/lib/weather";
 import { cn } from "@/lib/utils";
 
 interface Props {
   hourly: HourlyType[];
+  title?: string;
+  timezone?: string;
+  todayDate?: string;
+  dimPast?: boolean;
 }
 
-const VISIBLE = 8;
+const VISIBLE = 6;
 
 const MODES = ["temp", "wind", "uv"] as const;
 type HourlyMode = (typeof MODES)[number];
@@ -36,17 +42,19 @@ function HourCard({
   hour,
   mode,
   fill,
+  past,
 }: {
   hour: HourlyType;
   mode: HourlyMode;
   fill: number;
+  past?: boolean;
 }) {
   const wet = hour.precipitation > 0;
   const stub = getHourlyStub(hour.weatherCode);
   const showStub = hourlyStubVisible(hour.weatherCode);
 
   return (
-    <div className="flex flex-col items-center min-w-0">
+    <div className={cn("flex flex-col items-center min-w-0", past && "opacity-[0.38]")}>
       <div
         className={cn(
           "relative overflow-hidden border-[3px] border-ink min-h-[96px] md:min-h-[118px] w-full min-w-0 px-1 pt-2 pb-2 flex flex-col items-center text-center",
@@ -103,10 +111,17 @@ function HourCard({
   );
 }
 
-const HourlyForecast = ({ hourly }: Props) => {
+const HourlyForecast = ({
+  hourly,
+  title = "Kommande timmar",
+  timezone,
+  todayDate,
+  dimPast = false,
+}: Props) => {
   const [mode, setMode] = useState<HourlyMode>("temp");
   const visible = hourly.slice(0, VISIBLE);
   const maxMm = Math.max(4, ...visible.map((h) => h.precipitation));
+  const nowHour = timezone ? localHourInZone(new Date(), timezone) : new Date().getHours();
 
   const cycleMode = () => {
     setMode((current) => MODES[(MODES.indexOf(current) + 1) % MODES.length]);
@@ -115,20 +130,22 @@ const HourlyForecast = ({ hourly }: Props) => {
   return (
     <button
       type="button"
+      id="timprognos"
       onClick={cycleMode}
-      aria-label={`Kommande timmar, ${MODE_ARIA[mode]}. Klicka för att byta.`}
+      aria-label={`${title}, ${MODE_ARIA[mode]}. Klicka för att byta.`}
       className="box bg-white p-4 mt-4 w-full text-left cursor-pointer font-[inherit] text-ink select-none"
     >
       <div className="text-xs font-bold uppercase tracking-[0.08em]">
-        Kommande timmar
+        {title}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 mt-2.5 min-w-0">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mt-2.5 min-w-0">
         {visible.map((hour) => (
           <HourCard
             key={hour.time}
             hour={hour}
             mode={mode}
             fill={precipFillPercent(hour.precipitation, maxMm)}
+            past={dimPast && isHourPast(hour.time, todayDate ?? "", nowHour)}
           />
         ))}
       </div>

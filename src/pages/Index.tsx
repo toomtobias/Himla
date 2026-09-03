@@ -1,12 +1,34 @@
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
 import WeatherSkeleton from "@/components/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
+import {
+  formatDayPartTitle,
+  hoursForDayPart,
+  isSameDayPart,
+  type SelectedDayPart,
+} from "@/lib/weather";
 
 const Index = () => {
   const { weather, loading, error, location, setLocation, recentLocations } = useWeather();
+  const [selectedPeriod, setSelectedPeriod] = useState<SelectedDayPart | null>(null);
+
+  useEffect(() => {
+    setSelectedPeriod(null);
+  }, [location.latitude, location.longitude]);
+
+  const selectPeriod = (next: SelectedDayPart) => {
+    setSelectedPeriod((current) => (isSameDayPart(current, next) ? null : next));
+    if (!isSameDayPart(selectedPeriod, next)) {
+      document.getElementById("timprognos")?.scrollIntoView?.({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -40,11 +62,35 @@ const Index = () => {
               airQuality={weather.airQuality}
               precipProbability={weather.hourly[0]?.precipitationProbability ?? 0}
             />
-            <HourlyForecast hourly={weather.hourly} />
+            <HourlyForecast
+              hourly={
+                selectedPeriod
+                  ? hoursForDayPart(
+                      weather.allHourly,
+                      selectedPeriod.date,
+                      selectedPeriod.partId,
+                    )
+                  : weather.hourly
+              }
+              title={
+                selectedPeriod
+                  ? formatDayPartTitle(
+                      selectedPeriod.date,
+                      selectedPeriod.partId,
+                      weather.daily[0]?.date ?? "",
+                    )
+                  : "Kommande timmar"
+              }
+              timezone={weather.timezone}
+              todayDate={weather.daily[0]?.date}
+              dimPast={Boolean(selectedPeriod)}
+            />
             <DailyForecast
               daily={weather.daily}
               allHourly={weather.allHourly}
               timezone={weather.timezone}
+              selected={selectedPeriod}
+              onSelect={selectPeriod}
             />
           </>
         )}

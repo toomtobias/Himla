@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import HourlyForecast from "@/components/HourlyForecast";
 import type { HourlyForecast as HourlyType } from "@/lib/weather";
@@ -24,13 +24,22 @@ function hour(index: number, overrides: Partial<HourlyType> = {}): HourlyType {
 const hours = Array.from({ length: 24 }, (_, i) => hour(i));
 
 describe("HourlyForecast", () => {
-  it("shows the next 8 hours", () => {
+  it("shows the next 6 hours", () => {
     render(<HourlyForecast hourly={hours} />);
 
     expect(screen.getByText("Kommande timmar")).toBeInTheDocument();
     expect(screen.getByText("00")).toBeInTheDocument();
-    expect(screen.getByText("07")).toBeInTheDocument();
-    expect(screen.queryByText("08")).not.toBeInTheDocument();
+    expect(screen.getByText("05")).toBeInTheDocument();
+    expect(screen.queryByText("06")).not.toBeInTheDocument();
+  });
+
+  it("uses a day-part title when given one", () => {
+    render(<HourlyForecast hourly={hours} title="Fredag förmiddag" />);
+    expect(screen.getByText("Fredag förmiddag")).toBeInTheDocument();
+    expect(screen.queryByText("Kommande timmar")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /fredag förmiddag, temperatur/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows a short sky label under dry hours", () => {
@@ -79,7 +88,7 @@ describe("HourlyForecast", () => {
     render(<HourlyForecast hourly={mixed} />);
 
     const strip = screen.getByRole("button", { name: /kommande timmar, temperatur/i });
-    expect(screen.getAllByText("14°").length).toBe(8);
+    expect(screen.getAllByText("14°").length).toBe(6);
     expect(screen.getByText("1,2 mm")).toBeInTheDocument();
 
     fireEvent.click(strip);
@@ -89,8 +98,8 @@ describe("HourlyForecast", () => {
     expect(screen.queryByText("1,2 mm")).not.toBeInTheDocument();
     expect(screen.getByText("9 m/s")).toBeInTheDocument();
     expect(screen.getByText("SV · byar 12")).toBeInTheDocument();
-    expect(screen.getAllByText("4 m/s").length).toBe(7);
-    expect(screen.getAllByText("Ö · byar 7").length).toBe(7);
+    expect(screen.getAllByText("4 m/s").length).toBe(5);
+    expect(screen.getAllByText("Ö · byar 7").length).toBe(5);
 
     fireEvent.click(strip);
     expect(screen.getByRole("button", { name: /kommande timmar, uv/i })).toBeInTheDocument();
@@ -98,11 +107,29 @@ describe("HourlyForecast", () => {
     expect(screen.queryByText("9 m/s")).not.toBeInTheDocument();
     expect(screen.getByText("7,4")).toBeInTheDocument();
     expect(screen.getByText("Hög")).toBeInTheDocument();
-    expect(screen.getAllByText("Måttlig").length).toBe(7);
+    expect(screen.getAllByText("Måttlig").length).toBe(5);
 
     fireEvent.click(strip);
     expect(screen.getByRole("button", { name: /kommande timmar, temperatur/i })).toBeInTheDocument();
-    expect(screen.getAllByText("14°").length).toBe(8);
+    expect(screen.getAllByText("14°").length).toBe(6);
     expect(screen.getByText("1,2 mm")).toBeInTheDocument();
+  });
+
+  it("dims hours that have already passed in a selected period", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-04T10:32:00+02:00"));
+    const morning = Array.from({ length: 6 }, (_, i) => hour(6 + i, { time: `2026-09-04T${String(6 + i).padStart(2, "0")}:00` }));
+    const { container } = render(
+      <HourlyForecast
+        hourly={morning}
+        title="Idag förmiddag"
+        timezone="Europe/Stockholm"
+        todayDate="2026-09-04"
+        dimPast
+      />,
+    );
+    const cards = container.querySelectorAll(".opacity-\\[0\\.38\\]");
+    expect(cards.length).toBe(4);
+    vi.useRealTimers();
   });
 });

@@ -191,6 +191,11 @@ export const DAY_PARTS = [
 
 export type DayPartId = (typeof DAY_PARTS)[number]["id"];
 
+export interface SelectedDayPart {
+  date: string;
+  partId: DayPartId;
+}
+
 export interface DayPartSlot {
   id: DayPartId;
   label: string;
@@ -199,6 +204,67 @@ export interface DayPartSlot {
   tempMin: number | null;
   tempMax: number | null;
   precip: number;
+}
+
+const WEEKDAYS_SV = [
+  "söndag",
+  "måndag",
+  "tisdag",
+  "onsdag",
+  "torsdag",
+  "fredag",
+  "lördag",
+] as const;
+
+export function weekdayName(date: string): string {
+  return WEEKDAYS_SV[new Date(`${date}T12:00:00`).getDay()];
+}
+
+export function getDayPart(partId: DayPartId) {
+  return DAY_PARTS.find((part) => part.id === partId);
+}
+
+export function hoursForDayPart(
+  allHourly: HourlyForecast[],
+  date: string,
+  partId: DayPartId,
+): HourlyForecast[] {
+  const part = getDayPart(partId);
+  if (!part) return [];
+  return allHourly.filter((h) => {
+    if (!h.time.startsWith(date)) return false;
+    const hr = localHourFromIso(h.time);
+    return hr >= part.start && hr < part.end;
+  });
+}
+
+export function formatDayPartTitle(date: string, partId: DayPartId, todayDate: string): string {
+  const part = getDayPart(partId);
+  if (!part) return "Kommande timmar";
+  const weekday = weekdayName(date);
+  const isToday = date === todayDate;
+
+  if (partId === "natt") {
+    return isToday ? "Natt mot idag" : `Natt mot ${weekday}`;
+  }
+
+  const dayLabel = isToday ? "Idag" : weekday.charAt(0).toUpperCase() + weekday.slice(1);
+  return `${dayLabel} ${part.label.toLowerCase()}`;
+}
+
+export function isHourPast(isoTime: string, todayDate: string, nowHour: number): boolean {
+  if (!todayDate) return false;
+  const date = isoTime.slice(0, 10);
+  if (date < todayDate) return true;
+  if (date > todayDate) return false;
+  return localHourFromIso(isoTime) < nowHour;
+}
+
+export function isSameDayPart(
+  a: SelectedDayPart | null,
+  b: SelectedDayPart | null,
+): boolean {
+  return Boolean(a && b && a.date === b.date && a.partId === b.partId);
 }
 
 export function formatSlotTemp(min: number | null, max: number | null): string {

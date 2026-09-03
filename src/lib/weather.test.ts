@@ -15,6 +15,9 @@ import {
   aggregateDayParts,
   formatSlotTemp,
   precipFillPercent,
+  hoursForDayPart,
+  formatDayPartTitle,
+  isHourPast,
   getHourlyStub,
   hourlyStubVisible,
 } from "@/lib/weather";
@@ -179,6 +182,44 @@ describe("aggregateDayParts", () => {
     expect(parts[1].tempMax).toBe(13);
     expect(parts[2].precip).toBe(2.4);
     expect(parts[0].precip).toBe(0);
+  });
+});
+
+describe("hoursForDayPart", () => {
+  it("returns the six hours that belong to a day-part", () => {
+    const hours = Array.from({ length: 24 }, (_, h) => ({
+      time: `2026-09-04T${String(h).padStart(2, "0")}:00`,
+      temperature: h,
+      weatherCode: 0,
+      humidity: 50,
+      uvIndex: 1,
+      windSpeed: 2,
+      windGusts: 3,
+      windDirection: 0,
+      cloudCover: 10,
+      precipitationProbability: 0,
+      precipitation: 0,
+    }));
+    const morning = hoursForDayPart(hours, "2026-09-04", "formiddag");
+    expect(morning.map((h) => h.time.slice(11, 13))).toEqual(["06", "07", "08", "09", "10", "11"]);
+  });
+});
+
+describe("formatDayPartTitle", () => {
+  it("names today, a later weekday, and night towards a calendar day", () => {
+    expect(formatDayPartTitle("2026-09-04", "formiddag", "2026-09-04")).toBe("Idag förmiddag");
+    expect(formatDayPartTitle("2026-09-04", "eftermiddag", "2026-09-03")).toBe("Fredag eftermiddag");
+    expect(formatDayPartTitle("2026-09-05", "natt", "2026-09-04")).toBe("Natt mot lördag");
+    expect(formatDayPartTitle("2026-09-04", "natt", "2026-09-04")).toBe("Natt mot idag");
+  });
+});
+
+describe("isHourPast", () => {
+  it("treats earlier hours on today as past", () => {
+    expect(isHourPast("2026-09-04T10:00", "2026-09-04", 12)).toBe(true);
+    expect(isHourPast("2026-09-04T12:00", "2026-09-04", 12)).toBe(false);
+    expect(isHourPast("2026-09-03T23:00", "2026-09-04", 12)).toBe(true);
+    expect(isHourPast("2026-09-05T00:00", "2026-09-04", 12)).toBe(false);
   });
 });
 

@@ -1,7 +1,16 @@
+import { useState } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import DailyForecast from "@/components/DailyForecast";
-import type { DailyForecast as DailyType, HourlyForecast as HourlyType } from "@/lib/weather";
+import HourlyForecast from "@/components/HourlyForecast";
+import {
+  formatDayPartTitle,
+  hoursForDayPart,
+  isSameDayPart,
+  type DailyForecast as DailyType,
+  type HourlyForecast as HourlyType,
+  type SelectedDayPart,
+} from "@/lib/weather";
 
 function daily(date: string, i: number): DailyType {
   return {
@@ -82,5 +91,88 @@ describe("DailyForecast", () => {
     );
 
     expect(screen.getAllByText("10–15°").length).toBeGreaterThan(0);
+  });
+
+  it("notifies when a day-part is chosen and marks it as pressed", () => {
+    const onSelect = vi.fn();
+    const days = ["2026-09-01", "2026-09-02"].map((d, i) => daily(d, i));
+    const allHourly = days.flatMap((d) =>
+      Array.from({ length: 24 }, (_, h) => hour(d.date, h)),
+    );
+
+    const { rerender } = render(
+      <DailyForecast
+        daily={days}
+        allHourly={allHourly}
+        timezone="Europe/Stockholm"
+        onSelect={onSelect}
+      />,
+    );
+
+    fireEvent.click(screen.getAllByRole("button", { name: /idag eftermiddag/i })[0]);
+    expect(onSelect).toHaveBeenCalledWith({ date: "2026-09-01", partId: "eftermiddag" });
+
+    rerender(
+      <DailyForecast
+        daily={days}
+        allHourly={allHourly}
+        timezone="Europe/Stockholm"
+        selected={{ date: "2026-09-01", partId: "eftermiddag" }}
+        onSelect={onSelect}
+      />,
+    );
+
+    expect(screen.getAllByRole("button", { name: /idag eftermiddag, vald/i }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getAllByRole("button", { name: /onsdag förmiddag/i })[0]);
+    expect(onSelect).toHaveBeenCalledWith({ date: "2026-09-02", partId: "formiddag" });
+  });
+
+  it("fills the hourly strip from the chosen day-part and restores upcoming hours on a second click", () => {
+    const days = ["2026-09-01", "2026-09-02"].map((d, i) => daily(d, i));
+    const allHourly = days.flatMap((d) =>
+      Array.from({ length: 24 }, (_, h) =>
+        hour(d.date, h, { temperature: d.date === "2026-09-02" && h === 7 ? 21 : 10 }),
+      ),
+    );
+    const upcoming = allHourly.filter((h) => h.time >= "2026-09-01T13:00");
+
+    function Pair() {
+      const [selected, setSelected] = useState<SelectedDayPart | null>(null);
+      const title = selected
+        ? formatDayPartTitle(selected.date, selected.partId, days[0].date)
+        : "Kommande timmar";
+      const hours = selected
+        ? hoursForDayPart(allHourly, selected.date, selected.partId)
+        : upcoming;
+      return (
+        <>
+          <HourlyForecast hourly={hours} title={title} />
+          <DailyForecast
+            daily={days}
+            allHourly={allHourly}
+            timezone="Europe/Stockholm"
+            selected={selected}
+            onSelect={(next) =>
+              setSelected((current) => (isSameDayPart(current, next) ? null : next))
+            }
+          />
+        </>
+      );
+    }
+
+    render(<Pair />);
+    expect(screen.getByText("Kommande timmar")).toBeInTheDocument();
+    expect(screen.getByText("13")).toBeInTheDocument();
+    expect(screen.queryByText("21°")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole("button", { name: /onsdag förmiddag/i })[0]);
+    expect(screen.getByText("Onsdag förmiddag")).toBeInTheDocument();
+    expect(screen.getByText("21°")).toBeInTheDocument();
+    expect(screen.getByText("06")).toBeInTheDocument();
+    expect(screen.queryByText("13")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole("button", { name: /onsdag förmiddag, vald/i })[0]);
+    expect(screen.getByText("Kommande timmar")).toBeInTheDocument();
+    expect(screen.getByText("13")).toBeInTheDocument();
   });
 });

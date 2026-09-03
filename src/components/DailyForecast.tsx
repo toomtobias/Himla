@@ -7,7 +7,10 @@ import {
   formatSlotTemp,
   precipFillPercent,
   localHourInZone,
+  formatDayPartTitle,
+  isSameDayPart,
   type DayPartSlot,
+  type SelectedDayPart,
 } from "@/lib/weather";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +18,8 @@ interface Props {
   daily: DailyType[];
   allHourly: HourlyType[];
   timezone: string;
+  selected?: SelectedDayPart | null;
+  onSelect?: (next: SelectedDayPart) => void;
 }
 
 const DAY_NAMES = ["Sön", "Mån", "Tis", "Ons", "Tors", "Fre", "Lör"];
@@ -24,20 +29,30 @@ function SlotCell({
   fill,
   past,
   current,
+  selected,
   labeled,
+  ariaLabel,
+  onSelect,
 }: {
   slot: DayPartSlot;
   fill: number;
   past: boolean;
   current: boolean;
+  selected: boolean;
   labeled?: boolean;
+  ariaLabel: string;
+  onSelect?: () => void;
 }) {
   const wet = slot.precip > 0;
   return (
-    <div
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      aria-label={ariaLabel}
       className={cn(
-        "relative overflow-hidden border-[3px] md:border-0 md:border-l-[3px] border-ink min-h-[72px] md:min-h-[86px] min-w-0 px-1 md:px-2 py-2 md:py-3 flex flex-col justify-center items-center gap-0.5",
-        current ? "bg-now" : "bg-white",
+        "relative overflow-hidden border-[3px] md:border-0 md:border-l-[3px] border-ink min-h-[72px] md:min-h-[86px] min-w-0 px-1 md:px-2 py-2 md:py-3 flex flex-col justify-center items-center gap-0.5 w-full text-ink font-[inherit] cursor-pointer",
+        selected ? "bg-tape" : current ? "bg-now" : "bg-white",
         past && "opacity-[0.38]",
       )}
     >
@@ -64,11 +79,11 @@ function SlotCell({
       {wet && (
         <span className="relative z-[1] text-[11px] font-bold">{formatMm(slot.precip)}</span>
       )}
-    </div>
+    </button>
   );
 }
 
-const DailyForecast = ({ daily, allHourly, timezone }: Props) => {
+const DailyForecast = ({ daily, allHourly, timezone, selected = null, onSelect }: Props) => {
   const visibleDays = daily.slice(0, 7);
   const nowHour = timezone ? localHourInZone(new Date(), timezone) : new Date().getHours();
   const todayDate = visibleDays[0]?.date;
@@ -104,6 +119,31 @@ const DailyForecast = ({ daily, allHourly, timezone }: Props) => {
         const name = i === 0 ? "IDAG" : DAY_NAMES[date.getDay()].toUpperCase();
         const isToday = d.date === todayDate;
         const slots = slotsByDay[i];
+        const todayKey = todayDate ?? "";
+
+        const renderSlot = (slot: DayPartSlot, si: number, labeled?: boolean) => {
+          const part = DAY_PARTS[si];
+          const next = { date: d.date, partId: slot.id };
+          const isSelected = isSameDayPart(selected, next);
+          const title = formatDayPartTitle(d.date, slot.id, todayKey);
+          return (
+            <SlotCell
+              key={slot.id}
+              slot={slot}
+              labeled={labeled}
+              fill={precipFillPercent(slot.precip, maxMm)}
+              past={isToday && nowHour >= part.end}
+              current={isToday && nowHour >= part.start && nowHour < part.end}
+              selected={isSelected}
+              ariaLabel={
+                isSelected
+                  ? `${title}, vald. Visa kommande timmar.`
+                  : `${title}. Visa timmar.`
+              }
+              onSelect={() => onSelect?.(next)}
+            />
+          );
+        };
 
         return (
           <div key={d.date} className="border-t-[3px] border-ink">
@@ -111,36 +151,13 @@ const DailyForecast = ({ daily, allHourly, timezone }: Props) => {
               <div className="flex items-center px-3.5 font-bold tracking-[0.06em] text-sm">
                 {name}
               </div>
-              {slots.map((slot, si) => {
-                const part = DAY_PARTS[si];
-                return (
-                  <SlotCell
-                    key={slot.id}
-                    slot={slot}
-                    fill={precipFillPercent(slot.precip, maxMm)}
-                    past={isToday && nowHour >= part.end}
-                    current={isToday && nowHour >= part.start && nowHour < part.end}
-                  />
-                );
-              })}
+              {slots.map((slot, si) => renderSlot(slot, si))}
             </div>
 
             <div className="md:hidden p-3">
               <div className="font-bold tracking-[0.06em] text-sm mb-2">{name}</div>
               <div className="grid grid-cols-2 gap-2">
-                {slots.map((slot, si) => {
-                  const part = DAY_PARTS[si];
-                  return (
-                    <SlotCell
-                      key={slot.id}
-                      slot={slot}
-                      labeled
-                      fill={precipFillPercent(slot.precip, maxMm)}
-                      past={isToday && nowHour >= part.end}
-                      current={isToday && nowHour >= part.start && nowHour < part.end}
-                    />
-                  );
-                })}
+                {slots.map((slot, si) => renderSlot(slot, si, true))}
               </div>
             </div>
           </div>
