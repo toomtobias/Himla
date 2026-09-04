@@ -64,6 +64,20 @@ describe("Header search", () => {
     vi.useRealTimers();
   });
 
+  it("shows city and country when a place is selected", () => {
+    renderHeader();
+
+    expect(searchInput()).toHaveValue("Stockholm, Sverige");
+    expect(screen.getByText("Stockholm")).toBeInTheDocument();
+    expect(screen.getByText(", Sverige")).toBeInTheDocument();
+  });
+
+  it("hides the country visually on small screens", () => {
+    renderHeader();
+
+    expect(screen.getByText(", Sverige")).toHaveClass("hidden", "sm:inline");
+  });
+
   it("shows an empty state when no places are found", async () => {
     vi.mocked(searchLocations).mockResolvedValue([]);
     renderHeader();
@@ -149,7 +163,7 @@ describe("Header search", () => {
       ],
     });
 
-    expect(searchInput()).toHaveValue("Stockholm");
+    expect(searchInput()).toHaveValue("Stockholm, Sverige");
     fireEvent.focus(searchInput());
     expect(screen.getByText("Oslo, Norge")).toBeInTheDocument();
     expect(screen.queryByText(/Norway/)).not.toBeInTheDocument();

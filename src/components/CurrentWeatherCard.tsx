@@ -3,6 +3,7 @@ import {
   AirQuality,
   AirSlide,
   getPosterCopy,
+  getSunNowInfo,
   getWindDirection,
   getUvInfo,
   getAqiInfo,
@@ -20,13 +21,6 @@ interface Props {
   timezone: string;
   airQuality: AirQuality | null;
   precipProbability?: number;
-}
-
-function formatClock(iso: string) {
-  return new Date(iso).toLocaleTimeString("sv-SE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function airSlideCopy(slide: AirSlide): { value: string; detail: string; aria: string } {
@@ -149,17 +143,12 @@ const CurrentWeatherCard = ({
   }, [timezone]);
 
   const localNow = new Date(new Date(nowMs).toLocaleString("en-US", { timeZone: timezone }));
-  const sunriseMs = new Date(sunrise).getTime();
-  const sunsetMs = new Date(sunset).getTime();
-  const isNight = localNow.getTime() < sunriseMs || localNow.getTime() >= sunsetMs;
-  const poster = getPosterCopy(current.weatherCode, isNight);
+  const sun = getSunNowInfo({ sunrise, sunset, nextSunrise, now: localNow });
+  const poster = getPosterCopy(current.weatherCode, sun.isNight);
 
   const weekday = localNow.toLocaleDateString("sv-SE", { weekday: "long" });
   const clock = localNow.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
   const when = `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${clock}`;
-
-  const sunIso = isNight ? (localNow.getTime() >= sunsetMs && nextSunrise ? nextSunrise : sunrise) : sunset;
-  const sunLine = isNight ? `Solen går upp ${formatClock(sunIso)}` : `Solen går ner ${formatClock(sunIso)}`;
 
   const precip = Math.round(current.precipitation * 10) / 10;
   const uv = getUvInfo(current.uvIndex);
@@ -181,7 +170,7 @@ const CurrentWeatherCard = ({
             <span className="block">{poster.line1}</span>
             <span className="block">{poster.line2}</span>
           </h1>
-          <div className="font-bold">{sunLine}</div>
+          {sun.countdown && <div className="font-bold">{sun.countdown}</div>}
         </div>
       </div>
 

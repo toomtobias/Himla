@@ -11,6 +11,8 @@ import {
   listAirSlides,
   getTimeOfDayFraction,
   formatRelativeToNow,
+  formatDurationSv,
+  getSunNowInfo,
   getPosterCopy,
   formatMm,
   aggregateDayParts,
@@ -157,6 +159,78 @@ describe("formatRelativeToNow", () => {
     expect(formatRelativeToNow(new Date(2026, 7, 30, 15, 20, 0), now)).toBe("om 3 tim 20 min");
     expect(formatRelativeToNow(new Date(2026, 7, 30, 9, 0, 0), now)).toBe("för 3 tim sedan");
     expect(formatRelativeToNow(new Date(2026, 7, 30, 12, 0, 20), now)).toBe("nu");
+  });
+});
+
+describe("formatDurationSv", () => {
+  it("drops zero minutes and keeps compact Swedish units", () => {
+    expect(formatDurationSv(8 * 3600000)).toBe("8 tim");
+    expect(formatDurationSv(14 * 3600000 + 30 * 60000)).toBe("14 tim 30 min");
+    expect(formatDurationSv(12 * 60000)).toBe("12 min");
+    expect(formatDurationSv(60000)).toBe("1 min");
+  });
+});
+
+describe("getSunNowInfo", () => {
+  const sunrise = "2026-08-30T05:30";
+  const sunset = "2026-08-30T20:00";
+
+  it("counts down to sunset during the day", () => {
+    expect(
+      getSunNowInfo({
+        sunrise,
+        sunset,
+        now: new Date(2026, 7, 30, 12, 0, 0),
+      }),
+    ).toEqual({
+      isNight: false,
+      countdown: "Solen går ner om 8 tim",
+    });
+  });
+
+  it("counts down to sunrise before dawn", () => {
+    const info = getSunNowInfo({
+      sunrise,
+      sunset,
+      now: new Date(2026, 7, 30, 4, 0, 0),
+    });
+    expect(info.isNight).toBe(true);
+    expect(info.countdown).toBe("Solen går upp om 1 tim 30 min");
+  });
+
+  it("points at the next sunrise after sunset", () => {
+    const info = getSunNowInfo({
+      sunrise,
+      sunset,
+      nextSunrise: "2026-08-31T05:32",
+      now: new Date(2026, 7, 30, 21, 0, 0),
+    });
+    expect(info.isNight).toBe(true);
+    expect(info.countdown).toBe("Solen går upp om 8 tim 32 min");
+  });
+
+  it("handles polar day and polar night", () => {
+    expect(
+      getSunNowInfo({
+        sunrise: "2026-06-15T00:00",
+        sunset: "2026-06-16T00:00",
+        now: new Date(2026, 5, 15, 12, 0, 0),
+      }),
+    ).toEqual({
+      isNight: false,
+      countdown: "Solen går inte ner idag",
+    });
+
+    expect(
+      getSunNowInfo({
+        sunrise: "2025-12-15T00:00",
+        sunset: "2025-12-15T00:00",
+        now: new Date(2025, 11, 15, 12, 0, 0),
+      }),
+    ).toEqual({
+      isNight: true,
+      countdown: "Solen går inte upp idag",
+    });
   });
 });
 

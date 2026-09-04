@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import type { ComponentProps } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
@@ -49,9 +49,17 @@ describe("CurrentWeatherCard", () => {
     expect(screen.queryByText("1/1")).not.toBeInTheDocument();
   });
 
-  it("shows sunrise or sunset time in the poster box", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("shows a sun countdown in the poster and leaves the temp card as day and time", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-08-30T10:00:00.000Z"));
     renderCard({ aqi: 35, pm25: null, pm10: null, pollen: [] });
-    expect(screen.getByText(/Solen går (upp|ner) \d{2}:\d{2}/)).toBeInTheDocument();
+    expect(screen.getByText("Solen går ner om 8 tim")).toBeInTheDocument();
+    expect(screen.queryByText(/Soluppgång/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Solnedgång/)).not.toBeInTheDocument();
   });
 
   it("falls back to humidity without air data", () => {

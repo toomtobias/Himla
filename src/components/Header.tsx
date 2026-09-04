@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { GeoLocation, searchLocations, formatLocationLabel } from "@/lib/weather";
+import {
+  GeoLocation,
+  searchLocations,
+  formatLocationLabel,
+  formatCountry,
+} from "@/lib/weather";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -14,6 +19,8 @@ interface HeaderProps {
 
 export default function Header({
   location,
+  country,
+  countryCode,
   onSelectLocation,
   recentLocations,
 }: HeaderProps) {
@@ -85,6 +92,8 @@ export default function Header({
     closeSearch();
   };
 
+  const countryLabel = formatCountry(country, countryCode);
+  const selectedLabel = countryLabel ? `${location}, ${countryLabel}` : location;
   const recent = recentLocations();
   const showRecent = searchOpen && searchQuery.length < 2 && recent.length > 0;
   const showResults = searchOpen && searchResults.length > 0 && searchQuery.length >= 2;
@@ -127,12 +136,13 @@ export default function Header({
         HIMLA
       </div>
       <div ref={searchRef} className="relative flex-1 min-w-0 z-50">
-        <div className={cn("box overflow-hidden", showList && "relative")}>
+        <div className="box relative overflow-hidden">
           <input
             ref={inputRef}
             type="text"
             placeholder="Sök plats"
-            value={searchOpen ? searchQuery : location}
+            value={searchOpen ? searchQuery : selectedLabel}
+            title={!searchOpen ? selectedLabel : undefined}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => {
               setSearchOpen(true);
@@ -150,9 +160,20 @@ export default function Header({
             aria-busy={isSearching}
             className={cn(
               "w-full bg-transparent px-4 py-3 text-lg font-semibold outline-none placeholder:text-ink/40",
-              !searchOpen && "uppercase",
+              !searchOpen && "uppercase text-transparent caret-transparent",
             )}
           />
+          {!searchOpen && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 flex items-center px-4 text-lg font-semibold uppercase"
+            >
+              <span className="min-w-0 truncate">{location}</span>
+              {countryLabel && (
+                <span className="hidden shrink-0 sm:inline">, {countryLabel}</span>
+              )}
+            </div>
+          )}
 
           {showList && (
             <div

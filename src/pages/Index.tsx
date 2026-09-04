@@ -35,8 +35,8 @@ const Index = () => {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 py-10 md:py-12 min-w-0">
         <Header
           location={weather?.location.name ?? location.name}
-          country={weather?.location.country ?? ""}
-          countryCode={weather?.location.countryCode}
+          country={weather?.location.country ?? location.country}
+          countryCode={weather?.location.countryCode ?? location.countryCode}
           admin1={weather?.location.admin1}
           timezone={weather?.timezone ?? ""}
           onSelectLocation={setLocation}

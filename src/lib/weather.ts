@@ -436,19 +436,67 @@ export function getTimeOfDayFraction(date: Date): number {
   return Math.min(1, Math.max(0, ms / 86400000));
 }
 
-export function formatRelativeToNow(event: Date, now: Date): string {
-  const diffMs = event.getTime() - now.getTime();
-  const minutes = Math.round(Math.abs(diffMs) / 60000);
-  if (minutes < 1) return "nu";
-
+export function formatDurationSv(ms: number): string {
+  const minutes = Math.round(Math.abs(ms) / 60000);
+  if (minutes < 1) return "0 min";
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  let body: string;
-  if (hours > 0 && mins > 0) body = `${hours} tim ${mins} min`;
-  else if (hours > 0) body = hours === 1 ? "1 tim" : `${hours} tim`;
-  else body = mins === 1 ? "1 min" : `${mins} min`;
+  if (hours > 0 && mins > 0) return `${hours} tim ${mins} min`;
+  if (hours > 0) return hours === 1 ? "1 tim" : `${hours} tim`;
+  return mins === 1 ? "1 min" : `${mins} min`;
+}
 
+export function formatRelativeToNow(event: Date, now: Date): string {
+  const diffMs = event.getTime() - now.getTime();
+  if (Math.round(Math.abs(diffMs) / 60000) < 1) return "nu";
+  const body = formatDurationSv(diffMs);
   return diffMs > 0 ? `om ${body}` : `för ${body} sedan`;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export function getSunNowInfo({
+  sunrise,
+  sunset,
+  nextSunrise,
+  now,
+}: {
+  sunrise: string;
+  sunset: string;
+  nextSunrise?: string;
+  now: Date;
+}): { isNight: boolean; countdown: string } {
+  const sunriseMs = new Date(sunrise).getTime();
+  const sunsetMs = new Date(sunset).getTime();
+  const nowMs = now.getTime();
+
+  if (!Number.isFinite(sunriseMs) || !Number.isFinite(sunsetMs)) {
+    return { isNight: false, countdown: "" };
+  }
+
+  if (sunsetMs <= sunriseMs) {
+    return { isNight: true, countdown: "Solen går inte upp idag" };
+  }
+
+  if (sunsetMs - sunriseMs >= DAY_MS - 1000) {
+    return { isNight: false, countdown: "Solen går inte ner idag" };
+  }
+
+  const isNight = nowMs < sunriseMs || nowMs >= sunsetMs;
+  let eventIso = sunset;
+  let verb = "ner";
+  if (isNight) {
+    verb = "upp";
+    eventIso = nowMs >= sunsetMs && nextSunrise ? nextSunrise : sunrise;
+  }
+
+  const eventMs = new Date(eventIso).getTime();
+  let countdown = `Solen går ${verb}`;
+  if (Number.isFinite(eventMs) && eventMs >= nowMs) {
+    countdown = `${countdown} ${formatRelativeToNow(new Date(eventIso), now)}`;
+  }
+
+  return { isNight, countdown };
 }
 
 function asFiniteNumber(value: unknown): number | null {
