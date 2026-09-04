@@ -70,6 +70,20 @@ describe("HourlyForecast", () => {
     expect(screen.getByText("1 mm")).toBeInTheDocument();
   });
 
+  it("draws taller rain bars for more millimetres", () => {
+    const wet = hours.map((h, i) => {
+      if (i === 0) return { ...h, precipitation: 0.5 };
+      if (i === 1) return { ...h, precipitation: 1.2 };
+      if (i === 2) return { ...h, precipitation: 2.4 };
+      return h;
+    });
+    const { container } = render(<HourlyForecast hourly={wet} />);
+    const heights = [...container.querySelectorAll(".bg-rain")].map((el) =>
+      parseFloat((el as HTMLElement).style.height),
+    );
+    expect(heights).toEqual([5.625, 13.5, 27]);
+  });
+
   it("does not show millimetres when precipitation is zero", () => {
     const dryChance = hours.map((h, i) =>
       i === 1 ? { ...h, precipitation: 0, precipitationProbability: 40 } : h,

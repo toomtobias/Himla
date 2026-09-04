@@ -6,6 +6,7 @@ import {
   formatMm,
   formatSlotTemp,
   precipFillPercent,
+  DAY_PART_PRECIP_SCALE_MM,
   localHourInZone,
   formatDayPartTitle,
   isSameDayPart,
@@ -92,10 +93,6 @@ const DailyForecast = ({ daily, allHourly, timezone, selected = null, onSelect }
     const hours = allHourly.filter((h) => h.time.startsWith(d.date));
     return aggregateDayParts(hours);
   });
-  const maxMm = Math.max(
-    8,
-    ...slotsByDay.flatMap((slots) => slots.map((s) => s.precip)),
-  );
 
   return (
     <div className="box bg-white mt-4 min-w-0 overflow-hidden">
@@ -131,7 +128,7 @@ const DailyForecast = ({ daily, allHourly, timezone, selected = null, onSelect }
               key={slot.id}
               slot={slot}
               labeled={labeled}
-              fill={precipFillPercent(slot.precip, maxMm)}
+              fill={precipFillPercent(slot.precip, DAY_PART_PRECIP_SCALE_MM)}
               past={isToday && nowHour >= part.end}
               current={isToday && nowHour >= part.start && nowHour < part.end}
               selected={isSelected}

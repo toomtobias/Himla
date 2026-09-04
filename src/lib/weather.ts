@@ -182,9 +182,14 @@ export function formatMm(n: number): string {
   return `${text} mm`;
 }
 
-export function precipFillPercent(mm: number, scale = 8): number {
+/** Millimetres that fill the hourly rain bar. */
+export const HOURLY_PRECIP_SCALE_MM = 8;
+/** Millimetres that fill a six-hour day-part rain bar. */
+export const DAY_PART_PRECIP_SCALE_MM = 16;
+
+export function precipFillPercent(mm: number, scale = HOURLY_PRECIP_SCALE_MM): number {
   if (mm <= 0) return 0;
-  return Math.min(90, Math.max(16, (mm / scale) * 90));
+  return Math.min(90, (mm / scale) * 90);
 }
 
 export function localHourFromIso(iso: string): number {

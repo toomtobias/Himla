@@ -321,10 +321,14 @@ describe("isHourPast", () => {
 });
 
 describe("precipFillPercent", () => {
-  it("is silent when dry and capped when wet", () => {
+  it("is silent when dry and scales linearly with millimetres", () => {
     expect(precipFillPercent(0)).toBe(0);
-    expect(precipFillPercent(8)).toBe(90);
-    expect(precipFillPercent(0.2)).toBe(16);
+    expect(precipFillPercent(0.2, 8)).toBe(2.25);
+    expect(precipFillPercent(1, 8)).toBe(11.25);
+    expect(precipFillPercent(2, 8)).toBe(22.5);
+    expect(precipFillPercent(4, 8)).toBe(45);
+    expect(precipFillPercent(8, 8)).toBe(90);
+    expect(precipFillPercent(20, 8)).toBe(90);
   });
 });
 

@@ -120,7 +120,6 @@ const HourlyForecast = ({
 }: Props) => {
   const [mode, setMode] = useState<HourlyMode>("temp");
   const visible = hourly.slice(0, VISIBLE);
-  const maxMm = Math.max(4, ...visible.map((h) => h.precipitation));
   const nowHour = timezone ? localHourInZone(new Date(), timezone) : new Date().getHours();
 
   const cycleMode = () => {
@@ -144,7 +143,7 @@ const HourlyForecast = ({
             key={hour.time}
             hour={hour}
             mode={mode}
-            fill={precipFillPercent(hour.precipitation, maxMm)}
+            fill={precipFillPercent(hour.precipitation)}
             past={dimPast && isHourPast(hour.time, todayDate ?? "", nowHour)}
           />
         ))}
