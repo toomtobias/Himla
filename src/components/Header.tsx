@@ -17,6 +17,26 @@ interface HeaderProps {
   recentLocations: () => GeoLocation[];
 }
 
+function SearchGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      data-testid="search-icon"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM10 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"
+      />
+      <rect x="15" y="16.4" width="10" height="3.2" transform="rotate(45 15 16.4)" />
+    </svg>
+  );
+}
+
 export default function Header({
   location,
   country,
@@ -137,43 +157,46 @@ export default function Header({
       </div>
       <div ref={searchRef} className="relative flex-1 min-w-0 z-50">
         <div className="box relative overflow-hidden">
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Sök plats"
-            value={searchOpen ? searchQuery : selectedLabel}
-            title={!searchOpen ? selectedLabel : undefined}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => {
-              setSearchOpen(true);
-              setSearchQuery("");
-            }}
-            onKeyDown={handleSearchKeyDown}
-            role="combobox"
-            aria-label="Sök plats"
-            aria-expanded={showRecent || showResults || showEmpty}
-            aria-controls="location-search-results"
-            aria-activedescendant={
-              listItems.length > 0 ? `search-option-${highlightedIndex}` : undefined
-            }
-            aria-autocomplete="list"
-            aria-busy={isSearching}
-            className={cn(
-              "w-full bg-transparent px-4 py-3 text-lg font-semibold outline-none placeholder:text-ink/40",
-              !searchOpen && "uppercase text-transparent caret-transparent",
-            )}
-          />
-          {!searchOpen && (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 flex items-center px-4 text-lg font-semibold uppercase"
-            >
-              <span className="min-w-0 truncate">{location}</span>
-              {countryLabel && (
-                <span className="hidden shrink-0 sm:inline">, {countryLabel}</span>
+          <div className="relative">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Sök plats"
+              value={searchOpen ? searchQuery : selectedLabel}
+              title={!searchOpen ? selectedLabel : undefined}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                setSearchOpen(true);
+                setSearchQuery("");
+              }}
+              onKeyDown={handleSearchKeyDown}
+              role="combobox"
+              aria-label="Sök plats"
+              aria-expanded={showRecent || showResults || showEmpty}
+              aria-controls="location-search-results"
+              aria-activedescendant={
+                listItems.length > 0 ? `search-option-${highlightedIndex}` : undefined
+              }
+              aria-autocomplete="list"
+              aria-busy={isSearching}
+              className={cn(
+                "w-full bg-transparent pl-4 pr-12 py-3 text-lg font-semibold outline-none placeholder:text-ink/40",
+                !searchOpen && "uppercase text-transparent caret-transparent",
               )}
-            </div>
-          )}
+            />
+            {!searchOpen && (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 flex items-center pl-4 pr-12 text-lg font-semibold uppercase"
+              >
+                <span className="min-w-0 truncate">{location}</span>
+                {countryLabel && (
+                  <span className="hidden shrink-0 sm:inline">, {countryLabel}</span>
+                )}
+              </div>
+            )}
+            <SearchGlyph className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink" />
+          </div>
 
           {showList && (
             <div

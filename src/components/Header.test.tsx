@@ -72,6 +72,13 @@ describe("Header search", () => {
     expect(screen.getByText(", Sverige")).toBeInTheDocument();
   });
 
+  it("shows a magnifying glass in the search field", () => {
+    renderHeader();
+
+    expect(screen.queryByText("Sök")).not.toBeInTheDocument();
+    expect(screen.getByTestId("search-icon")).toBeInTheDocument();
+  });
+
   it("hides the country visually on small screens", () => {
     renderHeader();
 
