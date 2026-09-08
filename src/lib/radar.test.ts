@@ -6,6 +6,7 @@ import {
   visibleTiles,
   radarOverlay,
   mapOrigin,
+  worldToScreen,
   radarTileUrl,
   basemapTileUrl,
   formatRadarClock,
@@ -60,6 +61,18 @@ describe("tile math", () => {
     const origin = mapOrigin(0, 0, 0, TILE_SIZE, TILE_SIZE);
     expect(origin.x).toBe(0);
     expect(origin.y).toBeCloseTo(0);
+  });
+
+  it("places a location at the viewport center until the map is panned", () => {
+    const origin = mapOrigin(59.33, 18.07, 6, 800, 400);
+    const pin = worldToScreen(59.33, 18.07, 6, origin.x, origin.y);
+    expect(pin.x).toBe(400);
+    expect(pin.y).toBe(200);
+
+    const panned = mapOrigin(59.33, 18.07, 6, 800, 400, 80, -30);
+    const moved = worldToScreen(59.33, 18.07, 6, panned.x, panned.y);
+    expect(moved.x).toBe(320);
+    expect(moved.y).toBe(230);
   });
 });
 

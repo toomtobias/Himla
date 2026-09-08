@@ -142,6 +142,19 @@ export function radarOverlay(
   return { zoom: radarZoom, scale, tiles };
 }
 
+export function worldToScreen(
+  latitude: number,
+  longitude: number,
+  zoom: number,
+  originX: number,
+  originY: number,
+): { x: number; y: number } {
+  return {
+    x: lonToWorldX(longitude, zoom) - originX,
+    y: latToWorldY(latitude, zoom) - originY,
+  };
+}
+
 export function mapOrigin(
   latitude: number,
   longitude: number,

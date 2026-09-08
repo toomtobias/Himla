@@ -13,6 +13,7 @@ import {
   radarOverlay,
   radarTileUrl,
   visibleTiles,
+  worldToScreen,
   type RadarIndex,
 } from "@/lib/radar";
 
@@ -76,6 +77,10 @@ const RadarView = ({ latitude, longitude, locationName, timezone }: Props) => {
   const overlay = useMemo(
     () => radarOverlay(origin.x, origin.y, size.w, size.h, zoom),
     [origin.x, origin.y, size.w, size.h, zoom],
+  );
+  const pin = useMemo(
+    () => worldToScreen(latitude, longitude, zoom, origin.x, origin.y),
+    [latitude, longitude, zoom, origin.x, origin.y],
   );
 
   useEffect(() => {
@@ -226,7 +231,10 @@ const RadarView = ({ latitude, longitude, locationName, timezone }: Props) => {
             />
           ))}
 
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex flex-col items-center -translate-x-1/2 -translate-y-1/2">
+        <div
+          className="pointer-events-none absolute z-10 flex flex-col items-center"
+          style={{ left: pin.x, top: pin.y, transform: "translate(-50%, -50%)" }}
+        >
           <span className="absolute bottom-[calc(100%+6px)] bg-tape border-[3px] border-ink px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap">
             {locationName}
           </span>
