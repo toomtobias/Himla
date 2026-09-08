@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
 import DailyForecast from "@/components/DailyForecast";
+import RadarView from "@/components/RadarView";
 import WeatherSkeleton from "@/components/WeatherSkeleton";
 import { useWeather } from "@/hooks/useWeather";
 import {
@@ -51,47 +52,59 @@ const Index = () => {
           </div>
         )}
 
-        {weather && !loading && (
+        {!loading && (
           <>
-            <CurrentWeatherCard
-              current={weather.current}
-              sunrise={weather.sunrises[0]}
-              sunset={weather.sunsets[0]}
-              nextSunrise={weather.sunrises[1]}
-              timezone={weather.timezone}
-              airQuality={weather.airQuality}
-              precipProbability={weather.hourly[0]?.precipitationProbability ?? 0}
+            {weather && (
+              <CurrentWeatherCard
+                current={weather.current}
+                sunrise={weather.sunrises[0]}
+                sunset={weather.sunsets[0]}
+                nextSunrise={weather.sunrises[1]}
+                timezone={weather.timezone}
+                airQuality={weather.airQuality}
+                precipProbability={weather.hourly[0]?.precipitationProbability ?? 0}
+              />
+            )}
+            <RadarView
+              latitude={location.latitude}
+              longitude={location.longitude}
+              locationName={weather?.location.name ?? location.name}
+              timezone={weather?.timezone ?? "Europe/Stockholm"}
             />
-            <HourlyForecast
-              hourly={
-                selectedPeriod
-                  ? hoursForDayPart(
-                      weather.allHourly,
-                      selectedPeriod.date,
-                      selectedPeriod.partId,
-                    )
-                  : weather.hourly
-              }
-              title={
-                selectedPeriod
-                  ? formatDayPartTitle(
-                      selectedPeriod.date,
-                      selectedPeriod.partId,
-                      weather.daily[0]?.date ?? "",
-                    )
-                  : "Kommande timmar"
-              }
-              timezone={weather.timezone}
-              todayDate={weather.daily[0]?.date}
-              dimPast={Boolean(selectedPeriod)}
-            />
-            <DailyForecast
-              daily={weather.daily}
-              allHourly={weather.allHourly}
-              timezone={weather.timezone}
-              selected={selectedPeriod}
-              onSelect={selectPeriod}
-            />
+            {weather && (
+              <>
+                <HourlyForecast
+                  hourly={
+                    selectedPeriod
+                      ? hoursForDayPart(
+                          weather.allHourly,
+                          selectedPeriod.date,
+                          selectedPeriod.partId,
+                        )
+                      : weather.hourly
+                  }
+                  title={
+                    selectedPeriod
+                      ? formatDayPartTitle(
+                          selectedPeriod.date,
+                          selectedPeriod.partId,
+                          weather.daily[0]?.date ?? "",
+                        )
+                      : "Kommande timmar"
+                  }
+                  timezone={weather.timezone}
+                  todayDate={weather.daily[0]?.date}
+                  dimPast={Boolean(selectedPeriod)}
+                />
+                <DailyForecast
+                  daily={weather.daily}
+                  allHourly={weather.allHourly}
+                  timezone={weather.timezone}
+                  selected={selectedPeriod}
+                  onSelect={selectPeriod}
+                />
+              </>
+            )}
           </>
         )}
       </div>
