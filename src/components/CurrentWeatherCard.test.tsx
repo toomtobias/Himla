@@ -70,7 +70,7 @@ describe("CurrentWeatherCard", () => {
     expect(screen.queryByText("AQI")).not.toBeInTheDocument();
   });
 
-  it("cycles AQI, particles and present pollen", () => {
+  it("cycles pollen first, then AQI and particles", () => {
     renderCard({
       aqi: 10,
       pm25: 8.2,
@@ -81,35 +81,36 @@ describe("CurrentWeatherCard", () => {
       ],
     });
 
-    const card = screen.getByRole("button", { name: /luft, aqi 10, bra, 1 av 5/i });
+    const card = screen.getByRole("button", { name: /luft, pollen gräs, hög, 1 av 5/i });
+    expect(screen.getByText("Gräs")).toBeInTheDocument();
+    expect(screen.getByText("Pollen · Hög")).toBeInTheDocument();
+    expect(screen.getByText("1/5")).toBeInTheDocument();
+    expect(screen.queryByText("AQI 10")).not.toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByText("Björk")).toBeInTheDocument();
+    expect(screen.getByText("Pollen · Låg")).toBeInTheDocument();
+    expect(screen.getByText("2/5")).toBeInTheDocument();
+
+    fireEvent.click(card);
+    expect(screen.getByRole("button", { name: /luft, aqi 10, bra, 3 av 5/i })).toBeInTheDocument();
     expect(screen.getByText("AQI 10")).toBeInTheDocument();
     expect(screen.getByText("Bra")).toBeInTheDocument();
-    expect(screen.getByText("1/5")).toBeInTheDocument();
-    expect(screen.queryByText("Gräs")).not.toBeInTheDocument();
+    expect(screen.getByText("3/5")).toBeInTheDocument();
 
     fireEvent.click(card);
     expect(screen.getByRole("button", { name: /luft, pm2\.5 8,2/i })).toBeInTheDocument();
     expect(screen.getByText("8,2")).toBeInTheDocument();
     expect(screen.getByText("PM2.5 · µg/m³")).toBeInTheDocument();
-    expect(screen.getByText("2/5")).toBeInTheDocument();
+    expect(screen.getByText("4/5")).toBeInTheDocument();
 
     fireEvent.click(card);
     expect(screen.getByText("14")).toBeInTheDocument();
     expect(screen.getByText("PM10 · µg/m³")).toBeInTheDocument();
-    expect(screen.getByText("3/5")).toBeInTheDocument();
-
-    fireEvent.click(card);
-    expect(screen.getByText("Gräs")).toBeInTheDocument();
-    expect(screen.getByText("Pollen · Hög")).toBeInTheDocument();
-    expect(screen.getByText("4/5")).toBeInTheDocument();
-
-    fireEvent.click(card);
-    expect(screen.getByText("Björk")).toBeInTheDocument();
-    expect(screen.getByText("Pollen · Låg")).toBeInTheDocument();
     expect(screen.getByText("5/5")).toBeInTheDocument();
 
     fireEvent.click(card);
-    expect(screen.getByRole("button", { name: /luft, aqi 10, bra, 1 av 5/i })).toBeInTheDocument();
-    expect(screen.getByText("AQI 10")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /luft, pollen gräs, hög, 1 av 5/i })).toBeInTheDocument();
+    expect(screen.getByText("Gräs")).toBeInTheDocument();
   });
 });

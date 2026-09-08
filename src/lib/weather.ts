@@ -388,12 +388,12 @@ export function listPollen(values: {
 export function listAirSlides(air: AirQuality | null): AirSlide[] {
   if (!air) return [];
   const slides: AirSlide[] = [];
-  if (air.aqi != null) slides.push({ kind: "aqi", aqi: air.aqi });
-  if (air.pm25 != null) slides.push({ kind: "pm25", value: air.pm25 });
-  if (air.pm10 != null) slides.push({ kind: "pm10", value: air.pm10 });
   for (const p of air.pollen) {
     slides.push({ kind: "pollen", type: p.type, level: p.level, value: p.value });
   }
+  if (air.aqi != null) slides.push({ kind: "aqi", aqi: air.aqi });
+  if (air.pm25 != null) slides.push({ kind: "pm25", value: air.pm25 });
+  if (air.pm10 != null) slides.push({ kind: "pm10", value: air.pm10 });
   return slides;
 }
 

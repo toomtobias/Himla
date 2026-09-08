@@ -122,18 +122,22 @@ describe("listPollen", () => {
 });
 
 describe("listAirSlides", () => {
-  it("orders AQI, particles, then pollen and skips missing values", () => {
+  it("orders pollen first, then AQI and particles, and skips missing values", () => {
     expect(
       listAirSlides({
         aqi: 35,
         pm25: 8.2,
         pm10: null,
-        pollen: [{ type: "Gräs", level: "Hög", value: 40 }],
+        pollen: [
+          { type: "Gräs", level: "Hög", value: 40 },
+          { type: "Björk", level: "Låg", value: 5 },
+        ],
       }),
     ).toEqual([
+      { kind: "pollen", type: "Gräs", level: "Hög", value: 40 },
+      { kind: "pollen", type: "Björk", level: "Låg", value: 5 },
       { kind: "aqi", aqi: 35 },
       { kind: "pm25", value: 8.2 },
-      { kind: "pollen", type: "Gräs", level: "Hög", value: 40 },
     ]);
   });
 
