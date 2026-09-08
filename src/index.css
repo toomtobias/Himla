@@ -14,32 +14,6 @@
     --tape: #ffe14a;
     --air: #ffab39;
     --card: #ffffff;
-
-    --background: 48 100% 91%;
-    --foreground: 0 0% 7%;
-    --card-foreground: 0 0% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 16 100% 56%;
-    --primary-foreground: 0 0% 7%;
-    --secondary: 48 100% 62%;
-    --secondary-foreground: 0 0% 7%;
-    --muted: 48 40% 85%;
-    --muted-foreground: 0 0% 20%;
-    --accent: 115 100% 71%;
-    --accent-foreground: 0 0% 7%;
-    --destructive: 0 84% 42%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 7%;
-    --input: 0 0% 7%;
-    --ring: 0 0% 7%;
-    --radius: 0px;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
   }
 
   html,
@@ -64,11 +38,6 @@
   .box {
     border: 3px solid var(--ink);
     box-shadow: 6px 6px 0 var(--ink);
-    background: var(--card);
-  }
-
-  .box-flat {
-    border: 3px solid var(--ink);
     background: var(--card);
   }
 }

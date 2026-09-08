@@ -51,7 +51,7 @@ describe("getWeatherInfo", () => {
   });
 
   it("falls back for unknown codes", () => {
-    expect(getWeatherInfo(999)).toEqual({ label: "Okänt", icon: "Cloud" });
+    expect(getWeatherInfo(999)).toEqual({ label: "Okänt" });
   });
 });
 

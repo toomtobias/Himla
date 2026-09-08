@@ -15,6 +15,6 @@ Swedish weather app. Single-page React client that fetches forecasts from the pu
 
 ## Stack
 
-Vite, React, TypeScript, Tailwind CSS. Weather icons are animated [Meteocons](https://bas.dev/work/meteocons) in `public/meteocons/`.
+Vite, React, TypeScript, Tailwind CSS.
 
 Last searched locations are stored in `localStorage` under `himla-recent-locations` (max 5). Default location is Stockholm.

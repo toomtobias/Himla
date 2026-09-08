@@ -79,31 +79,31 @@ export interface WeatherData {
   airQuality: AirQuality | null;
 }
 
-const WMO_CODES: Record<number, { label: string; icon: string }> = {
-  0: { label: "Klart", icon: "Sun" },
-  1: { label: "Mestadels klart", icon: "SunMedium" },
-  2: { label: "Halvklart", icon: "CloudSun" },
-  3: { label: "Mulet", icon: "Cloud" },
-  45: { label: "Dimma", icon: "CloudFog" },
-  48: { label: "Rimfrost", icon: "CloudFog" },
-  51: { label: "Lätt duggregn", icon: "CloudDrizzle" },
-  53: { label: "Duggregn", icon: "CloudDrizzle" },
-  55: { label: "Kraftigt duggregn", icon: "CloudDrizzle" },
-  61: { label: "Lätt regn", icon: "CloudRain" },
-  63: { label: "Regn", icon: "CloudRain" },
-  65: { label: "Kraftigt regn", icon: "CloudRainWind" },
-  71: { label: "Lätt snö", icon: "Snowflake" },
-  73: { label: "Snö", icon: "Snowflake" },
-  75: { label: "Kraftigt snöfall", icon: "Snowflake" },
-  77: { label: "Snökorn", icon: "Snowflake" },
-  80: { label: "Lätta skurar", icon: "CloudRain" },
-  81: { label: "Skurar", icon: "CloudRain" },
-  82: { label: "Kraftiga skurar", icon: "CloudRainWind" },
-  85: { label: "Lätta snöbyar", icon: "Snowflake" },
-  86: { label: "Kraftiga snöbyar", icon: "Snowflake" },
-  95: { label: "Åska", icon: "CloudLightning" },
-  96: { label: "Åska med hagel", icon: "CloudLightning" },
-  99: { label: "Åska med kraftigt hagel", icon: "CloudLightning" },
+const WMO_LABELS: Record<number, string> = {
+  0: "Klart",
+  1: "Mestadels klart",
+  2: "Halvklart",
+  3: "Mulet",
+  45: "Dimma",
+  48: "Rimfrost",
+  51: "Lätt duggregn",
+  53: "Duggregn",
+  55: "Kraftigt duggregn",
+  61: "Lätt regn",
+  63: "Regn",
+  65: "Kraftigt regn",
+  71: "Lätt snö",
+  73: "Snö",
+  75: "Kraftigt snöfall",
+  77: "Snökorn",
+  80: "Lätta skurar",
+  81: "Skurar",
+  82: "Kraftiga skurar",
+  85: "Lätta snöbyar",
+  86: "Kraftiga snöbyar",
+  95: "Åska",
+  96: "Åska med hagel",
+  99: "Åska med kraftigt hagel",
 };
 
 const WIND_DIRECTIONS = ["N", "NO", "Ö", "SO", "S", "SV", "V", "NV"];
@@ -118,7 +118,7 @@ export function snapWindDegrees(degrees: number): number {
 }
 
 export function getWeatherInfo(code: number) {
-  return WMO_CODES[code] || { label: "Okänt", icon: "Cloud" };
+  return { label: WMO_LABELS[code] || "Okänt" };
 }
 
 export function getHourlyStub(code: number): string {
