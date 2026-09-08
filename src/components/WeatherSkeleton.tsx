@@ -1,7 +1,7 @@
 const WeatherSkeleton = () => {
   return (
     <div className="mt-[18px] space-y-4 animate-pulse">
-      <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="box bg-white p-[18px] min-h-[220px]" />
         <div className="box bg-now p-[22px] min-h-[220px]" />
       </div>

@@ -2,7 +2,7 @@ import {
   CurrentWeather,
   AirQuality,
   AirSlide,
-  getPosterCopy,
+  getWeatherInfo,
   getSunNowInfo,
   getWindDirection,
   getUvInfo,
@@ -144,7 +144,7 @@ const CurrentWeatherCard = ({
 
   const localNow = new Date(new Date(nowMs).toLocaleString("en-US", { timeZone: timezone }));
   const sun = getSunNowInfo({ sunrise, sunset, nextSunrise, now: localNow });
-  const poster = getPosterCopy(current.weatherCode, sun.isNight);
+  const condition = getWeatherInfo(current.weatherCode).label;
 
   const weekday = localNow.toLocaleDateString("sv-SE", { weekday: "long" });
   const clock = localNow.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
@@ -156,7 +156,7 @@ const CurrentWeatherCard = ({
 
   return (
     <div className="mt-[18px] space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="box bg-white p-[18px] flex flex-col justify-between min-h-[220px]">
           <div className="text-sm font-bold uppercase tracking-[0.08em]">{when}</div>
           <div className="text-[clamp(88px,16vw,180px)] leading-[0.8] font-bold tracking-[-0.07em] my-2">
@@ -166,9 +166,8 @@ const CurrentWeatherCard = ({
         </div>
         <div className="box bg-now p-[22px] flex flex-col justify-between min-h-[220px]">
           <div className="text-sm font-bold uppercase tracking-[0.08em]">Just nu</div>
-          <h1 className="text-[clamp(28px,4.2vw,42px)] leading-[1] font-bold uppercase">
-            <span className="block">{poster.line1}</span>
-            <span className="block">{poster.line2}</span>
+          <h1 className="text-[clamp(36px,5.5vw,56px)] leading-[1] font-bold uppercase">
+            {condition}
           </h1>
           {sun.countdown && <div className="font-bold">{sun.countdown}</div>}
         </div>

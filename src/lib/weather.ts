@@ -137,41 +137,6 @@ export function hourlyStubVisible(code: number): boolean {
   return getHourlyStub(code).length > 0;
 }
 
-const POSTER_LINE2: Record<number, string> = {
-  0: "Inget att anmärka.",
-  1: "Nästan fint.",
-  2: "Ingen brådska.",
-  3: "Grått och stilla.",
-  45: "Titta upp.",
-  48: "Halt underlag.",
-  51: "Det duggar.",
-  53: "Fuktigt.",
-  55: "Blött.",
-  61: "Jacka på.",
-  63: "Paraply.",
-  65: "Stanna inne.",
-  71: "Långsamt.",
-  73: "Vinter.",
-  75: "Håll er inne.",
-  77: "Korn i luften.",
-  80: "Det skurar.",
-  81: "Skurar.",
-  82: "Ös.",
-  85: "Snöbyar.",
-  86: "Tjockt.",
-  95: "Inne.",
-  96: "Hagel.",
-  99: "Hagel. Inne.",
-};
-
-export function getPosterCopy(code: number, isNight = false): { line1: string; line2: string } {
-  const line1 = getWeatherInfo(code).label;
-  if (isNight && (code === 0 || code === 1)) {
-    return { line1: "Klart", line2: "Stjärnor." };
-  }
-  return { line1, line2: POSTER_LINE2[code] ?? "Se upp." };
-}
-
 export function formatSvNumber(n: number): string {
   return String(n).replace(".", ",");
 }

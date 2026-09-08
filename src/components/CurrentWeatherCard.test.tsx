@@ -36,6 +36,7 @@ describe("CurrentWeatherCard", () => {
   it("shows now chips including UV and wind gusts", () => {
     renderCard({ aqi: 35, pm25: null, pm10: null, pollen: [] });
     expect(screen.getByText("Klart")).toBeInTheDocument();
+    expect(screen.queryByText("Inget att anmärka.")).not.toBeInTheDocument();
     expect(screen.getByText("14°")).toBeInTheDocument();
     expect(screen.getByText("4 m/s")).toBeInTheDocument();
     expect(screen.getByText(/byar 7/)).toBeInTheDocument();

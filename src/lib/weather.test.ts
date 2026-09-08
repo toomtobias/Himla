@@ -13,7 +13,6 @@ import {
   formatRelativeToNow,
   formatDurationSv,
   getSunNowInfo,
-  getPosterCopy,
   formatMm,
   aggregateDayParts,
   formatSlotTemp,
@@ -231,13 +230,6 @@ describe("getSunNowInfo", () => {
       isNight: true,
       countdown: "Solen går inte upp idag",
     });
-  });
-});
-
-describe("getPosterCopy", () => {
-  it("pairs the WMO label with a poster line", () => {
-    expect(getPosterCopy(2)).toEqual({ line1: "Halvklart", line2: "Ingen brådska." });
-    expect(getPosterCopy(0, true)).toEqual({ line1: "Klart", line2: "Stjärnor." });
   });
 });
 
