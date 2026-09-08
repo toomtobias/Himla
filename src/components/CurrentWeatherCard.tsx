@@ -169,7 +169,7 @@ const CurrentWeatherCard = ({
           <h1 className="text-[clamp(36px,5.5vw,56px)] leading-[1] font-bold uppercase">
             {condition}
           </h1>
-          {sun.countdown && <div className="font-bold">{sun.countdown}</div>}
+          {sun.countdown && <div className="font-bold uppercase">{sun.countdown}</div>}
         </div>
       </div>
 
