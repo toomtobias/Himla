@@ -172,9 +172,9 @@ const RadarView = ({ latitude, longitude, locationName, timezone }: Props) => {
   const age = current ? formatRadarAge(current.time) : "";
 
   return (
-    <section className="box bg-white mt-4 overflow-hidden" aria-label="Radar">
+    <section className="box bg-white mt-4 overflow-hidden" aria-label="Regnradar">
       <div className="px-3.5 py-2.5 border-b-[3px] border-ink">
-        <div className="text-xs font-bold uppercase tracking-[0.08em]">Radar</div>
+        <div className="text-xs font-bold uppercase tracking-[0.08em]">Regnradar</div>
         <div className="text-[11px] font-semibold text-ink/70 truncate">
           {current?.nowcast ? "Prognos" : age}
           {current ? ` · ${clock}` : ""}

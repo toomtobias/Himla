@@ -43,7 +43,7 @@ describe("RadarView", () => {
       />,
     );
 
-    expect(screen.getByText("Radar")).toBeInTheDocument();
+    expect(screen.getByText("Regnradar")).toBeInTheDocument();
     const latest = formatRadarClock(TIME_B, "Europe/Stockholm");
     expect(await screen.findAllByText(latest)).not.toHaveLength(0);
     expect(screen.getByText("Stockholm")).toBeInTheDocument();
