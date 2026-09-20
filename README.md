@@ -1,6 +1,6 @@
 # Himla
 
-Swedish weather app. Single-page React client that fetches forecasts from the public [Open-Meteo](https://open-meteo.com/) API (no API key).
+Swedish weather app. Near-term forecast from [MET Norway](https://api.met.no/) (locationforecast + nowcast), with UV, sun times, air quality and the longer horizon from the public [Open-Meteo](https://open-meteo.com/) API.
 
 ## Scripts
 

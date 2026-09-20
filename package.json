@@ -2,7 +2,7 @@
   "name": "himla",
   "private": true,
   "version": "0.0.0",
-  "description": "Swedish weather app using Open-Meteo",
+  "description": "Swedish weather app using MET Norway and Open-Meteo",
   "type": "module",
   "scripts": {
     "dev": "vite",

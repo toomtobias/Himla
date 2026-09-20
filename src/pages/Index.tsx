@@ -103,6 +103,9 @@ const Index = () => {
                   selected={selectedPeriod}
                   onSelect={selectPeriod}
                 />
+                <p className="mt-8 text-center text-xs font-medium text-ink/45">
+                  Prognos MET Norway · UV, sol och luft Open-Meteo
+                </p>
               </>
             )}
           </>

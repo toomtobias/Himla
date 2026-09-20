@@ -47,6 +47,7 @@ describe("getWeatherInfo", () => {
   it("returns Swedish labels for known WMO codes", () => {
     expect(getWeatherInfo(0).label).toBe("Klart");
     expect(getWeatherInfo(63).label).toBe("Regn");
+    expect(getWeatherInfo(68).label).toBe("Snöblandat");
     expect(getWeatherInfo(95).label).toBe("Åska");
   });
 
@@ -338,6 +339,7 @@ describe("getHourlyStub", () => {
     expect(getHourlyStub(51)).toBe("Dugg");
     expect(getHourlyStub(63)).toBe("Regn");
     expect(getHourlyStub(81)).toBe("Regn");
+    expect(getHourlyStub(68)).toBe("Snöblandat");
     expect(getHourlyStub(73)).toBe("Snö");
     expect(getHourlyStub(95)).toBe("Åska");
   });

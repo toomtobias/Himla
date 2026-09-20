@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-"Himla" is a Swedish React weather app that fetches data from the public Open-Meteo API (no API key needed). Poster-like visual design: ink boxes, hard shadows, Space Grotesk. Single-page app with one route (`/`), no backend. All user-facing text is in Swedish.
+"Himla" is a Swedish React weather app. Near-term forecast (temperature, wind, precipitation, symbols, rain probability) comes from MET Norway (`api.met.no` locationforecast + nowcast). UV, sunrise/sunset, 14-day hourly backbone, geocoding and air quality come from the public Open-Meteo API (no API key). Poster-like visual design: ink boxes, hard shadows, Space Grotesk. Single-page app with one route (`/`). All user-facing text is in Swedish.
 
 ## Commands
 
@@ -22,8 +22,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Data flow:** `useWeather` hook holds the selected `GeoLocation` and calls `fetchWeather()` from `src/lib/weather.ts` on change. On first load, the last searched location is restored from localStorage (falls back to Stockholm). `searchLocations()` calls the Open-Meteo geocoding API for city autocomplete. All weather display components are pure/presentational — they receive typed props.
 
+**Weather merge:** `fetchWeather()` loads Open-Meteo first (skeleton including UV and sun times), then overlays MET Norway on matching local hours that have `next_1_hours` (~55 hours). Nowcast supplies current precipitation when radar coverage is `ok`. If MET fails, the Open-Meteo forecast is shown unchanged. Dev/preview proxy `/api/met` → `api.met.no` adds the required User-Agent; production uses a simple CORS GET to `https://api.met.no`.
+
 **Key modules:**
-- `src/lib/weather.ts` — Types, WMO code-to-Swedish-label mapping, wind direction helper (`getWindDirection`), API fetch functions. Wind speed uses m/s (`wind_speed_unit=ms`). Returns `timezone` from API. Hourly slicing uses location-local time (via `toLocaleString` with timezone) to correctly offset for remote locations.
+- `src/lib/weather.ts` — Types, WMO code-to-Swedish-label mapping, wind direction helper (`getWindDirection`), Open-Meteo fetch. Wind speed uses m/s (`wind_speed_unit=ms`). Returns `timezone` from API. Hourly slicing uses location-local time (via `toLocaleString` with timezone) to correctly offset for remote locations.
+- `src/lib/met.ts` — MET locationforecast/nowcast client, symbol-to-WMO mapping, overlay onto `WeatherData`.
 - `src/hooks/useWeather.ts` — Location state + weather data fetching. Manages recent locations in localStorage (key: `himla-recent-locations`, max 5). Exposes `recentLocations` getter and `setLocation` which auto-saves to history.
 - `src/pages/Index.tsx` — Composes header, current weather, hourly forecast and week grid. Shows `WeatherSkeleton` during loading. Selecting a day-part in the week grid filters the hourly row.
 - `src/components/Header.tsx` — "Himla" wordmark + location search. When search opens with no query, shows recent locations. Search results overlay content. Click outside closes search.
